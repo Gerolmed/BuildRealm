@@ -1,0 +1,4 @@
+name: Lost Souls Save
+version: @version@
+main: net.endrealm.lostsouls.LostSoulsSave
+api-version: 1.15.2

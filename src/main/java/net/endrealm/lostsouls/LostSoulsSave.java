@@ -1,0 +1,17 @@
+package net.endrealm.lostsouls;
+
+import org.bukkit.plugin.java.JavaPlugin;
+
+public final class LostSoulsSave extends JavaPlugin {
+
+    @Override
+    public void onEnable() {
+        // Plugin startup logic
+
+    }
+
+    @Override
+    public void onDisable() {
+        // Plugin shutdown logic
+    }
+}
