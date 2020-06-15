@@ -2,7 +2,8 @@ package net.endrealm.lostsouls.world;
 
 
 import org.bukkit.World;
-import org.bukkit.util.Consumer;
+
+import java.util.function.Consumer;
 
 public interface WorldService {
     /**
@@ -28,4 +29,7 @@ public interface WorldService {
     void unload(WorldIdentity worldIdentity, Runnable onSuccess);
 
     void delete(WorldIdentity worldIdentity, Runnable onSuccess);
+    boolean isLoaded(WorldIdentity worldIdentity);
+
+    void replace(WorldIdentity old, WorldIdentity newIdentity, Runnable onSuccess);
 }

@@ -7,9 +7,9 @@ import net.endrealm.lostsouls.world.WorldIdentity;
 import net.endrealm.lostsouls.world.WorldInstance;
 import net.endrealm.lostsouls.world.WorldService;
 import org.bukkit.World;
-import org.bukkit.util.Consumer;
 
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public class BasicWorldService<T> implements WorldService {
@@ -71,6 +71,23 @@ public class BasicWorldService<T> implements WorldService {
             threadService.runAsync(() -> {
                 worldAdapter.delete(target);
                 onSuccess.run();
+            });
+        });
+    }
+
+    @Override
+    public boolean isLoaded(WorldIdentity worldIdentity) {
+        return activeInstances.containsKey(worldIdentity);
+    }
+
+    @Override
+    public void replace(WorldIdentity old, WorldIdentity newIdentity, Runnable onSuccess) {
+        unload(newIdentity, () -> {
+            delete(old, () -> {
+                clone(newIdentity, old, () -> {
+                    delete(newIdentity, onSuccess);
+                });
+
             });
         });
     }

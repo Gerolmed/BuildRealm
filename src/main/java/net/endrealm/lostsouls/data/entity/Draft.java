@@ -3,6 +3,7 @@ package net.endrealm.lostsouls.data.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.endrealm.lostsouls.world.WorldIdentity;
 import net.endrealm.realmdrive.annotations.SaveAll;
 
 import java.util.ArrayList;
@@ -49,5 +50,9 @@ public class Draft {
         draft.setMembers(members);
 
         return draft;
+    }
+
+    public WorldIdentity getIdentity() {
+        return new WorldIdentity(getId(), open);
     }
 }

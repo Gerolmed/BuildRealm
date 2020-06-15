@@ -6,6 +6,7 @@ import net.endrealm.lostsouls.exception.DuplicateKeyException;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThreadService;
+import net.endrealm.lostsouls.world.WorldService;
 import org.bukkit.World;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class BasicDraftService implements DraftService {
 
     private final DataProvider dataProvider;
     private final ThreadService threadService;
+    private final WorldService worldService;
 
     @Override
     public void loadDraft(String id, Consumer<Draft> onLoad, Runnable notExists) {
@@ -63,22 +65,22 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void generateDraft(Draft draft, Consumer<World> onGenerated, Consumer<Exception> onFailure) {
-
+        worldService.generate(draft.getIdentity(), onGenerated);
     }
 
     @Override
     public void unloadDraft(Draft draft, Runnable onFinish, Consumer<Exception> onFailure) {
-
+        worldService.unload(draft.getIdentity(), onFinish);
     }
 
     @Override
     public void replaceDraft(Draft oldDraft, Draft newDraft, Runnable onSuccess) {
-        threadService.runAsync(() -> {
-
-            // TODO unload oldDraft world and newDraft world + remove newDraft world
-            Draft merge = oldDraft.merge(newDraft);
-            dataProvider.remove(newDraft);
-            dataProvider.saveDraft(merge);
+        worldService.replace(oldDraft.getIdentity(), newDraft.getIdentity(), () -> {
+            threadService.runAsync(() -> {
+                Draft merge = oldDraft.merge(newDraft);
+                dataProvider.remove(newDraft);
+                dataProvider.saveDraft(merge);
+            });
         });
     }
 }
