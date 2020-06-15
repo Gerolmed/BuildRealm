@@ -4,9 +4,7 @@ import lombok.Data;
 import net.endrealm.lostsouls.repository.Cache;
 import net.endrealm.lostsouls.utils.Pair;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Data
 public class BasicCache<T, K> implements Cache<T, K> {
@@ -22,25 +20,43 @@ public class BasicCache<T, K> implements Cache<T, K> {
             return Optional.empty();
         }
 
-        Long now = System.currentTimeMillis();
 
-        if(entry.getValue() > now) {
-            markDirty(key);
+        if(!validateOrRefresh(key, entry)) {
             return Optional.empty();
         }
-
-        entry.setValue(now + cacheDuration);
 
         return Optional.of(entry.getKey());
     }
 
+    private boolean validateOrRefresh(K key, Pair<T, Long> entry) {
+        long now = System.currentTimeMillis();
+
+        if(entry.getValue() > now) {
+            markDirty(key);
+            return false;
+        }
+        entry.setValue(now + cacheDuration);
+        return true;
+    }
+
     @Override
-    public void add(K key, T value) {
+    public List<T> getAllBy(Filter<T> matches) {
+        List<T> found = new ArrayList<>();
+        new ArrayList<>(cacheMap.entrySet()).forEach((k) -> {
+            if(matches.matches(k.getValue().getKey()))
+                found.add(k.getValue().getKey());
+        });
+
+        return found;
+    }
+
+    @Override
+    public synchronized void add(K key, T value) {
         cacheMap.put(key, Pair.of(value, System.currentTimeMillis() + cacheDuration));
     }
 
     @Override
-    public Optional<T> markDirty(K key) {
+    public synchronized Optional<T> markDirty(K key) {
         Pair<T, Long> pair = cacheMap.remove(key);
         return pair != null ? Optional.of(pair.getKey()) : Optional.empty();
     }
