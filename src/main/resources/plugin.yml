@@ -2,7 +2,7 @@ name: LostSoulsSave
 version: @version@
 main: net.endrealm.lostsouls.LostSoulsSave
 api-version: 1.15
-depend: [SlimeWorldManager]
+depend: [SlimeWorldManager, WorldEdit]
 
 commands:
   draft:

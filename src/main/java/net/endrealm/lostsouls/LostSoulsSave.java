@@ -2,10 +2,13 @@ package net.endrealm.lostsouls;
 
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import fr.minuskube.inv.InventoryManager;
 import lombok.Getter;
+import net.endrealm.lostsouls.bridge.WorldEditListener;
 import net.endrealm.lostsouls.commands.DraftCommand;
 import net.endrealm.lostsouls.gui.Gui;
+import net.endrealm.lostsouls.listener.EditWorldListener;
 import net.endrealm.lostsouls.listener.WorldChangeListener;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.repository.impl.BasicCache;
@@ -37,6 +40,7 @@ public final class LostSoulsSave extends JavaPlugin {
     private DraftService draftService;
     private final Long CACHE_DURATION = 40000L;
     private SlimePlugin slimePlugin;
+    private WorldEditPlugin worldEditPlugin;
     private InventoryManager inventoryManager;
 
     @Override
@@ -50,6 +54,7 @@ public final class LostSoulsSave extends JavaPlugin {
         new Gui(inventoryManager);
 
         slimePlugin = (SlimePlugin) Bukkit.getServer().getPluginManager().getPlugin("SlimeWorldManager");
+        worldEditPlugin = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
         registerLoaders();
 
         threadService = new ThreadServiceImpl(this);
@@ -76,10 +81,14 @@ public final class LostSoulsSave extends JavaPlugin {
 
         registerCommands();
         registerEvents();
+
+        this.worldEditPlugin.getWorldEdit().getEventBus().register(new WorldEditListener(dataProvider, worldService));
     }
 
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(new WorldChangeListener(draftService, worldService), this);
+        getServer().getPluginManager().registerEvents(new EditWorldListener(dataProvider, worldService), this);
+
     }
 
     private void registerLoaders() {

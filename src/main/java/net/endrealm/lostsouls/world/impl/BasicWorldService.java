@@ -22,6 +22,7 @@ public class BasicWorldService<T> implements WorldService {
     public synchronized void generate(WorldIdentity worldIdentity, Consumer<World> worldConsumer) {
         if(activeInstances.containsKey(worldIdentity)) {
             worldConsumer.accept(activeInstances.get(worldIdentity).getBukkitWorld().get());
+            return;
         }
         threadService.runAsync(() -> {
             final WorldInstance<T> instance;

@@ -31,7 +31,7 @@ public class WorldChangeListener extends BaseListener {
         if(world.getPlayers().size() > 0) {
             return;
         }
-        //draftService.unloadDraft(name, () -> sendInfo(player, "Unloaded Draft@"+name), System.out::println);
+        draftService.unloadDraft(name, () -> sendInfo(player, "Unloaded Draft@"+name), System.out::println);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
