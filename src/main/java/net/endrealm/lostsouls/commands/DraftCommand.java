@@ -78,10 +78,9 @@ public class DraftCommand extends BaseCommand {
                     noteBuilder.append(" ").append(args[i]);
                 }
                 note =  noteBuilder.substring(1);
-                tryCreate(player, note);
-
-                return true;
             }
+            tryCreate(player, note);
+            return true;
         }
 
 
