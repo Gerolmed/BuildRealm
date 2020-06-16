@@ -2,9 +2,11 @@ package net.endrealm.lostsouls.repository.impl;
 
 import lombok.Data;
 import net.endrealm.lostsouls.data.entity.Draft;
+import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.repository.Cache;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.repository.DraftRepository;
+import net.endrealm.lostsouls.repository.ThemeRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +19,8 @@ public class BasicDataProvider implements DataProvider {
 
     private final Cache<Draft, String> draftCache;
     private final DraftRepository draftRepository;
-
+    private final Cache<Theme, String> themeCache;
+    private final ThemeRepository themeRepository;
     @Override
     public Optional<Draft> getDraft(String key) {
         Optional<Draft> draftOpt = draftCache.get(key);
@@ -38,12 +41,6 @@ public class BasicDataProvider implements DataProvider {
         return drafts;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends Draft> Optional<T> getDraftCast(String key) {
-        return getDraft(key).map(t -> (T) t);
-    }
-
     @Override
     public synchronized void saveDraft(Draft draft) {
         draftCache.add(draft.getId(), draft);
@@ -59,5 +56,36 @@ public class BasicDataProvider implements DataProvider {
     public void remove(Draft draft) {
         draftCache.markDirty(draft.getId());
         draftRepository.remove(draft);
+    }
+
+    @Override
+    public Optional<Theme> getTheme(String key) {
+        Optional<Theme> draftOpt = themeCache.get(key);
+        if(!draftOpt.isPresent()) {
+            draftOpt = themeRepository.get(key);
+            draftOpt.ifPresent(draft -> themeCache.add(draft.getName(), draft));
+        }
+        return draftOpt;
+    }
+
+    @Override
+    public void saveTheme(Theme theme) {
+        themeCache.add(theme.getName(), theme);
+        themeRepository.save(theme);
+    }
+
+    @Override
+    public List<Theme> getAllThemes() {
+        List<Theme> cachedThemes = themeCache.getAllBy(value -> true);
+        List<Theme> newThemes = themeRepository.getAll(cachedThemes.stream().map(Theme::getName).collect(Collectors.toList()));
+        newThemes.forEach(theme -> themeCache.add(theme.getName(), theme));
+        cachedThemes.addAll(newThemes);
+        return cachedThemes;
+    }
+
+    @Override
+    public void removeTheme(Theme theme) {
+        themeCache.markDirty(theme.getName());
+        themeRepository.delete(theme.getName());
     }
 }

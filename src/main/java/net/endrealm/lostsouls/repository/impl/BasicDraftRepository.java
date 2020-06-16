@@ -20,6 +20,7 @@ import java.util.UUID;
 public class BasicDraftRepository implements DraftRepository {
 
     private final DriveService driveService;
+    private final String TABLE = "themes";
 
     public BasicDraftRepository(DriveService driveService) {
         this.driveService = driveService;
@@ -32,7 +33,7 @@ public class BasicDraftRepository implements DraftRepository {
     }
 
     private Query queryById(String id) {
-        return new Query().addEq().setField("id").setValue(id).close().build();
+        return new Query().setTableName(TABLE).addEq().setField("id").setValue(id).close().build();
     }
 
     @Override
@@ -44,7 +45,7 @@ public class BasicDraftRepository implements DraftRepository {
     // { $and: [{ "members.uuid": { $eq: "1234" }}, { id: { $nin: ["hijklm", "nopqrs"] } }] }
     @Override
     public synchronized List<Draft> findByMember(UUID uuid, boolean open, List<String> excludedDraftIds) {
-        ValueNotInOperator<AndOperator<Query>> nin = new Query()
+        ValueNotInOperator<AndOperator<Query>> nin = new Query().setTableName(TABLE)
                 .addAnd()
                     .addEq()
                         .setField("members.uuid")

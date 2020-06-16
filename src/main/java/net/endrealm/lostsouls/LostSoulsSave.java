@@ -10,6 +10,7 @@ import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.repository.impl.BasicCache;
 import net.endrealm.lostsouls.repository.impl.BasicDataProvider;
 import net.endrealm.lostsouls.repository.impl.BasicDraftRepository;
+import net.endrealm.lostsouls.repository.impl.BasicThemeRepository;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.services.impl.BasicDraftService;
@@ -19,6 +20,7 @@ import net.endrealm.lostsouls.world.impl.BasicWorldService;
 import net.endrealm.lostsouls.world.impl.FileLoader;
 import net.endrealm.lostsouls.world.impl.SlimeWorldAdapter;
 import net.endrealm.realmdrive.factory.DriveServiceFactory;
+import net.endrealm.realmdrive.interfaces.DriveService;
 import net.endrealm.realmdrive.utils.DriveSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -60,10 +62,13 @@ public final class LostSoulsSave extends JavaPlugin {
                 .build();
 
         DriveServiceFactory serviceFactory = new DriveServiceFactory();
+        DriveService driveService = serviceFactory.getDriveService(settings);
 
         this.dataProvider = new BasicDataProvider(
                 new BasicCache<>(CACHE_DURATION),
-                new BasicDraftRepository(serviceFactory.getDriveService(settings))
+                new BasicDraftRepository(driveService),
+                new BasicCache<>(CACHE_DURATION),
+                new BasicThemeRepository(driveService)
         );
         this.worldService = new BasicWorldService<>(new SlimeWorldAdapter(slimePlugin, getSlimeLoader("openDrafts"), getSlimeLoader("closedDrafts")), threadService);
         this.draftService = new BasicDraftService(dataProvider, threadService, worldService);
