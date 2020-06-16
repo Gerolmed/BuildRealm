@@ -27,6 +27,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.12'
     compileOnly 'net.endrealm:realm-drive:1.3.2-RELEASE'
     compileOnly group: "com.grinderwolf", name: "slimeworldmanager-api", version: "2.2.1";
+    compile 'fr.minuskube.inv:smart-invs:1.2.7'
 
 
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
