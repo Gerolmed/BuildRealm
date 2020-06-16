@@ -135,6 +135,19 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
         worldInstance.getBukkitWorld().ifPresent(World::save);
     }
 
+    @Override
+    public boolean unloadHard(WorldIdentity identity) {
+        SlimeWorldInstance instance = new SlimeWorldInstance(identity);
+        instance.setBukkitWorld(Bukkit.getWorld(identity.getWorldName()));
+        return unloadHard(instance);
+    }
+    @Override
+    public boolean unloadHard(WorldInstance<SlimeWorld> instance) {
+        WorldIdentity identity = instance.getIdentity();
+        instance.getBukkitWorld().ifPresent(world -> world.getPlayers().forEach(player -> player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation())));
+        return Bukkit.unloadWorld(identity.getWorldName(), false);
+    }
+
     private SlimeLoader getLoader(WorldIdentity identity) {
         return identity.isOpen() ? openWorldLoader : closedWorldLoader;
     }

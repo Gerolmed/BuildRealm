@@ -6,6 +6,7 @@ import net.endrealm.lostsouls.exception.DuplicateKeyException;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThreadService;
+import net.endrealm.lostsouls.world.WorldIdentity;
 import net.endrealm.lostsouls.world.WorldService;
 import org.bukkit.World;
 
@@ -20,9 +21,12 @@ public class BasicDraftService implements DraftService {
     private final WorldService worldService;
 
     private final Set<String> deletedQueue = new HashSet<>();
+    private final Set<String> unloadingQueue = Collections.synchronizedSet(new HashSet<>());
+
 
     @Override
     public void loadDraft(String id, Consumer<Draft> onLoad, Runnable notExists) {
+        if(unloadingQueue.contains(id)) return; //TODO call error
         threadService.runAsync(() -> dataProvider.getDraft(id).ifPresentOrElse(onLoad, notExists));
     }
 
@@ -89,15 +93,24 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void unloadDraft(Draft draft, Runnable onFinish, Consumer<Exception> onFailure) {
-        if(isInDeletionQueue(draft.getId())) {
+
+    }
+
+    @Override
+    public void unloadDraft(String name, Runnable onFinish, Consumer<Exception> onFailure) {
+        if(unloadingQueue.contains(name)){
+            onFailure.accept(new Exception("World is being unloaded"));
+            return;
+        }
+        if(isInDeletionQueue(name)) {
             onFailure.accept(new Exception("World is being deleted"));
             return;
         }
-        if(draft.isInvalid()) {
-            onFailure.accept(new Exception("Draft is invalid"));
-            return;
-        }
-        worldService.unload(draft.getIdentity(), onFinish);
+        unloadingQueue.add(name);
+        worldService.unload(new WorldIdentity(name, false), () -> {
+            unloadingQueue.remove(name);
+            onFinish.run();
+        });
     }
 
     @Override
@@ -127,8 +140,8 @@ public class BasicDraftService implements DraftService {
         threadService.runAsync(() -> {
             dataProvider.remove(draft);
             worldService.delete(draft.getIdentity(), () -> {
-                onDelete.run();
                 removeFromDeletionQueue(draft.getId());
+                onDelete.run();
             });
         });
     }

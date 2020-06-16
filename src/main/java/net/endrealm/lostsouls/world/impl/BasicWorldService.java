@@ -58,8 +58,8 @@ public class BasicWorldService<T> implements WorldService {
             return;
         }
         threadService.runSync(() -> {
-            onSuccess.run();
-            worldAdapter.unload(worldIdentity);
+            WorldInstance<T> instance = activeInstances.remove(worldIdentity);
+            worldAdapter.unload(instance.getIdentity());
             onSuccess.run();
         });
     }
@@ -69,7 +69,7 @@ public class BasicWorldService<T> implements WorldService {
         threadService.runSync(() -> {
             if(activeInstances.containsKey(target)) {
                 activeInstances.remove(target);
-                worldAdapter.unload(target);
+                worldAdapter.unloadHard(target);
             }
             threadService.runAsync(() -> {
                 worldAdapter.delete(target);

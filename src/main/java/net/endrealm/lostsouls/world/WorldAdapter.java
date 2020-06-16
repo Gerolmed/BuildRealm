@@ -15,4 +15,8 @@ public interface WorldAdapter<T> {
     WorldInstance<T> createEmpty(WorldIdentity worldIdentity);
 
     void save(WorldInstance<T> worldInstance);
+
+    boolean unloadHard(WorldIdentity target);
+    boolean unloadHard(WorldInstance<T> instance);
+
 }

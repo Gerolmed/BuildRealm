@@ -13,7 +13,7 @@ public interface DraftService {
     void createDraft(Consumer<Draft> onLoad, Runnable duplicateId);
     void saveDraft(Draft draft, Runnable onLoad);
     void unloadDraft(Draft draft, Runnable onFinish, Consumer<Exception> onFailure);
-
+    void unloadDraft(String name, Runnable onFinish, Consumer<Exception> onFailure);
     /**
      * Generates a draft or finds currently generated draft
      *
@@ -22,4 +22,5 @@ public interface DraftService {
     void replaceDraft(Draft oldDraft, Draft newDraft, Runnable onSuccess);
 
     void deleteDraft(Draft draft, Runnable onDelete);
+
 }
