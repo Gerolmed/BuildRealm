@@ -3,7 +3,9 @@ package net.endrealm.lostsouls.commands;
 import lombok.RequiredArgsConstructor;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.PermissionLevel;
+import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.data.entity.Member;
+import net.endrealm.lostsouls.gui.Gui;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.BaseCommand;
@@ -108,10 +110,12 @@ public class DraftCommand extends BaseCommand {
                 draftService.saveDraft(draft,() -> {
                     threadService.runSync(() -> {
                         sendInfo(player, "Created a new draft " + draft.getId());
-                        //TODO open details gui
+                        Gui.getDraftDetails(player, draft).open(player);
                     });
                 });
-            }, () -> {});
+            }, () -> {
+                sendError(player, "An error occurred while saving! Please report this to an administrator");
+            });
         });
     }
 
@@ -135,7 +139,11 @@ public class DraftCommand extends BaseCommand {
 
         draftService.ownedDrafts(target.getUniqueId(), drafts -> {
             openTransactions.remove(player.getUniqueId());
+            sendInfo(player, "Drafts by " + target.getName() + ":");
 
+            for (Draft draft: drafts) {
+                sendInfo(player, " - " + draft.getId() + " " + draft.getNote());
+            }
             //TODO: open GUI
         });
         return true;

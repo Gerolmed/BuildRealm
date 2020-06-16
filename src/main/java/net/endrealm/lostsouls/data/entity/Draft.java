@@ -3,6 +3,7 @@ package net.endrealm.lostsouls.data.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.endrealm.lostsouls.data.PermissionLevel;
 import net.endrealm.lostsouls.world.WorldIdentity;
 import net.endrealm.realmdrive.annotations.SaveAll;
 
@@ -54,5 +55,17 @@ public class Draft {
 
     public WorldIdentity getIdentity() {
         return new WorldIdentity(getId(), open);
+    }
+
+    public boolean hasOwner(UUID uuid) {
+        if(members == null)
+            return false;
+
+        for (Member member : members) {
+            if(member.getUuid().equals(uuid) && member.getPermissionLevel() == PermissionLevel.OWNER)
+                return true;
+        }
+
+        return false;
     }
 }

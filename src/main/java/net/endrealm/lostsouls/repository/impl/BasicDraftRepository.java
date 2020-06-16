@@ -2,6 +2,9 @@ package net.endrealm.lostsouls.repository.impl;
 
 import lombok.Data;
 import net.endrealm.lostsouls.data.entity.Draft;
+import net.endrealm.lostsouls.data.entity.ForkData;
+import net.endrealm.lostsouls.data.entity.Member;
+import net.endrealm.lostsouls.data.entity.Piece;
 import net.endrealm.lostsouls.repository.DraftRepository;
 import net.endrealm.realmdrive.interfaces.DriveService;
 import net.endrealm.realmdrive.query.Query;
@@ -12,10 +15,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@SuppressWarnings("deprecation")
 @Data
 public class BasicDraftRepository implements DraftRepository {
 
     private final DriveService driveService;
+
+    public BasicDraftRepository(DriveService driveService) {
+        this.driveService = driveService;
+        driveService.getConversionHandler().registerClasses(
+                Draft.class,
+                Piece.class,
+                Member.class,
+                ForkData.class
+        );
+    }
 
     private Query queryById(String id) {
         return new Query().addEq().setField("id").setValue(id).close().build();

@@ -2,8 +2,10 @@ package net.endrealm.lostsouls;
 
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import fr.minuskube.inv.InventoryManager;
 import lombok.Getter;
 import net.endrealm.lostsouls.commands.DraftCommand;
+import net.endrealm.lostsouls.gui.Gui;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.repository.impl.BasicCache;
 import net.endrealm.lostsouls.repository.impl.BasicDataProvider;
@@ -32,9 +34,14 @@ public final class LostSoulsSave extends JavaPlugin {
     private DraftService draftService;
     private final Long CACHE_DURATION = 40000L;
     private SlimePlugin slimePlugin;
+    private InventoryManager inventoryManager;
 
     @Override
     public void onEnable() {
+        inventoryManager = new InventoryManager(this);
+        inventoryManager.init();
+        new Gui(inventoryManager);
+
         slimePlugin = (SlimePlugin) Bukkit.getServer().getPluginManager().getPlugin("SlimeWorldManager");
         registerLoaders();
 

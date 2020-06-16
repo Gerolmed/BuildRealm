@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("SimplifyOptionalCallChains")
 @Data
 public class BasicDataProvider implements DataProvider {
 
@@ -37,9 +38,9 @@ public class BasicDataProvider implements DataProvider {
         return drafts;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Draft> Optional<T> getDraftCast(String key) {
-        //noinspection unchecked
         return getDraft(key).map(t -> (T) t);
     }
 
