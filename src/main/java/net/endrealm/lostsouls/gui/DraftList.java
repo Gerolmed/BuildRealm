@@ -19,7 +19,6 @@ import java.util.List;
 
 @Data
 public class DraftList implements InventoryProvider {
-    private final Player player;
     private final List<Draft> drafts;
     private final DraftService draftService;
     @Setter
@@ -39,7 +38,7 @@ public class DraftList implements InventoryProvider {
                                 player.closeInventory();
                                 return;
                             }
-                            Gui.getDraftDetails(player, draft, draftService).open(player);
+                            Gui.getDraftDetails(draft, draftService).open(player);
                         })
         ).toArray(ClickableItem[]::new));
 

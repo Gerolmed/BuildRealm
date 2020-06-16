@@ -16,16 +16,19 @@ public final class Gui {
         Gui.inventoryManager = inventoryManager;
     }
 
-    public static SmartInventory getDraftDetails(Player player, Draft draft, DraftService draftService) {
-        return SmartInventory.builder()
+    public static SmartInventory getDraftDetails(Draft draft, DraftService draftService) {
+        DraftDetails draftDetails = new DraftDetails(draft, draftService);
+        SmartInventory smartInventory =  SmartInventory.builder()
                 .manager(inventoryManager)
-                .provider(new DraftDetails(player, draft, draftService))
+                .provider(draftDetails)
                 .size(3, 9)
                 .title("Draft@" + draft.getId())
                 .build();
+        draftDetails.setSmartInventory(smartInventory);
+        return smartInventory;
     }
     public static SmartInventory getDraftsList(Player player, List<Draft> drafts, DraftService draftService) {
-        DraftList list = new DraftList(player, drafts, draftService);
+        DraftList list = new DraftList(drafts, draftService);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(list)
@@ -33,6 +36,20 @@ public final class Gui {
                 .title("Drafts@" + player.getName())
                 .build();
         list.setSmartInventory(smartInventory);
+
+        return smartInventory;
+    }
+
+    public static SmartInventory getConfirmationWindow(String title, Runnable onConfirm, Runnable onCancel) {
+        Confirmation confirmation = new Confirmation(onConfirm, onCancel);
+        SmartInventory smartInventory = SmartInventory.builder()
+                .manager(inventoryManager)
+                .provider(confirmation)
+                .size(5, 9)
+                .title(title)
+                .closeable(false)
+                .build();
+        confirmation.setSmartInventory(smartInventory);
 
         return smartInventory;
     }

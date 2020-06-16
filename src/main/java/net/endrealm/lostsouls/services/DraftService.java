@@ -20,4 +20,6 @@ public interface DraftService {
      */
     void generateDraft(Draft draft, Consumer<World> onGenerated, Consumer<Exception> onFailure);
     void replaceDraft(Draft oldDraft, Draft newDraft, Runnable onSuccess);
+
+    void deleteDraft(Draft draft, Runnable onDelete);
 }

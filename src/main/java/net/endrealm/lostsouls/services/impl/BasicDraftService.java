@@ -89,4 +89,12 @@ public class BasicDraftService implements DraftService {
             });
         });
     }
+
+    @Override
+    public void deleteDraft(Draft draft, Runnable onDelete) {
+        threadService.runAsync(() -> {
+            dataProvider.remove(draft);
+            worldService.delete(draft.getIdentity(), onDelete);
+        });
+    }
 }

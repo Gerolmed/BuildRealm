@@ -110,7 +110,7 @@ public class DraftCommand extends BaseCommand {
                 draftService.saveDraft(draft,() -> {
                     threadService.runSync(() -> {
                         sendInfo(player, "Created a new draft " + draft.getId());
-                        Gui.getDraftDetails(player, draft, draftService).open(player);
+                        Gui.getDraftDetails(draft, draftService).open(player);
                     });
                 });
             }, () -> {

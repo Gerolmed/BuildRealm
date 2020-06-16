@@ -1,24 +1,27 @@
 package net.endrealm.lostsouls.gui;
 
 import fr.minuskube.inv.ClickableItem;
+import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import lombok.Data;
+import lombok.Setter;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.utils.ItemBuilder;
 import net.endrealm.lostsouls.utils.PlayerUtils;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 @Data
 public class DraftDetails implements InventoryProvider {
-    private final Player player;
     private final Draft draft;
     private final DraftService draftService;
+
+
+    private SmartInventory smartInventory;
 
     @Override
     public void init(Player player, InventoryContents contents) {
@@ -49,7 +52,11 @@ public class DraftDetails implements InventoryProvider {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.BARRIER).displayName("§cDelete").build(),
-                    inventoryClickEvent -> player.sendMessage("TODO: add deletion")));
+                    inventoryClickEvent -> {
+                        Gui.getConfirmationWindow("Delete Draft@"+draft.getId(),
+                                () -> draftService.deleteDraft(draft, () -> player.sendMessage(Constants.PREFIX+"Draft " +draft.getId() + " was deleted!")),
+                                () -> smartInventory.open(player)).open(player);
+                    }));
         }
 
         if(player.hasPermission("souls_save.draft.change_theme.other") || draft.hasOwner(player.getUniqueId())){
