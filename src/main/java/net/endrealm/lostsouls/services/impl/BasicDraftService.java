@@ -39,7 +39,7 @@ public class BasicDraftService implements DraftService {
         threadService.runAsync(
                 () -> {
 
-                    Draft draft = new Draft(dataProvider.getFreeDraftId(), new ArrayList<>(), "", null, null, new Date(), true);
+                    Draft draft = new Draft(dataProvider.getFreeDraftId(), new ArrayList<>(), "", null, null, new Date(), true, false);
 
                     try {
                         dataProvider.saveDraft(draft);

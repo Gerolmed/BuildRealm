@@ -139,17 +139,13 @@ public class DraftCommand extends BaseCommand {
 
         draftService.ownedDrafts(target.getUniqueId(), drafts -> {
             openTransactions.remove(player.getUniqueId());
-            sendInfo(player, "Drafts by " + target.getName() + ":");
-
-            for (Draft draft: drafts) {
-                sendInfo(player, " - " + draft.getId() + " " + draft.getNote());
-            }
-            //TODO: open GUI
+            threadService.runSync(() -> Gui.getDraftsList(player, drafts).open(player));
         });
         return true;
     }
 
     private int getMaxDrafts(Player player) {
+        //TODO: add check for max drafts
         return 5;
     }
 }

@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.endrealm.lostsouls.data.PermissionLevel;
+import net.endrealm.lostsouls.utils.Invalidateble;
 import net.endrealm.lostsouls.world.WorldIdentity;
+import net.endrealm.realmdrive.annotations.IgnoreVar;
 import net.endrealm.realmdrive.annotations.SaveAll;
 
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @SaveAll
-public class Draft {
+public class Draft implements Invalidateble {
     private String id;
     private List<Member> members;
     private String note;
@@ -24,6 +26,9 @@ public class Draft {
     private String theme;
     private Date lastUpdated;
     private boolean open;
+
+    @IgnoreVar
+    private boolean invalid;
 
     public boolean hasMember(UUID uuid) {
         if(members == null)

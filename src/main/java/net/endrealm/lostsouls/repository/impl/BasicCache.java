@@ -2,12 +2,13 @@ package net.endrealm.lostsouls.repository.impl;
 
 import lombok.Data;
 import net.endrealm.lostsouls.repository.Cache;
+import net.endrealm.lostsouls.utils.Invalidateble;
 import net.endrealm.lostsouls.utils.Pair;
 
 import java.util.*;
 
 @Data
-public class BasicCache<T, K> implements Cache<T, K> {
+public class BasicCache<T extends Invalidateble, K> implements Cache<T, K> {
     private final Map<K, Pair<T, Long>> cacheMap = new HashMap<>();
 
     private final Long cacheDuration;
@@ -58,6 +59,10 @@ public class BasicCache<T, K> implements Cache<T, K> {
     @Override
     public synchronized Optional<T> markDirty(K key) {
         Pair<T, Long> pair = cacheMap.remove(key);
-        return pair != null ? Optional.of(pair.getKey()) : Optional.empty();
+        if (pair != null) {
+            pair.getKey().setInvalid(true);
+            return Optional.of(pair.getKey());
+        }
+        return Optional.empty();
     }
 }

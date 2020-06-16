@@ -5,6 +5,8 @@ import fr.minuskube.inv.SmartInventory;
 import net.endrealm.lostsouls.data.entity.Draft;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public final class Gui {
 
     private static InventoryManager inventoryManager;
@@ -20,5 +22,17 @@ public final class Gui {
                 .size(3, 9)
                 .title("Draft@" + draft.getId())
                 .build();
+    }
+    public static SmartInventory getDraftsList(Player player, List<Draft> drafts) {
+        DraftList list = new DraftList(player, drafts);
+        SmartInventory smartInventory = SmartInventory.builder()
+                .manager(inventoryManager)
+                .provider(list)
+                .size(4, 9)
+                .title("Drafts@" + player.getName())
+                .build();
+        list.setSmartInventory(smartInventory);
+
+        return smartInventory;
     }
 }

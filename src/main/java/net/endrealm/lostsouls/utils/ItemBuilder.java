@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 public final class ItemBuilder {
     private Material material;
     private String displayName;
+    private List<String> lore = new ArrayList<>();
     private int amount = 1;
     private List<Consumer<ItemMeta>> metaUpdates = new ArrayList<>();
 
@@ -49,11 +50,17 @@ public final class ItemBuilder {
         itemStack.setAmount(amount);
         ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(displayName);
+        meta.setLore(lore);
 
         metaUpdates.forEach(itemMetaConsumer -> itemMetaConsumer.accept(meta));
 
         itemStack.setItemMeta(meta);
 
         return itemStack;
+    }
+
+    public ItemBuilder addLore(String lore) {
+        this.lore.add(lore);
+        return this;
     }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 public class Piece extends Draft {
 
     public Piece(String id, List<Member> members, String note, ForkData forkData, String theme, Date lastUpdated, boolean open) {
-        super(id, members, note, forkData, theme, lastUpdated, open);
+        super(id, members, note, forkData, theme, lastUpdated, open, false);
     }
 
     private String number;
