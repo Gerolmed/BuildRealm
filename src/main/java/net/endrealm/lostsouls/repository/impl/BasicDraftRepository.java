@@ -59,9 +59,18 @@ public class BasicDraftRepository implements DraftRepository {
     @Override
     public String findFreeKey() {
         String id;
+        outer:
         do {
-            id = UUID.randomUUID().toString();
-        } while (driveService.getReader().containsObject(queryById(id)));
+            String fullId = UUID.randomUUID().toString().replace("-", "");
+
+            int i = 4;
+           do {
+               id = fullId.substring(0, i);
+               i++;
+               if(!driveService.getReader().containsObject(queryById(id)))
+                   break outer;
+           } while (fullId.length() > id.length());
+        } while (true);
 
         return id;
     }

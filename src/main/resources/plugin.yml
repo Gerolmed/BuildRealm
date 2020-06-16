@@ -3,3 +3,8 @@ version: @version@
 main: net.endrealm.lostsouls.LostSoulsSave
 api-version: 1.15.2
 depends: [SlimeWorldManager]
+
+commands:
+  draft:
+    description: Base command for drafts
+    usage: /draft create/list
