@@ -13,4 +13,6 @@ public interface WorldAdapter<T> {
     boolean exists(WorldIdentity identity);
 
     WorldInstance<T> createEmpty(WorldIdentity worldIdentity);
+
+    void save(WorldInstance<T> worldInstance);
 }

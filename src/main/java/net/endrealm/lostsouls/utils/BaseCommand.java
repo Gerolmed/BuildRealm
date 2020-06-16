@@ -10,10 +10,10 @@ import org.bukkit.command.CommandSender;
 public abstract class BaseCommand implements CommandExecutor {
 
     protected void sendError(CommandSender sender, String message) {
-        sender.sendMessage(Constants.PREFIX + message);
+        sender.sendMessage(Constants.ERROR_PREFIX + message);
 
     }
     protected void sendInfo(CommandSender sender, String message) {
-        sender.sendMessage(Constants.ERROR_PREFIX + message);
+        sender.sendMessage(Constants.PREFIX + message);
     }
 }

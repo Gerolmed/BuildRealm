@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Data
 public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
@@ -111,7 +112,15 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
     @Override
     public synchronized WorldInstance<SlimeWorld> createEmpty(WorldIdentity worldIdentity) {
         try {
-            SlimeWorld slimeWorld = slimePlugin.createEmptyWorld(getLoader(worldIdentity), worldIdentity.getWorldName(), !worldIdentity.isOpen(),getDefaultProperties());
+            SlimeLoader loader = getLoader(worldIdentity);
+            Objects.requireNonNull(loader);
+            SlimeWorld slimeWorld = slimePlugin
+                    .createEmptyWorld(
+                            loader,
+                            worldIdentity.getWorldName(),
+                            !worldIdentity.isOpen(),
+                            getDefaultProperties()
+                    );
             SlimeWorldInstance slimeWorldInstance = new SlimeWorldInstance(worldIdentity);
             slimeWorldInstance.setStorageWorld(slimeWorld);
             return slimeWorldInstance;
@@ -119,6 +128,11 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void save(WorldInstance<SlimeWorld> worldInstance) {
+        worldInstance.getBukkitWorld().ifPresent(World::save);
     }
 
     private SlimeLoader getLoader(WorldIdentity identity) {

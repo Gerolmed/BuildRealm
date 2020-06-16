@@ -110,7 +110,7 @@ public class DraftCommand extends BaseCommand {
                 draftService.saveDraft(draft,() -> {
                     threadService.runSync(() -> {
                         sendInfo(player, "Created a new draft " + draft.getId());
-                        Gui.getDraftDetails(player, draft).open(player);
+                        Gui.getDraftDetails(player, draft, draftService).open(player);
                     });
                 });
             }, () -> {
@@ -139,7 +139,7 @@ public class DraftCommand extends BaseCommand {
 
         draftService.ownedDrafts(target.getUniqueId(), drafts -> {
             openTransactions.remove(player.getUniqueId());
-            threadService.runSync(() -> Gui.getDraftsList(player, drafts).open(player));
+            threadService.runSync(() -> Gui.getDraftsList(player, drafts, draftService).open(player));
         });
         return true;
     }

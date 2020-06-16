@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.Setter;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.entity.Draft;
+import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ import java.util.List;
 public class DraftList implements InventoryProvider {
     private final Player player;
     private final List<Draft> drafts;
+    private final DraftService draftService;
     @Setter
     private SmartInventory smartInventory;
 
@@ -33,11 +35,11 @@ public class DraftList implements InventoryProvider {
                 draft -> ClickableItem.of(ItemBuilder.builder(Material.GRASS_BLOCK).displayName("§6" + draft.getId()).addLore("§7"+draft.getNote()).build(),
                         inventoryClickEvent -> {
                             if(draft.isInvalid()) {
-                                player.sendMessage(Constants.ERROR_PREFIX+"Draft has become invalid! Please reload the page");
+                                player.sendMessage(Constants.ERROR_PREFIX+Constants.DRAFT_INVALIDATED);
                                 player.closeInventory();
                                 return;
                             }
-                            Gui.getDraftDetails(player, draft).open(player);
+                            Gui.getDraftDetails(player, draft, draftService).open(player);
                         })
         ).toArray(ClickableItem[]::new));
 

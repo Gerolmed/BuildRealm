@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class BasicWorldService<T> implements WorldService {
 
-    private final HashMap<WorldIdentity, WorldInstance<?>> activeInstances = new HashMap<>();
+    private final HashMap<WorldIdentity, WorldInstance<T>> activeInstances = new HashMap<>();
     private final WorldAdapter<T> worldAdapter;
     private final ThreadService threadService;
 
@@ -29,6 +29,9 @@ public class BasicWorldService<T> implements WorldService {
                 instance = worldAdapter.load(worldIdentity);
             } else {
                 instance = worldAdapter.createEmpty(worldIdentity);
+            }
+            if(instance == null) {
+                worldConsumer.accept(null);
             }
             threadService.runSync(
                     () -> {
@@ -90,5 +93,12 @@ public class BasicWorldService<T> implements WorldService {
 
             });
         });
+    }
+
+    @Override
+    public void save(WorldIdentity identity) {
+        if(!activeInstances.containsKey(identity))
+            return;
+        worldAdapter.save(activeInstances.get(identity));
     }
 }

@@ -57,6 +57,7 @@ public class BasicDraftService implements DraftService {
         threadService.runAsync(
                 () -> {
                     //TODO: save world if generated
+                    worldService.save(draft.getIdentity());
                     dataProvider.saveDraft(draft);
                     postSave.run();
                 }
@@ -65,7 +66,12 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void generateDraft(Draft draft, Consumer<World> onGenerated, Consumer<Exception> onFailure) {
-        worldService.generate(draft.getIdentity(), onGenerated);
+        worldService.generate(draft.getIdentity(), world -> {
+            if(world == null)
+                onFailure.accept(null);
+            else
+                onGenerated.accept(world);
+        });
     }
 
     @Override

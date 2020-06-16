@@ -32,4 +32,6 @@ public interface WorldService {
     boolean isLoaded(WorldIdentity worldIdentity);
 
     void replace(WorldIdentity old, WorldIdentity newIdentity, Runnable onSuccess);
+
+    void save(WorldIdentity identity);
 }

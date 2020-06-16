@@ -4,8 +4,12 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import lombok.Data;
+import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.entity.Draft;
+import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.utils.ItemBuilder;
+import net.endrealm.lostsouls.utils.PlayerUtils;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 public class DraftDetails implements InventoryProvider {
     private final Player player;
     private final Draft draft;
+    private final DraftService draftService;
 
     @Override
     public void init(Player player, InventoryContents contents) {
@@ -24,7 +29,21 @@ public class DraftDetails implements InventoryProvider {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.COMPASS).displayName("§6Visit").build(),
-                    inventoryClickEvent -> player.sendMessage("TODO: add editing")));
+                    inventoryClickEvent -> {
+                        player.closeInventory();
+                        if(draft.isInvalid()) {
+                            player.sendMessage(Constants.ERROR_PREFIX+Constants.DRAFT_INVALIDATED);
+                            return;
+                        }
+                        player.sendMessage(Constants.PREFIX + "Loading world!");
+                        draftService.generateDraft(draft, world -> {
+                                    player.teleport(world.getSpawnLocation());
+                                    player.sendMessage(Constants.PREFIX + "Sent to Draft@" + draft.getId());
+
+                                    PlayerUtils.enterBuildMode(player);
+                                },
+                                e -> player.sendMessage(Constants.ERROR_PREFIX + "Failed to load the world. If you think that this is an error contact your server administrator!"));
+                    }));
         }
         if(player.hasPermission("souls_save.draft.delete.other") || draft.hasOwner(player.getUniqueId())){
             index++;

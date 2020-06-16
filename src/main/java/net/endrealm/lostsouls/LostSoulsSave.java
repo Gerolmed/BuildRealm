@@ -38,6 +38,10 @@ public final class LostSoulsSave extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        String version = Bukkit.getServer().getClass().getPackage().getName();
+        String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
+
         inventoryManager = new InventoryManager(this);
         inventoryManager.init();
         new Gui(inventoryManager);
