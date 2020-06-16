@@ -7,4 +7,4 @@ depend: [SlimeWorldManager]
 commands:
   draft:
     description: Base command for drafts
-    usage: /draft create/list
+    usage: /draft create/list/leave

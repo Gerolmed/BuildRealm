@@ -9,10 +9,7 @@ import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.world.WorldService;
 import org.bukkit.World;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Data
@@ -21,6 +18,8 @@ public class BasicDraftService implements DraftService {
     private final DataProvider dataProvider;
     private final ThreadService threadService;
     private final WorldService worldService;
+
+    private final Set<String> deletedQueue = new HashSet<>();
 
     @Override
     public void loadDraft(String id, Consumer<Draft> onLoad, Runnable notExists) {
@@ -54,6 +53,12 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void saveDraft(Draft draft, Runnable postSave) {
+        if(isInDeletionQueue(draft.getId())) {
+            return;
+        }
+        if(draft.isInvalid()) {
+            return;
+        }
         threadService.runAsync(
                 () -> {
                     //TODO: save world if generated
@@ -66,6 +71,14 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void generateDraft(Draft draft, Consumer<World> onGenerated, Consumer<Exception> onFailure) {
+        if(isInDeletionQueue(draft.getId())) {
+            onFailure.accept(new Exception("World is being deleted"));
+            return;
+        }
+        if(draft.isInvalid()) {
+            onFailure.accept(new Exception("Draft is invalid"));
+            return;
+        }
         worldService.generate(draft.getIdentity(), world -> {
             if(world == null)
                 onFailure.accept(null);
@@ -76,11 +89,24 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void unloadDraft(Draft draft, Runnable onFinish, Consumer<Exception> onFailure) {
+        if(isInDeletionQueue(draft.getId())) {
+            onFailure.accept(new Exception("World is being deleted"));
+            return;
+        }
+        if(draft.isInvalid()) {
+            onFailure.accept(new Exception("Draft is invalid"));
+            return;
+        }
         worldService.unload(draft.getIdentity(), onFinish);
     }
 
     @Override
     public void replaceDraft(Draft oldDraft, Draft newDraft, Runnable onSuccess) {
+        if(isInDeletionQueue(oldDraft.getId()) || oldDraft.isInvalid())
+            return;
+        if(isInDeletionQueue(newDraft.getId()) || newDraft.isInvalid())
+            return;
+
         worldService.replace(oldDraft.getIdentity(), newDraft.getIdentity(), () -> {
             threadService.runAsync(() -> {
                 Draft merge = oldDraft.merge(newDraft);
@@ -92,9 +118,28 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void deleteDraft(Draft draft, Runnable onDelete) {
+        if(isInDeletionQueue(draft.getId()))
+            return;
+        if(draft.isInvalid()) {
+            return;
+        }
+        addToDeletionQueue(draft.getId());
         threadService.runAsync(() -> {
             dataProvider.remove(draft);
-            worldService.delete(draft.getIdentity(), onDelete);
+            worldService.delete(draft.getIdentity(), () -> {
+                onDelete.run();
+                removeFromDeletionQueue(draft.getId());
+            });
         });
+    }
+
+    private synchronized void addToDeletionQueue(String id) {
+        deletedQueue.add(id);
+    }
+    private synchronized boolean isInDeletionQueue(String id) {
+        return deletedQueue.contains(id);
+    }
+    private synchronized void removeFromDeletionQueue(String id) {
+        deletedQueue.remove(id);
     }
 }

@@ -3,12 +3,13 @@ package net.endrealm.lostsouls.commands;
 import lombok.RequiredArgsConstructor;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.PermissionLevel;
-import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.data.entity.Member;
 import net.endrealm.lostsouls.gui.Gui;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.BaseCommand;
+import net.endrealm.lostsouls.world.WorldIdentity;
+import net.endrealm.lostsouls.world.WorldService;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -22,6 +23,7 @@ public class DraftCommand extends BaseCommand {
 
     private final DraftService draftService;
     private final ThreadService threadService;
+    private final WorldService worldService;
 
     private final List<UUID> openTransactions = new ArrayList<>();
 
@@ -80,6 +82,18 @@ public class DraftCommand extends BaseCommand {
                 note =  noteBuilder.substring(1);
             }
             tryCreate(player, note);
+            return true;
+        } else if(subCommandLabel.equalsIgnoreCase("leave")) {
+            if(!sender.hasPermission("souls_save.draft.leave")) {
+                sendError(sender, Constants.NO_PERMISSION);
+                return true;
+            }
+            if(!worldService.isLoaded(new WorldIdentity(player.getWorld().getName(), false))) {
+                sendError(sender, "You are not in a Draft!");
+                return true;
+            }
+
+            player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
             return true;
         }
 

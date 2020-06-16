@@ -73,4 +73,12 @@ public class Draft implements Invalidateble {
 
         return false;
     }
+
+    public synchronized boolean isInvalid() {
+        return invalid;
+    }
+
+    public synchronized void setInvalid(boolean invalid) {
+        this.invalid = invalid;
+    }
 }

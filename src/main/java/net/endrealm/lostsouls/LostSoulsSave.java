@@ -6,6 +6,7 @@ import fr.minuskube.inv.InventoryManager;
 import lombok.Getter;
 import net.endrealm.lostsouls.commands.DraftCommand;
 import net.endrealm.lostsouls.gui.Gui;
+import net.endrealm.lostsouls.listener.WorldChangeListener;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.repository.impl.BasicCache;
 import net.endrealm.lostsouls.repository.impl.BasicDataProvider;
@@ -74,6 +75,11 @@ public final class LostSoulsSave extends JavaPlugin {
         this.draftService = new BasicDraftService(dataProvider, threadService, worldService);
 
         registerCommands();
+        registerEvents();
+    }
+
+    private void registerEvents() {
+        getServer().getPluginManager().registerEvents(new WorldChangeListener(draftService, worldService), this);
     }
 
     private void registerLoaders() {
@@ -88,7 +94,7 @@ public final class LostSoulsSave extends JavaPlugin {
     }
 
     private void registerCommands() {
-        Bukkit.getServer().getPluginCommand("draft").setExecutor(new DraftCommand(draftService, threadService));
+        Bukkit.getServer().getPluginCommand("draft").setExecutor(new DraftCommand(draftService, threadService, worldService));
     }
 
     @Override
