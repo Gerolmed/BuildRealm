@@ -59,8 +59,8 @@ public class ThemeDetails implements InventoryProvider {
             int row = i < 7 ? 1 : 2;
             TypeCategory category = theme.getCategoryList().get(i);
             PieceType type = category.getType();
-            contents.set(row, col, ClickableItem.of(
-                    ItemBuilder.builder(type.getMaterial()).displayName("§6"+type.getDisplayName()).addLore("&aCount: §7"+category.getPieceCount()).build(),
+            contents.set(row, col+1, ClickableItem.of(
+                    ItemBuilder.builder(type.getMaterial()).displayName("§6"+type.getDisplayName()).addLore("§aCount: §7"+category.getPieceCount()).build(),
                     inventoryClickEvent -> player.sendMessage("Todo: open category view for Theme " + theme.getName() + " type: " + type)
             ));
         }
