@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.entity.Theme;
+import net.endrealm.lostsouls.gui.Gui;
+import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.BaseCommand;
@@ -21,6 +23,7 @@ import java.util.UUID;
 public class ThemeCommand extends BaseCommand {
 
     private final ThemeService themeService;
+    private final DraftService draftService;
     private final ThreadService threadService;
     private final List<UUID> openTransactions = Collections.synchronizedList(new ArrayList<>());
 
@@ -121,10 +124,11 @@ public class ThemeCommand extends BaseCommand {
     }
 
     private void openList(Player player, List<Theme> themes) {
-
+        player.sendMessage("Themes:");
+        themes.forEach(theme -> player.sendMessage("theme@"+theme.getName()));
     }
 
     private void openDetails(Player player, Theme theme) {
-
+        Gui.getThemeDetails(draftService, themeService, theme).open(player);
     }
 }

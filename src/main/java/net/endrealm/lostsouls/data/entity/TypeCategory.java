@@ -20,4 +20,8 @@ public class TypeCategory {
     public TypeCategory duplicate() {
         return new TypeCategory(type, mainPointer, pieceCount);
     }
+
+    public boolean isComplete() {
+        return pieceCount >= type.getMinCount();
+    }
 }

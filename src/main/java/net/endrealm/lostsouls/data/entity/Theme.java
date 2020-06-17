@@ -24,7 +24,7 @@ public class Theme implements Invalidateble {
     private boolean stale;
     //TODO: add settings
 
-    private List<TypeCategory> categoryList;
+    private List<TypeCategory> categoryList = new ArrayList<>();
     @IgnoreVar
     private boolean invalid;
 
@@ -32,8 +32,15 @@ public class Theme implements Invalidateble {
         List<TypeCategory> newlyAdded = new ArrayList<>();
         for (TypeCategory category: categories) {
             if (categoryList.contains(category)) continue;
-            newlyAdded.add(category);
+            newlyAdded.add(category.duplicate());
         }
         categoryList.addAll(newlyAdded);
+    }
+
+    public boolean isComplete() {
+        for(TypeCategory typeCategory : getCategoryList()) {
+            if(!typeCategory.isComplete()) return false;
+        }
+        return true;
     }
 }

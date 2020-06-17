@@ -7,6 +7,7 @@ import fr.minuskube.inv.InventoryManager;
 import lombok.Getter;
 import net.endrealm.lostsouls.bridge.WorldEditListener;
 import net.endrealm.lostsouls.commands.DraftCommand;
+import net.endrealm.lostsouls.commands.ThemeCommand;
 import net.endrealm.lostsouls.gui.Gui;
 import net.endrealm.lostsouls.listener.EditWorldListener;
 import net.endrealm.lostsouls.listener.WorldChangeListener;
@@ -108,6 +109,8 @@ public final class LostSoulsSave extends JavaPlugin {
 
     private void registerCommands() {
         Bukkit.getServer().getPluginCommand("draft").setExecutor(new DraftCommand(draftService, threadService, worldService));
+        Bukkit.getServer().getPluginCommand("theme").setExecutor(new ThemeCommand(themeService ,draftService, threadService));
+
     }
 
     @Override

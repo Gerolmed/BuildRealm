@@ -3,7 +3,9 @@ package net.endrealm.lostsouls.gui;
 import fr.minuskube.inv.InventoryManager;
 import fr.minuskube.inv.SmartInventory;
 import net.endrealm.lostsouls.data.entity.Draft;
+import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.services.DraftService;
+import net.endrealm.lostsouls.services.ThemeService;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -50,6 +52,19 @@ public final class Gui {
                 .closeable(false)
                 .build();
         confirmation.setSmartInventory(smartInventory);
+
+        return smartInventory;
+    }
+
+    public static SmartInventory getThemeDetails(DraftService draftService, ThemeService themeService, Theme theme) {
+        ThemeDetails themeDetails = new ThemeDetails(draftService, themeService, theme);
+        SmartInventory smartInventory = SmartInventory.builder()
+                .manager(inventoryManager)
+                .provider(themeDetails)
+                .size(4, 9)
+                .title("Theme@"+theme.getName())
+                .build();
+        themeDetails.setSmartInventory(smartInventory);
 
         return smartInventory;
     }
