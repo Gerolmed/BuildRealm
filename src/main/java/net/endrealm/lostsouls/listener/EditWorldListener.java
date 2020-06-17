@@ -25,28 +25,28 @@ public class EditWorldListener extends BaseListener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onBreakBlock(BlockBreakEvent event) {
-        event.setCancelled(isPermitted(event.getPlayer(), event.getPlayer().getWorld()));
+        event.setCancelled(!isPermitted(event.getPlayer(), event.getPlayer().getWorld()));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlaceBLock(BlockPlaceEvent event) {
-        event.setCancelled(isPermitted(event.getPlayer(), event.getPlayer().getWorld()));
+        event.setCancelled(!isPermitted(event.getPlayer(), event.getPlayer().getWorld()));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInteractEvent(PlayerInteractEvent event) {
-        event.setCancelled(isPermitted(event.getPlayer(), event.getPlayer().getWorld()));
+        event.setCancelled(!isPermitted(event.getPlayer(), event.getPlayer().getWorld()));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDrop(PlayerDropItemEvent event) {
-        event.setCancelled(isPermitted(event.getPlayer(), event.getPlayer().getWorld()));
+        event.setCancelled(!isPermitted(event.getPlayer(), event.getPlayer().getWorld()));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPickup(EntityPickupItemEvent event) {
         if(!(event.getEntity() instanceof Player)) return;
-        event.setCancelled(isPermitted((Player)event.getEntity(), event.getEntity().getWorld()));
+        event.setCancelled(!isPermitted((Player)event.getEntity(), event.getEntity().getWorld()));
     }
 
     private boolean isPermitted(Player player, World world) {

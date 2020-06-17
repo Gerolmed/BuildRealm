@@ -6,6 +6,7 @@ import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThemeService;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public final class Gui {
         draftDetails.setSmartInventory(smartInventory);
         return smartInventory;
     }
-    public static SmartInventory getDraftsList(Player player, List<Draft> drafts, DraftService draftService) {
+    public static SmartInventory getDraftsList(OfflinePlayer player, List<Draft> drafts, DraftService draftService) {
         DraftList list = new DraftList(drafts, draftService);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)

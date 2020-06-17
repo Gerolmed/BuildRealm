@@ -158,7 +158,7 @@ public class DraftCommand extends BaseCommand {
 
         draftService.ownedDrafts(target.getUniqueId(), drafts -> {
             openTransactions.remove(player.getUniqueId());
-            threadService.runSync(() -> Gui.getDraftsList(player, drafts, draftService).open(player));
+            threadService.runSync(() -> Gui.getDraftsList(target, drafts, draftService).open(player));
         });
         return true;
     }
