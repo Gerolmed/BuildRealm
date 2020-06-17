@@ -8,3 +8,6 @@ commands:
   draft:
     description: Base command for drafts
     usage: /draft create/list/leave
+  theme:
+    description: Base command for themes
+    usage: /theme create/list/open
