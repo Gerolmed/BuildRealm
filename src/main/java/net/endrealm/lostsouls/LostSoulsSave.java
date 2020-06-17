@@ -10,6 +10,7 @@ import net.endrealm.lostsouls.commands.DraftCommand;
 import net.endrealm.lostsouls.commands.ThemeCommand;
 import net.endrealm.lostsouls.gui.Gui;
 import net.endrealm.lostsouls.listener.EditWorldListener;
+import net.endrealm.lostsouls.listener.LeaveListener;
 import net.endrealm.lostsouls.listener.WorldChangeListener;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.repository.impl.BasicCache;
@@ -93,6 +94,7 @@ public final class LostSoulsSave extends JavaPlugin {
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(new WorldChangeListener(draftService, worldService), this);
         getServer().getPluginManager().registerEvents(new EditWorldListener(dataProvider, worldService), this);
+        getServer().getPluginManager().registerEvents(new LeaveListener(draftService, worldService), this);
 
     }
 
