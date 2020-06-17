@@ -1,33 +1,27 @@
-package net.endrealm.lostsouls.utils;
+package net.endrealm.lostsouls.utils.item;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class ItemBuilder {
-    private Material material;
+    private ItemCreator itemCreator;
     private String displayName;
     private List<String> lore = new ArrayList<>();
     private int amount = 1;
     private List<Consumer<ItemMeta>> metaUpdates = new ArrayList<>();
 
-    private ItemBuilder(Material material) {
-        this.material = material;
+    private ItemBuilder(ItemCreator itemCreator) {
+        this.itemCreator = itemCreator;
     }
 
     public ItemBuilder amount(int amount) {
         this.amount = amount;
-        return this;
-    }
-
-    public ItemBuilder material(Material material) {
-        this.material = material;
         return this;
     }
 
@@ -41,12 +35,17 @@ public final class ItemBuilder {
         return this;
     }
 
+
     public static ItemBuilder builder(Material material) {
-        return new ItemBuilder(material);
+        return new ItemBuilder(new DefaultCreator(material));
+    }
+
+    public static ItemBuilder skullBuilder(UUID playerId) {
+        return new ItemBuilder(new SkullCreator(playerId));
     }
 
     public ItemStack build() {
-        ItemStack itemStack = new ItemStack(material);
+        ItemStack itemStack = itemCreator.produce();
         itemStack.setAmount(amount);
         ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(displayName);

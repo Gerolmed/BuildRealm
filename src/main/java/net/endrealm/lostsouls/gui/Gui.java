@@ -6,8 +6,8 @@ import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThemeService;
+import net.endrealm.lostsouls.services.ThreadService;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -19,8 +19,8 @@ public final class Gui {
         Gui.inventoryManager = inventoryManager;
     }
 
-    public static SmartInventory getDraftDetails(Draft draft, DraftService draftService) {
-        DraftDetails draftDetails = new DraftDetails(draft, draftService);
+    public static SmartInventory getDraftDetails(Draft draft, DraftService draftService, ThreadService threadService) {
+        DraftDetails draftDetails = new DraftDetails(draft, draftService, threadService);
         SmartInventory smartInventory =  SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(draftDetails)
@@ -30,8 +30,8 @@ public final class Gui {
         draftDetails.setSmartInventory(smartInventory);
         return smartInventory;
     }
-    public static SmartInventory getDraftsList(OfflinePlayer player, List<Draft> drafts, DraftService draftService) {
-        DraftList list = new DraftList(drafts, draftService);
+    public static SmartInventory getDraftsList(OfflinePlayer player, List<Draft> drafts, DraftService draftService, ThreadService threadService) {
+        DraftList list = new DraftList(drafts, draftService, threadService);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(list)
@@ -80,6 +80,18 @@ public final class Gui {
                 .build();
         themeDetails.setSmartInventory(smartInventory);
 
+        return smartInventory;
+    }
+
+    public static SmartInventory getEditDraftMembers(Draft draft, DraftService draftService, ThreadService threadService, Runnable onBack) {
+        EditMembers editMembers = new EditMembers(draft, draftService, threadService, onBack);
+        SmartInventory smartInventory = SmartInventory.builder()
+                .manager(inventoryManager)
+                .provider(editMembers)
+                .size(4, 9)
+                .title("Members Draft@"+draft.getId())
+                .build();
+        editMembers.setSmartInventory(smartInventory);
         return smartInventory;
     }
 }

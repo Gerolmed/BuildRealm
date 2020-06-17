@@ -6,7 +6,7 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import net.endrealm.lostsouls.utils.ItemBuilder;
+import net.endrealm.lostsouls.utils.item.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 

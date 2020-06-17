@@ -5,11 +5,11 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import lombok.Data;
-import lombok.Setter;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.services.DraftService;
-import net.endrealm.lostsouls.utils.ItemBuilder;
+import net.endrealm.lostsouls.services.ThreadService;
+import net.endrealm.lostsouls.utils.item.ItemBuilder;
 import net.endrealm.lostsouls.utils.PlayerUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 public class DraftDetails implements InventoryProvider {
     private final Draft draft;
     private final DraftService draftService;
+    private final ThreadService threadService;
 
 
     private SmartInventory smartInventory;
@@ -83,6 +84,13 @@ public class DraftDetails implements InventoryProvider {
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.WRITABLE_BOOK).displayName("§aPublish").build(),
                     inventoryClickEvent -> player.sendMessage("TODO: add publish gui")));
+        }
+
+        if((player.hasPermission("souls_save.draft.manage_members.own") && draft.hasOwner(player.getUniqueId())) || player.hasPermission("souls_save.draft.manage_members.other")) {
+            index++;
+            contents.set(1, index, ClickableItem.of(
+                    ItemBuilder.builder(Material.PLAYER_HEAD).displayName("§bEdit Users").build(),
+                    inventoryClickEvent -> Gui.getEditDraftMembers(draft, draftService, threadService, () -> smartInventory.open(player)).open(player)));
         }
     }
 

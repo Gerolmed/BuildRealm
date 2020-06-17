@@ -10,7 +10,8 @@ import lombok.Setter;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.services.DraftService;
-import net.endrealm.lostsouls.utils.ItemBuilder;
+import net.endrealm.lostsouls.services.ThreadService;
+import net.endrealm.lostsouls.utils.item.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -21,6 +22,7 @@ import java.util.List;
 public class DraftList implements InventoryProvider {
     private final List<Draft> drafts;
     private final DraftService draftService;
+    private final ThreadService threadService;
     @Setter
     private SmartInventory smartInventory;
 
@@ -38,7 +40,7 @@ public class DraftList implements InventoryProvider {
                                 player.closeInventory();
                                 return;
                             }
-                            Gui.getDraftDetails(draft, draftService).open(player);
+                            Gui.getDraftDetails(draft, draftService, threadService).open(player);
                         })
         ).toArray(ClickableItem[]::new));
 

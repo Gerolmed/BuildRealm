@@ -11,7 +11,7 @@ import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.data.entity.TypeCategory;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThemeService;
-import net.endrealm.lostsouls.utils.ItemBuilder;
+import net.endrealm.lostsouls.utils.item.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
