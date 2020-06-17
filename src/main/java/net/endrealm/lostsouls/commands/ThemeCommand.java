@@ -64,11 +64,12 @@ public class ThemeCommand extends BaseCommand {
                 openTransactions.remove(player.getUniqueId());
                 sendError(sender, "Theme " + theme.getName() + " already exists!");
             }, () -> {
-                Theme theme = new Theme(newThemeName, false, false);
+                Theme theme = new Theme(newThemeName, false, new ArrayList<>(), false);
                 themeService.createTheme(theme, createdTheme -> {
+                    createdTheme.fixList();
                     openTransactions.remove(player.getUniqueId());
-                    sendInfo(sender, "Theme " + theme.getName() + " has been created!");
-                    openDetails(player, theme);
+                    sendInfo(sender, "Theme " + createdTheme.getName() + " has been created!");
+                    openDetails(player, createdTheme);
                 }, () -> {
                     openTransactions.remove(player.getUniqueId());
                     sendError(sender, "Theme " + theme.getName() + " already exists!");

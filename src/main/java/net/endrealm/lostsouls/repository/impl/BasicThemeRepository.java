@@ -19,7 +19,8 @@ public class BasicThemeRepository implements ThemeRepository {
     public BasicThemeRepository(DriveService driveService) {
         this.driveService = driveService;
         driveService.getConversionHandler().registerClasses(
-                Theme.class
+                Theme.class,
+                TypeCategory.class
         );
     }
 
@@ -41,7 +42,9 @@ public class BasicThemeRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> get(String id) {
-        return Optional.ofNullable(driveService.getReader().readObject(queryById(id), Theme.class));
+        Optional<Theme> theme = Optional.ofNullable(driveService.getReader().readObject(queryById(id), Theme.class));
+        theme.ifPresent(Theme::fixList);
+        return theme;
     }
 
     @Override
@@ -50,6 +53,8 @@ public class BasicThemeRepository implements ThemeRepository {
                 .setField("name");
         except.forEach(nin::addValue);
         Query query = nin.close();
-        return driveService.getReader().readAllObjects(query.build(), Theme.class);
+        List<Theme> themes = driveService.getReader().readAllObjects(query.build(), Theme.class);
+        themes.forEach(Theme::fixList);
+        return themes;
     }
 }
