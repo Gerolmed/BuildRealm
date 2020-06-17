@@ -16,8 +16,10 @@ import net.endrealm.lostsouls.repository.impl.BasicDataProvider;
 import net.endrealm.lostsouls.repository.impl.BasicDraftRepository;
 import net.endrealm.lostsouls.repository.impl.BasicThemeRepository;
 import net.endrealm.lostsouls.services.DraftService;
+import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.services.impl.BasicDraftService;
+import net.endrealm.lostsouls.services.impl.BasicThemeService;
 import net.endrealm.lostsouls.services.impl.ThreadServiceImpl;
 import net.endrealm.lostsouls.world.WorldService;
 import net.endrealm.lostsouls.world.impl.BasicWorldService;
@@ -36,6 +38,7 @@ public final class LostSoulsSave extends JavaPlugin {
 
     private DataProvider dataProvider;
     private ThreadService threadService;
+    private ThemeService themeService;
     private WorldService worldService;
     private DraftService draftService;
     private final Long CACHE_DURATION = 40000L;
@@ -78,6 +81,7 @@ public final class LostSoulsSave extends JavaPlugin {
         );
         this.worldService = new BasicWorldService<>(new SlimeWorldAdapter(slimePlugin, getSlimeLoader("openDrafts"), getSlimeLoader("closedDrafts")), threadService);
         this.draftService = new BasicDraftService(dataProvider, threadService, worldService);
+        this.themeService = new BasicThemeService(dataProvider, threadService);
 
         registerCommands();
         registerEvents();

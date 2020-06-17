@@ -1,7 +1,8 @@
 package net.endrealm.lostsouls.services;
 
 import net.endrealm.lostsouls.data.entity.Theme;
-import org.bukkit.util.Consumer;
+
+import java.util.function.Consumer;
 
 public interface ThemeService {
     void createTheme(Theme theme, Consumer<Theme> onCreated, Runnable onFailed);
