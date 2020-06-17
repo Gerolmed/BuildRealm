@@ -20,7 +20,7 @@ import java.util.UUID;
 public class BasicDraftRepository implements DraftRepository {
 
     private final DriveService driveService;
-    private final String TABLE = "themes";
+    private final String TABLE = "drafts";
 
     public BasicDraftRepository(DriveService driveService) {
         this.driveService = driveService;

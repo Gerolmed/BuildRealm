@@ -57,7 +57,7 @@ public class ThemeCommand extends BaseCommand {
             }
 
             String newThemeName = args[1];
-            if(newThemeName.matches("[a-z_]{3,}")) {
+            if(!newThemeName.matches("[a-z_]{3,}")) {
                 sendError(sender, "Theme name pattern musst be: §eat least 3 long and only contain a-z and _");
                 return true;
             }
@@ -72,7 +72,7 @@ public class ThemeCommand extends BaseCommand {
                     createdTheme.fixList();
                     openTransactions.remove(player.getUniqueId());
                     sendInfo(sender, "Theme " + createdTheme.getName() + " has been created!");
-                    openDetails(player, createdTheme);
+                    threadService.runSync(() -> openDetails(player, createdTheme));
                 }, () -> {
                     openTransactions.remove(player.getUniqueId());
                     sendError(sender, "Theme " + theme.getName() + " already exists!");
@@ -114,7 +114,7 @@ public class ThemeCommand extends BaseCommand {
             theme -> {
                 openTransactions.remove(player.getUniqueId());
                 sendInfo(sender, "Opening " + theme.getName() + "...");
-                openDetails(player, theme);
+                threadService.runSync(() -> openDetails(player, theme));
             }, () -> {
                 sendError(sender, "The given theme does not exist!");
             });
