@@ -2,6 +2,7 @@ package net.endrealm.lostsouls.services;
 
 import net.endrealm.lostsouls.data.entity.Theme;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public interface ThemeService {
@@ -9,4 +10,6 @@ public interface ThemeService {
     void deleteTheme(Theme theme, Runnable onDeleted);
     void saveTheme(Theme theme, Runnable onSaved);
     void loadTheme(String id, Consumer<Theme> onFound, Runnable notFound);
+
+    void loadAll(Consumer<List<Theme>> onFound);
 }

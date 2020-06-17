@@ -8,6 +8,7 @@ import net.endrealm.lostsouls.services.ThreadService;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -69,5 +70,10 @@ public class BasicThemeService implements ThemeService {
         threadService.runAsync(() -> {
             dataProvider.getTheme(id).ifPresentOrElse(onFound, notFound);
         });
+    }
+
+    @Override
+    public void loadAll(Consumer<List<Theme>> onFound) {
+        threadService.runAsync(() -> onFound.accept(dataProvider.getAllThemes()));
     }
 }

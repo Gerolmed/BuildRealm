@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.services.ThemeService;
+import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.BaseCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class ThemeCommand extends BaseCommand {
 
     private final ThemeService themeService;
+    private final ThreadService threadService;
     private final List<UUID> openTransactions = Collections.synchronizedList(new ArrayList<>());
 
     @Override
@@ -66,13 +68,62 @@ public class ThemeCommand extends BaseCommand {
                 themeService.createTheme(theme, createdTheme -> {
                     openTransactions.remove(player.getUniqueId());
                     sendInfo(sender, "Theme " + theme.getName() + " has been created!");
-                    //TODO: open theme details gui
+                    openDetails(player, theme);
                 }, () -> {
+                    openTransactions.remove(player.getUniqueId());
                     sendError(sender, "Theme " + theme.getName() + " already exists!");
                 });
             });
             return true;
+        } else if(subCommandLabel.equalsIgnoreCase("list")) {
+            if(!sender.hasPermission("souls_save.theme.list")) {
+                sendError(sender, Constants.NO_PERMISSION);
+                return true;
+            }
+            openTransactions.add(player.getUniqueId());
+            sendInfo(sender, "Fetching themes...");
+
+            themeService.loadAll(themes -> {
+                openTransactions.remove(player.getUniqueId());
+                sendInfo(sender, "Opening theme list...");
+                threadService.runSync(() -> openList(player, themes));
+            });
+            return true;
+        } else if(subCommandLabel.equalsIgnoreCase("open")) {
+            String themeName = "all";
+
+            if(args.length == 2) {
+                themeName = args[1];
+            }
+            if(!sender.hasPermission("souls_save.theme.open.all") && !sender.hasPermission("souls_save.theme.open."+themeName)) {
+                sendError(sender, Constants.NO_PERMISSION);
+                return true;
+            }
+            if(args.length != 2) {
+                sendError(sender, "Use /theme create {name}");
+                return true;
+            }
+
+
+            openTransactions.add(player.getUniqueId());
+            themeService.loadTheme(themeName,
+            theme -> {
+                openTransactions.remove(player.getUniqueId());
+                sendInfo(sender, "Opening " + theme.getName() + "...");
+                openDetails(player, theme);
+            }, () -> {
+                sendError(sender, "The given theme does not exist!");
+            });
+            return true;
         }
         return false;
+    }
+
+    private void openList(Player player, List<Theme> themes) {
+
+    }
+
+    private void openDetails(Player player, Theme theme) {
+
     }
 }
