@@ -9,7 +9,6 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import net.endrealm.lostsouls.data.entity.Draft;
-import net.endrealm.lostsouls.services.DraftService;
 import org.bukkit.Bukkit;
 
 public class AntiWorldEdit extends AbstractDelegateExtent
@@ -36,6 +35,7 @@ public class AntiWorldEdit extends AbstractDelegateExtent
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException
     {

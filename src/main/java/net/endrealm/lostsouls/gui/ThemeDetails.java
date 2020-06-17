@@ -15,6 +15,10 @@ import net.endrealm.lostsouls.utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 @Data
 public class ThemeDetails implements InventoryProvider {
     private final DraftService draftService;
@@ -54,10 +58,12 @@ public class ThemeDetails implements InventoryProvider {
                     })
             );
         }
-        for (int i = 0; i < theme.getCategoryList().size(); i++) {
+        List<TypeCategory> categories = new ArrayList<>(theme.getCategoryList());
+        categories.sort(Comparator.comparingInt(o -> o.getType().ordinal()));
+        for (int i = 0; i < categories.size(); i++) {
             int col = i < 7 ? i : i - 7;
             int row = i < 7 ? 1 : 2;
-            TypeCategory category = theme.getCategoryList().get(i);
+            TypeCategory category = categories.get(i);
             PieceType type = category.getType();
             contents.set(row, col+1, ClickableItem.of(
                     ItemBuilder.builder(type.getMaterial()).displayName("§6"+type.getDisplayName()).addLore("§aCount: §7"+category.getPieceCount()).build(),
