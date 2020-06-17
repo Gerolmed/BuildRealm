@@ -94,7 +94,7 @@ public final class LostSoulsSave extends JavaPlugin {
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(new WorldChangeListener(draftService, worldService), this);
         getServer().getPluginManager().registerEvents(new EditWorldListener(dataProvider, worldService), this);
-        getServer().getPluginManager().registerEvents(new LeaveListener(draftService, worldService), this);
+        getServer().getPluginManager().registerEvents(new LeaveListener(draftService, worldService, this), this);
 
     }
 
