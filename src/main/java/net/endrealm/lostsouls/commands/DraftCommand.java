@@ -95,9 +95,15 @@ public class DraftCommand extends BaseCommand {
 
             player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
             return true;
+        } else if(subCommandLabel.equalsIgnoreCase("floating")) {
+            if (!sender.hasPermission("souls_save.draft.floating")) {
+                sendError(sender, Constants.NO_PERMISSION);
+                return true;
+            }
+
+            sendInfo(sender, "We are still working on this feature. Hope we can add it in soon");
+            return true;
         }
-
-
         return false;
     }
 

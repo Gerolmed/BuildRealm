@@ -45,6 +45,8 @@ public class BasicThemeService implements ThemeService {
         threadService.runAsync(() -> {
             dataProvider.removeTheme(theme);
             deleting.remove(theme.getName());
+
+            //TODO set drafts to floating state by removing their target theme
             onDeleted.run();
         });
     }
