@@ -116,7 +116,8 @@ public class ThemeCommand extends BaseCommand {
                 sendInfo(sender, "Opening " + theme.getName() + "...");
                 threadService.runSync(() -> openDetails(player, theme));
             }, () -> {
-                sendError(sender, "The given theme does not exist!");
+                 openTransactions.remove(player.getUniqueId());
+                 sendError(sender, "The given theme does not exist!");
             });
             return true;
         }

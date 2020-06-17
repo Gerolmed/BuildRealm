@@ -35,7 +35,7 @@ public class ThemeDetails implements InventoryProvider {
             );
         }
 
-        contents.set(0, 2, ClickableItem.empty(
+        contents.set(0, 4, ClickableItem.empty(
                 ItemBuilder
                         .builder(Material.BOOK)
                         .displayName("§6Theme@§e"+theme.getName())
@@ -44,13 +44,13 @@ public class ThemeDetails implements InventoryProvider {
 
         // Can delete theme
         if(player.hasPermission("souls_save.theme.delete.all") || player.hasPermission("souls_save.theme.delete."+theme.getName())) {
-            contents.set(0, 6, ClickableItem.of(ItemBuilder.builder(Material.BARRIER).displayName("Delete").build(),
+            contents.set(0, 6, ClickableItem.of(ItemBuilder.builder(Material.BARRIER).displayName("§cDelete").build(),
                     inventoryClickEvent -> {
                         Gui.getConfirmationWindow("Delete theme " + theme.getName(),
                                 () -> {
                                     themeService.deleteTheme(theme, () -> player.sendMessage(Constants.PREFIX+"Theme " +theme.getName() + " was deleted! Its drafts are now floating (/draft floating)"));
                                 },
-                                () -> smartInventory.open(player));
+                                () -> smartInventory.open(player)).open(player);
                     })
             );
         }
