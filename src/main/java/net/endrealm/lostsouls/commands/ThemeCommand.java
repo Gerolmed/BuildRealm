@@ -125,8 +125,7 @@ public class ThemeCommand extends BaseCommand {
     }
 
     private void openList(Player player, List<Theme> themes) {
-        player.sendMessage("Themes:");
-        themes.forEach(theme -> player.sendMessage("theme@"+theme.getName()));
+        Gui.getThemesList(themes, draftService, themeService).open(player);
     }
 
     private void openDetails(Player player, Theme theme) {

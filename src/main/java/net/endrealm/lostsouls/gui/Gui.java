@@ -56,6 +56,19 @@ public final class Gui {
         return smartInventory;
     }
 
+    public static SmartInventory getThemesList(List<Theme> themes, DraftService draftService, ThemeService themeService) {
+        ThemeList list = new ThemeList(themes, draftService, themeService);
+        SmartInventory smartInventory = SmartInventory.builder()
+                .manager(inventoryManager)
+                .provider(list)
+                .size(4, 9)
+                .title("Themes@all")
+                .build();
+        list.setSmartInventory(smartInventory);
+
+        return smartInventory;
+    }
+
     public static SmartInventory getThemeDetails(DraftService draftService, ThemeService themeService, Theme theme) {
         ThemeDetails themeDetails = new ThemeDetails(draftService, themeService, theme);
         SmartInventory smartInventory = SmartInventory.builder()

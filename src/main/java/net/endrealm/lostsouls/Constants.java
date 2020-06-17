@@ -11,4 +11,5 @@ public final class Constants {
     public static final String NO_PERMISSION = "You do not have the permission to do this";
     public static final String TRANSACTIONS_RUNNING = "Please wait until your last action succeeds";
     public static final String DRAFT_INVALIDATED = "Draft has become invalid! Please reload the gui";
+    public static final String THEME_INVALIDATED = "Theme has become invalid! Please reload the gui";
 }

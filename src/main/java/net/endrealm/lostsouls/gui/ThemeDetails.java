@@ -44,6 +44,7 @@ public class ThemeDetails implements InventoryProvider {
                         .builder(Material.BOOK)
                         .displayName("§6Theme@§e"+theme.getName())
                         .addLore("§bIsComplete: " + (theme.isComplete() ? "§ayes" : "§cno"))
+                        .addLore("§bStale: " + (theme.isStale() ? "§ayes" : "§cno"))
                         .build()));
 
         // Can delete theme
