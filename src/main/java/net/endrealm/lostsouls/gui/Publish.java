@@ -34,23 +34,28 @@ public class Publish implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fill(ClickableItem.empty(ItemBuilder.builder(Material.GREEN_STAINED_GLASS_PANE).build()));
 
+        boolean allPerm = player.hasPermission("souls_save.publish.any");
         contents.set(3, 4, ClickableItem.of(ItemBuilder.builder(Material.BARRIER).displayName("§cCancel").build(),
                 inventoryClickEvent -> {
                     onCancel.run();
                 }));
 
         if(draft.getForkData() != null) {
-            contents.set(1, 1, ClickableItem.of(ItemBuilder.builder(Material.REDSTONE_BLOCK).displayName("§cReplace Original").build(),
+
+            if(allPerm || player.hasPermission("souls_save.publish.original."+draft.getTheme()))
+                contents.set(1, 1, ClickableItem.of(ItemBuilder.builder(Material.REDSTONE_BLOCK).displayName("§cReplace Original").build(),
                     inventoryClickEvent -> {
                         player.closeInventory();
                         publishReplace(player);
                     }));
-            contents.set(1, 4, ClickableItem.of(ItemBuilder.builder(Material.SLIME_BLOCK).displayName("§cAs Variant").build(),
+            if(allPerm || player.hasPermission("souls_save.publish.variant."+draft.getTheme()))
+                contents.set(1, 4, ClickableItem.of(ItemBuilder.builder(Material.SLIME_BLOCK).displayName("§cAs Variant").build(),
                     inventoryClickEvent -> {
                         player.closeInventory();
                         publishVariant(player);
                     }));
-            contents.set(1, 7, ClickableItem.of(
+            if(allPerm || player.hasPermission("souls_save.publish.original_new."+draft.getTheme()))
+                contents.set(1, 7, ClickableItem.of(
                     ItemBuilder
                             .builder(Material.EMERALD_BLOCK)
                             .displayName("§cAppend")
@@ -61,7 +66,8 @@ public class Publish implements InventoryProvider {
                         publishAppend(player);
                     }));
         } else {
-            contents.set(1, 4, ClickableItem.of(ItemBuilder.builder(Material.LIME_CONCRETE).displayName("§cPublish new").build(),
+            if(allPerm || player.hasPermission("souls_save.publish.original_new."+draft.getTheme()))
+                contents.set(1, 4, ClickableItem.of(ItemBuilder.builder(Material.LIME_CONCRETE).displayName("§cPublish new").build(),
                     inventoryClickEvent -> publishNew(player)));
         }
     }
