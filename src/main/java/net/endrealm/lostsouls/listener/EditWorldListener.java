@@ -3,6 +3,7 @@ package net.endrealm.lostsouls.listener;
 import com.sk89q.worldedit.event.platform.BlockInteractEvent;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.utils.BaseListener;
 import net.endrealm.lostsouls.world.WorldIdentity;
@@ -16,6 +17,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+
+import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -52,6 +55,11 @@ public class EditWorldListener extends BaseListener {
     private boolean isPermitted(Player player, World world) {
         if(player == null) return true;
         if(!worldService.isLoaded(new WorldIdentity(world.getName(), false))) return true;
-        return player.hasPermission("souls_save.draft.edit.other") || dataProvider.getDraft(world.getName()).map(draft -> draft.hasMember(player.getUniqueId())).orElse(false);
+        Optional<Draft> draftOpt = dataProvider.getDraft(world.getName());
+
+        if(draftOpt.isPresent() && !draftOpt.get().isOpen())
+            return false;
+
+        return player.hasPermission("souls_save.draft.edit.other") || draftOpt.map(draft -> draft.hasMember(player.getUniqueId())).orElse(false);
     }
 }
