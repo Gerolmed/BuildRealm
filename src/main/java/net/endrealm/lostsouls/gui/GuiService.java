@@ -11,6 +11,7 @@ import net.endrealm.lostsouls.services.ThreadService;
 import org.bukkit.OfflinePlayer;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public class GuiService {
@@ -64,6 +65,19 @@ public class GuiService {
                 .provider(list)
                 .size(4, 9)
                 .title("Themes@all")
+                .build();
+        list.setSmartInventory(smartInventory);
+
+        return smartInventory;
+    }
+
+    public SmartInventory getThemesSelection(List<Theme> themes, Consumer<Theme> onSelect, Runnable onCancel) {
+        ThemeSelection list = new ThemeSelection(themes, draftService, themeService, this, onSelect, onCancel);
+        SmartInventory smartInventory = SmartInventory.builder()
+                .manager(inventoryManager)
+                .provider(list)
+                .size(4, 9)
+                .title("Themes@all#select")
                 .build();
         list.setSmartInventory(smartInventory);
 

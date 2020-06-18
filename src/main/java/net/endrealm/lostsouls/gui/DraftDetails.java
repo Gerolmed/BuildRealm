@@ -27,6 +27,7 @@ public class DraftDetails implements InventoryProvider {
 
 
     private SmartInventory smartInventory;
+    private boolean lockedInteract;
 
     @Override
     public void init(Player player, InventoryContents contents) {
@@ -38,6 +39,8 @@ public class DraftDetails implements InventoryProvider {
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.COMPASS).displayName("§6Visit").build(),
                     inventoryClickEvent -> {
+                        if(lockedInteract) return;
+
                         player.closeInventory();
                         if(draft.isInvalid()) {
                             player.sendMessage(Constants.ERROR_PREFIX+Constants.DRAFT_INVALIDATED);
@@ -58,6 +61,7 @@ public class DraftDetails implements InventoryProvider {
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.BARRIER).displayName("§cDelete").build(),
                     inventoryClickEvent -> {
+                        if(lockedInteract) return;
                         guiService.getConfirmationWindow("Delete Draft@"+draft.getId(),
                                 () -> draftService.deleteDraft(draft, () -> player.sendMessage(Constants.PREFIX+"Draft " +draft.getId() + " was deleted!")),
                                 () -> smartInventory.open(player)).open(player);
@@ -67,15 +71,34 @@ public class DraftDetails implements InventoryProvider {
         if(player.hasPermission("souls_save.draft.change_theme.other") || draft.hasOwner(player.getUniqueId())){
             index++;
             contents.set(1, index, ClickableItem.of(
-                    ItemBuilder.builder(Material.GRASS_BLOCK).displayName("§6Change Theme").build(),
-                    inventoryClickEvent -> player.sendMessage("TODO: add theme change")));
+
+                    ItemBuilder.builder(Material.GRASS_BLOCK)
+                            .displayName("§6Change Theme")
+                            .addLore("§aCurrently: " + (draft.getTheme() == null ? "§c---" : "§7"+draft.getTheme()))
+                            .build(),
+                    inventoryClickEvent -> {
+                        if(lockedInteract) return;
+                        lockedInteract = true;
+                        themeService.loadAll(themes -> {
+                            threadService.runSync(
+                                    ()-> guiService.getThemesSelection(themes, theme -> {
+                                        threadService.runSync(player::closeInventory);
+                                        draft.setTheme(theme.getName());
+                                        draftService.saveDraft(draft, () -> threadService.runSync(() -> guiService.getDraftDetails(draft).open(player)));
+                                    }, () -> threadService.runSync(() -> guiService.getDraftDetails(draft).open(player))).open(player)
+                            );
+                        });
+                    }));
         }
 
         if(player.hasPermission("souls_save.draft.unfork.other") || draft.hasOwner(player.getUniqueId())){
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.TRIPWIRE_HOOK).displayName("§cUnfork").build(),
-                    inventoryClickEvent -> player.sendMessage("TODO: add unforking")));
+                    inventoryClickEvent -> {
+                        if(lockedInteract) return;
+                        player.sendMessage("TODO: add unforking");
+                    }));
         }
 
         if(player.hasPermission("souls_save.draft.publish.other") ||
@@ -88,6 +111,7 @@ public class DraftDetails implements InventoryProvider {
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.WRITABLE_BOOK).displayName("§aPublish").build(),
                     inventoryClickEvent -> {
+                        if(lockedInteract) return;
                         player.closeInventory();
                         player.sendMessage("TODO: add publish gui");
                         themeService.loadTheme("old_dungeon", theme -> {
@@ -107,7 +131,10 @@ public class DraftDetails implements InventoryProvider {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.PLAYER_HEAD).displayName("§bEdit Users").build(),
-                    inventoryClickEvent -> guiService.getEditDraftMembers(draft, () -> smartInventory.open(player)).open(player)));
+                    inventoryClickEvent -> {
+                        if(lockedInteract) return;
+                        guiService.getEditDraftMembers(draft, () -> smartInventory.open(player)).open(player);
+                    }));
         }
     }
 

@@ -12,11 +12,19 @@ public class ThreadServiceImpl implements ThreadService {
 
     @Override
     public void runAsync(Runnable runnable) {
+        if(!Bukkit.isPrimaryThread()) {
+            runnable.run();
+            return;
+        }
         new Thread(runnable).start();
     }
 
     @Override
     public void runSync(Runnable runnable) {
+        if(Bukkit.isPrimaryThread()) {
+            runnable.run();
+            return;
+        }
         Bukkit.getScheduler().runTask(javaPlugin, runnable);
     }
 }
