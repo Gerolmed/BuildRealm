@@ -37,7 +37,7 @@ public class BasicDraftService implements DraftService {
     @Override
     public void ownedDrafts(UUID playerId, Consumer<List<Draft>> onLoad) {
         threadService.runAsync(
-                () -> onLoad.accept(dataProvider.getDraftsByUser(playerId))
+                () -> onLoad.accept(dataProvider.getDraftsByUser(playerId, true))
         );
     }
 
@@ -171,11 +171,11 @@ public class BasicDraftService implements DraftService {
                 draft.getId(),
                 draft.getMembers().stream().map(member -> new Member(member.getUuid(), PermissionLevel.COLLABORATOR)).collect(Collectors.toList()),
                 draft.getNote(),
-                draft.getForkData(),
+                null, //clear any fork data if present
                 theme.getName(),
                 new Date(),
                 false);
-
+        piece.setPieceType(type);
         worldService.clone(draft.getIdentity(), piece.getIdentity(), () -> {
             worldService.delete(draft.getIdentity(), () -> {
 
@@ -184,18 +184,15 @@ public class BasicDraftService implements DraftService {
                 int pointer = category.getMainPointer();
                 piece.setNumber(pointer+"");
                 category.setMainPointer(pointer+1);
+                category.setPieceCount(category.getPieceCount()+1);
 
-                threadService.runAsync(
-                        () -> {
-                            dataProvider.remove(draft);
-                            dataProvider.saveDraft(piece);
-                            themeService.unlock(theme);
-                            themeService.saveTheme(theme, () -> {
-                                blocked.remove(piece.getId());
-                                onFinish.accept(piece);
-                            });
-                        }
-                );
+                dataProvider.saveDraft(piece);
+                themeService.unlock(theme);
+                themeService.saveTheme(theme, () -> {
+                    blocked.remove(piece.getId());
+                    onFinish.accept(piece);
+                });
+
             });
         });
     }

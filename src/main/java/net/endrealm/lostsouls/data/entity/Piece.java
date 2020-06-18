@@ -4,10 +4,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import net.endrealm.lostsouls.data.PieceType;
+import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.realmdrive.annotations.SaveAll;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -33,5 +35,14 @@ public class Piece extends Draft {
         piece.setPieceType(pieceType);
 
         return piece;
+    }
+
+    public String getEffectiveName(DataProvider dataProvider) {
+        if(getForkData() == null) return number;
+        Optional<Draft> parent = dataProvider.getDraft(getForkData().getOriginId());
+        if(parent.isEmpty()) return number;
+        Draft draft = parent.get();
+        if(!(draft instanceof Piece)) return number;
+        return ((Piece) draft).getEffectiveName(dataProvider) + "_" +number;
     }
 }

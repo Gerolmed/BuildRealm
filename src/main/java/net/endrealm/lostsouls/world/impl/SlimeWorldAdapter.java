@@ -36,6 +36,8 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
 
     @Override
     public synchronized WorldInstance<SlimeWorld> clone(WorldInstance<SlimeWorld> original, WorldIdentity target) {
+        if(!original.getStorageWorld().isPresent())
+            return null;
         try {
             SlimeWorld slimeWorld = original.getStorageWorld().get();
             slimeWorld = slimeWorld.clone(target.getWorldName(), getLoader(target));
@@ -61,7 +63,7 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
         } catch (UnknownWorldException | IOException | CorruptedWorldException | NewerFormatException | WorldInUseException e) {
             e.printStackTrace();
         }
-        return null;
+        return new SlimeWorldInstance(identity);
     }
 
     @Override

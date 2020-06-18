@@ -5,10 +5,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import net.endrealm.lostsouls.data.PieceType;
+import net.endrealm.realmdrive.annotations.SaveAll;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SaveAll
 public class TypeCategory {
     private PieceType type;
 

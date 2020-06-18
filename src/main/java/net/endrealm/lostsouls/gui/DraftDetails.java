@@ -6,8 +6,10 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import lombok.Data;
 import net.endrealm.lostsouls.Constants;
+import net.endrealm.lostsouls.data.PieceType;
 import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.services.DraftService;
+import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.item.ItemBuilder;
 import net.endrealm.lostsouls.utils.PlayerUtils;
@@ -20,6 +22,7 @@ public class DraftDetails implements InventoryProvider {
     private final Draft draft;
     private final DraftService draftService;
     private final ThreadService threadService;
+    private final ThemeService themeService;
     private final GuiService guiService;
 
 
@@ -85,13 +88,16 @@ public class DraftDetails implements InventoryProvider {
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.WRITABLE_BOOK).displayName("§aPublish").build(),
                     inventoryClickEvent -> {
+                        player.closeInventory();
                         player.sendMessage("TODO: add publish gui");
-//                        draftService.publishNew(PieceType.PATH, "old_dungeon", draft, piece -> {
-//                                    player.sendMessage("Now at " + piece.getTheme() +"/"+piece.getPieceType().toString().toLowerCase()+"/"+piece.getNumber());
-//                        },
-//                        () -> {
-//                            player.sendMessage("Error");
-//                        });
+                        themeService.loadTheme("old_dungeon", theme -> {
+                            draftService.publishNew(PieceType.PATH, theme, draft, piece -> {
+                                        player.sendMessage("Now at " + piece.getTheme() +"/"+piece.getPieceType().toString().toLowerCase()+"/"+piece.getNumber());
+                                    },
+                                    () -> {
+                                        player.sendMessage("Error");
+                                    });
+                        }, () -> {player.sendMessage("no theme old_dungeon");});
                     }
                 )
             );

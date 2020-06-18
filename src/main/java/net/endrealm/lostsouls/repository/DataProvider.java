@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface DataProvider {
     Optional<Draft> getDraft(String key);
-    List<Draft> getDraftsByUser(UUID uuid);
+    List<Draft> getDraftsByUser(UUID uuid, boolean open);
     void saveDraft(Draft draft);
     String getFreeDraftId();
     void remove(Draft draft);

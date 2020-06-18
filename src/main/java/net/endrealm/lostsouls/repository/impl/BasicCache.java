@@ -53,6 +53,8 @@ public class BasicCache<T extends Invalidateble, K> implements Cache<T, K> {
 
     @Override
     public synchronized void add(K key, T value) {
+        if(!value.equals(cacheMap.getOrDefault(key, Pair.of(null, null)).getKey()))
+            markDirty(key);
         cacheMap.put(key, Pair.of(value, System.currentTimeMillis() + cacheDuration));
     }
 

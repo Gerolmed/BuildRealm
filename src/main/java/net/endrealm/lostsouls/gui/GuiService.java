@@ -20,7 +20,7 @@ public class GuiService {
     private final ThemeService themeService;
 
     public SmartInventory getDraftDetails(Draft draft) {
-        DraftDetails draftDetails = new DraftDetails(draft, draftService, threadService, this);
+        DraftDetails draftDetails = new DraftDetails(draft, draftService, threadService, themeService, this);
         SmartInventory smartInventory =  SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(draftDetails)

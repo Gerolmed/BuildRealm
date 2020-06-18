@@ -34,10 +34,10 @@ public class BasicDataProvider implements DataProvider {
     }
 
     @Override
-    public List<Draft> getDraftsByUser(UUID uuid) {
-        List<Draft> drafts = draftCache.getAllBy(value -> value.hasMember(uuid));
+    public List<Draft> getDraftsByUser(UUID uuid, boolean open) {
+        List<Draft> drafts = draftCache.getAllBy(value -> value.isOpen() == open && value.hasMember(uuid));
 
-        List<Draft> newDrafts = draftRepository.findByMember(uuid, true, drafts.stream().map(Draft::getId).collect(Collectors.toList()));
+        List<Draft> newDrafts = draftRepository.findByMember(uuid, open, drafts.stream().map(Draft::getId).collect(Collectors.toList()));
         newDrafts.forEach(draft -> draftCache.add(draft.getId(), draft));
         drafts.addAll(newDrafts);
         return drafts;
