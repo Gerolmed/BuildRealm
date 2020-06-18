@@ -182,22 +182,29 @@ public class BasicDraftService implements DraftService {
                 false);
         piece.setPieceType(type);
         worldService.clone(draft.getIdentity(), piece.getIdentity(), () -> {
-            worldService.delete(draft.getIdentity(), () -> {
+            threadService.runAsync(() -> {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                worldService.delete(draft.getIdentity(), () -> {
 
-                blocked.remove(draft.getId());
-                TypeCategory category = theme.getCategory(type);
-                int pointer = category.getMainPointer();
-                piece.setNumber(pointer+"");
-                category.setMainPointer(pointer+1);
-                category.setPieceCount(category.getPieceCount()+1);
+                    blocked.remove(draft.getId());
+                    TypeCategory category = theme.getCategory(type);
+                    int pointer = category.getMainPointer();
+                    piece.setNumber(pointer+"");
+                    category.setMainPointer(pointer+1);
+                    category.setPieceCount(category.getPieceCount()+1);
 
-                dataProvider.saveDraft(piece);
-                themeService.unlock(theme);
-                themeService.saveTheme(theme, () -> {
-                    blocked.remove(piece.getId());
-                    onFinish.accept(piece);
+                    dataProvider.saveDraft(piece);
+                    themeService.unlock(theme);
+                    themeService.saveTheme(theme, () -> {
+                        blocked.remove(piece.getId());
+                        onFinish.accept(piece);
+                    });
+
                 });
-
             });
         });
     }

@@ -47,8 +47,14 @@ public class BasicWorldService<T> implements WorldService {
     @Override
     public synchronized void clone(WorldIdentity worldIdentity, WorldIdentity target, Runnable onSuccess) {
         delete(target, () -> {
-            worldAdapter.clone(worldIdentity, target);
-            onSuccess.run();
+            threadService.runSync(() -> {
+                unload(worldIdentity, () -> {
+                    threadService.runAsync(()-> {
+                        worldAdapter.clone(worldIdentity, target);
+                        onSuccess.run();
+                    });
+                });
+            });
         });
     }
 

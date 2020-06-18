@@ -30,24 +30,25 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
     }
 
     @Override
-    public WorldInstance<SlimeWorld> clone(WorldIdentity original, WorldIdentity target) {
-        return clone(load(original), target);
-    }
+    public synchronized WorldInstance<SlimeWorld> clone(WorldIdentity original, WorldIdentity target) {
 
-    @Override
-    public synchronized WorldInstance<SlimeWorld> clone(WorldInstance<SlimeWorld> original, WorldIdentity target) {
-        if(!original.getStorageWorld().isPresent())
-            return null;
         try {
-            SlimeWorld slimeWorld = original.getStorageWorld().get();
-            slimeWorld = slimeWorld.clone(target.getWorldName(), getLoader(target));
+            SlimeWorld slimeWorld = null;
+            if(original.getWorldName().equals(target.getWorldName())) {
+                slimePlugin.migrateWorld(target.getWorldName(), getLoader(original), getLoader(target));
+                slimeWorld = slimePlugin.loadWorld(getLoader(target), target.getWorldName(), target.isOpen(), getDefaultProperties());
+            } else {
+                WorldInstance<SlimeWorld> instance = load(original);
+                if(instance.getStorageWorld().isPresent())
+                    slimeWorld = instance.getStorageWorld().get().clone(target.getWorldName(), getLoader(target));
+            }
             SlimeWorldInstance slimeWorldInstance = new SlimeWorldInstance(target);
             slimeWorldInstance.setStorageWorld(slimeWorld);
             return slimeWorldInstance;
         } catch (WorldAlreadyExistsException e) {
             e.printStackTrace();
             return load(target);
-        } catch (IOException e) {
+        } catch (IOException | UnknownWorldException | WorldInUseException | NewerFormatException | CorruptedWorldException e) {
             e.printStackTrace();
             return null;
         }
@@ -77,7 +78,7 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
     public boolean unload(WorldInstance<SlimeWorld> instance) {
         WorldIdentity identity = instance.getIdentity();
         instance.getBukkitWorld().ifPresent(world -> world.getPlayers().forEach(player -> player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation())));
-        return Bukkit.unloadWorld(identity.getWorldName(), identity.isOpen());
+        return Bukkit.unloadWorld(identity.getWorldName(), true);
     }
 
     @Override
@@ -93,10 +94,10 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
     @Override
     public synchronized void delete(WorldIdentity identity) {
         try {
-            getLoader(identity).deleteWorld(identity.getWorldName());
-        } catch (UnknownWorldException ignored) {
-
-        } catch (IOException e) {
+            SlimeLoader loader = getLoader(identity);
+            loader.unlockWorld(identity.getWorldName());
+            loader.deleteWorld(identity.getWorldName());
+        } catch (UnknownWorldException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -147,7 +148,7 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
     public boolean unloadHard(WorldInstance<SlimeWorld> instance) {
         WorldIdentity identity = instance.getIdentity();
         instance.getBukkitWorld().ifPresent(world -> world.getPlayers().forEach(player -> player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation())));
-        return Bukkit.unloadWorld(identity.getWorldName(), false);
+        return Bukkit.unloadWorld(identity.getWorldName(), true);
     }
 
     private SlimeLoader getLoader(WorldIdentity identity) {

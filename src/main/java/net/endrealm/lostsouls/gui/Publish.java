@@ -109,7 +109,7 @@ public class Publish implements InventoryProvider {
                         player.closeInventory();
                         draftService.publishNew(type, theme, draft, piece -> {
                             player.sendMessage(Constants.PREFIX+"Draft@" +piece.getId() + " was published to "+theme.getName()+"/"+type.name().toLowerCase() + "/" + piece.getEffectiveName(dataProvider));
-                            //TODO: open pubished details gui
+                            guiService.getPieceDetails(piece);
                         }, ()-> {
                             player.sendMessage(Constants.ERROR_PREFIX+"Failed to publish the draft. If you believe that this is an error contact an administrator!");
                         });
