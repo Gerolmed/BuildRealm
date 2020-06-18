@@ -1,7 +1,9 @@
 package net.endrealm.lostsouls.repository.impl;
 
 import lombok.Data;
+import net.endrealm.lostsouls.data.PieceType;
 import net.endrealm.lostsouls.data.entity.Draft;
+import net.endrealm.lostsouls.data.entity.Piece;
 import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.repository.Cache;
 import net.endrealm.lostsouls.repository.DataProvider;
@@ -87,5 +89,20 @@ public class BasicDataProvider implements DataProvider {
     public void removeTheme(Theme theme) {
         themeCache.markDirty(theme.getName());
         themeRepository.delete(theme.getName());
+    }
+
+    @Override
+    public List<Draft> getDraftsByThemeAndType(String theme, PieceType type) {
+        List<Draft> drafts = draftCache.getAllBy(value -> {
+            if(!(value instanceof Piece)) return false;
+            Piece piece = (Piece) value;
+
+            return piece.getTheme().equals(theme) && piece.getPieceType() == type;
+        });
+
+        List<Draft> newDrafts = draftRepository.findByThemeAndType(theme, type, drafts.stream().map(Draft::getId).collect(Collectors.toList()));
+        newDrafts.forEach(draft -> draftCache.add(draft.getId(), draft));
+        drafts.addAll(newDrafts);
+        return drafts;
     }
 }

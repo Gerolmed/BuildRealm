@@ -22,7 +22,6 @@ public class Piece extends Draft {
     private String number;
     private int forkCount;
     private PieceType pieceType;
-    private int categoryId;
 
     @Override
     public Piece merge(Draft newDraft) {
@@ -31,7 +30,6 @@ public class Piece extends Draft {
 
         piece.setNumber(number);
         piece.setForkCount(forkCount);
-        piece.setCategoryId(categoryId);
         piece.setPieceType(pieceType);
 
         return piece;

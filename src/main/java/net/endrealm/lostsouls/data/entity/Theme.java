@@ -43,4 +43,12 @@ public class Theme implements Invalidateble {
         }
         return true;
     }
+
+    public TypeCategory getCategory(PieceType type) {
+        for(TypeCategory category : categoryList) {
+            if(category.getType() == type)
+                return category;
+        }
+        return null;
+    }
 }

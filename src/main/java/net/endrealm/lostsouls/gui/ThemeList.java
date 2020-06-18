@@ -23,6 +23,7 @@ public class ThemeList implements InventoryProvider {
     private final List<Theme> drafts;
     private final DraftService draftService;
     private final ThemeService themeService;
+    private final GuiService guiService;
     @Setter
     private SmartInventory smartInventory;
 
@@ -53,7 +54,7 @@ public class ThemeList implements InventoryProvider {
                                 return;
                             }
 
-                            Gui.getThemeDetails(draftService, themeService, theme).open(player);
+                            guiService.getThemeDetails(theme).open(player);
                         })
         ).toArray(ClickableItem[]::new));
 

@@ -1,5 +1,6 @@
 package net.endrealm.lostsouls.repository;
 
+import net.endrealm.lostsouls.data.PieceType;
 import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.data.entity.Theme;
 
@@ -18,4 +19,6 @@ public interface DataProvider {
     void saveTheme(Theme theme);
     List<Theme> getAllThemes();
     void removeTheme(Theme theme);
+
+    List<Draft> getDraftsByThemeAndType(String theme, PieceType type);
 }

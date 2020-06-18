@@ -1,10 +1,13 @@
 package net.endrealm.lostsouls.services.impl;
 
 import lombok.Data;
-import net.endrealm.lostsouls.data.entity.Draft;
+import net.endrealm.lostsouls.data.PermissionLevel;
+import net.endrealm.lostsouls.data.PieceType;
+import net.endrealm.lostsouls.data.entity.*;
 import net.endrealm.lostsouls.exception.DuplicateKeyException;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.services.DraftService;
+import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.world.WorldIdentity;
 import net.endrealm.lostsouls.world.WorldService;
@@ -12,6 +15,7 @@ import org.bukkit.World;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Data
 public class BasicDraftService implements DraftService {
@@ -19,14 +23,14 @@ public class BasicDraftService implements DraftService {
     private final DataProvider dataProvider;
     private final ThreadService threadService;
     private final WorldService worldService;
+    private final ThemeService themeService;
 
-    private final Set<String> deletedQueue = new HashSet<>();
-    private final Set<String> unloadingQueue = Collections.synchronizedSet(new HashSet<>());
+    private final Set<String> blocked = new HashSet<>();
 
 
     @Override
     public void loadDraft(String id, Consumer<Draft> onLoad, Runnable notExists) {
-        if(unloadingQueue.contains(id)) return; //TODO call error
+        if(blocked.contains(id)) return; //TODO call error
         threadService.runAsync(() -> dataProvider.getDraft(id).ifPresentOrElse(onLoad, notExists));
     }
 
@@ -57,7 +61,7 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void saveDraft(Draft draft, Runnable postSave) {
-        if(isInDeletionQueue(draft.getId())) {
+        if(blocked.contains(draft.getId())) {
             return;
         }
         if(draft.isInvalid()) {
@@ -75,8 +79,8 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void generateDraft(Draft draft, Consumer<World> onGenerated, Consumer<Exception> onFailure) {
-        if(isInDeletionQueue(draft.getId())) {
-            onFailure.accept(new Exception("World is being deleted"));
+        if(blocked.contains(draft.getId())) {
+            onFailure.accept(new Exception("World is being blocked"));
             return;
         }
         if(draft.isInvalid()) {
@@ -98,26 +102,22 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void unloadDraft(String name, Runnable onFinish, Consumer<Exception> onFailure) {
-        if(unloadingQueue.contains(name)){
-            onFailure.accept(new Exception("World is being unloaded"));
+        if(blocked.contains(name)){
+            onFailure.accept(new Exception("World is being blocked"));
             return;
         }
-        if(isInDeletionQueue(name)) {
-            onFailure.accept(new Exception("World is being deleted"));
-            return;
-        }
-        unloadingQueue.add(name);
+        blocked.add(name);
         worldService.unload(new WorldIdentity(name, false), () -> {
-            unloadingQueue.remove(name);
+            blocked.remove(name);
             onFinish.run();
         });
     }
 
     @Override
     public void replaceDraft(Draft oldDraft, Draft newDraft, Runnable onSuccess) {
-        if(isInDeletionQueue(oldDraft.getId()) || oldDraft.isInvalid())
+        if(blocked.contains(oldDraft.getId()) || oldDraft.isInvalid())
             return;
-        if(isInDeletionQueue(newDraft.getId()) || newDraft.isInvalid())
+        if(blocked.contains(newDraft.getId()) || newDraft.isInvalid())
             return;
 
         worldService.replace(oldDraft.getIdentity(), newDraft.getIdentity(), () -> {
@@ -131,28 +131,72 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void deleteDraft(Draft draft, Runnable onDelete) {
-        if(isInDeletionQueue(draft.getId()))
+        if(blocked.contains(draft.getId()))
             return;
         if(draft.isInvalid()) {
             return;
         }
-        addToDeletionQueue(draft.getId());
+        blocked.add(draft.getId());
         threadService.runAsync(() -> {
             dataProvider.remove(draft);
             worldService.delete(draft.getIdentity(), () -> {
-                removeFromDeletionQueue(draft.getId());
+                blocked.remove(draft.getId());
                 onDelete.run();
             });
         });
     }
 
-    private synchronized void addToDeletionQueue(String id) {
-        deletedQueue.add(id);
+    @Override
+    public void draftsByThemeAndType(String theme, PieceType type, Consumer<List<Draft>> onLoad) {
+        threadService.runAsync(() -> {
+            List<Draft> drafts = dataProvider.getDraftsByThemeAndType(theme, type);
+            onLoad.accept(drafts);
+        });
     }
-    private synchronized boolean isInDeletionQueue(String id) {
-        return deletedQueue.contains(id);
+
+    @Override
+    public void draftsByThemeAndType(Theme theme, PieceType type, Consumer<List<Draft>> onLoad) {
+        draftsByThemeAndType(theme.getName(), type, onLoad);
     }
-    private synchronized void removeFromDeletionQueue(String id) {
-        deletedQueue.remove(id);
+
+    @Override
+    public void publishNew(PieceType type, Theme theme, Draft draft, Consumer<Piece> onFinish, Runnable onError) {
+        if(theme.isStale() || theme.isInvalid() || draft.isInvalid() || !draft.isOpen() || blocked.contains(draft.getId()) || themeService.isLocked(theme)) {
+            onError.run();
+            return;
+        }
+        themeService.lock(theme);
+        blocked.add(draft.getId());
+        Piece piece = new Piece(
+                draft.getId(),
+                draft.getMembers().stream().map(member -> new Member(member.getUuid(), PermissionLevel.COLLABORATOR)).collect(Collectors.toList()),
+                draft.getNote(),
+                draft.getForkData(),
+                theme.getName(),
+                new Date(),
+                false);
+
+        worldService.clone(draft.getIdentity(), piece.getIdentity(), () -> {
+            worldService.delete(draft.getIdentity(), () -> {
+
+                blocked.remove(draft.getId());
+                TypeCategory category = theme.getCategory(type);
+                int pointer = category.getMainPointer();
+                piece.setNumber(pointer+"");
+                category.setMainPointer(pointer+1);
+
+                threadService.runAsync(
+                        () -> {
+                            dataProvider.remove(draft);
+                            dataProvider.saveDraft(piece);
+                            themeService.unlock(theme);
+                            themeService.saveTheme(theme, () -> {
+                                blocked.remove(piece.getId());
+                                onFinish.accept(piece);
+                            });
+                        }
+                );
+            });
+        });
     }
 }

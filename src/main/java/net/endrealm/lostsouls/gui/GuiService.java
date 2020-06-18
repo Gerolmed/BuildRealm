@@ -2,6 +2,7 @@ package net.endrealm.lostsouls.gui;
 
 import fr.minuskube.inv.InventoryManager;
 import fr.minuskube.inv.SmartInventory;
+import lombok.RequiredArgsConstructor;
 import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.services.DraftService;
@@ -11,16 +12,15 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.List;
 
-public final class Gui {
+@RequiredArgsConstructor
+public class GuiService {
+    private final InventoryManager inventoryManager;
+    private final DraftService draftService;
+    private final ThreadService threadService;
+    private final ThemeService themeService;
 
-    private static InventoryManager inventoryManager;
-
-    public Gui(InventoryManager inventoryManager) {
-        Gui.inventoryManager = inventoryManager;
-    }
-
-    public static SmartInventory getDraftDetails(Draft draft, DraftService draftService, ThreadService threadService) {
-        DraftDetails draftDetails = new DraftDetails(draft, draftService, threadService);
+    public SmartInventory getDraftDetails(Draft draft) {
+        DraftDetails draftDetails = new DraftDetails(draft, draftService, threadService, this);
         SmartInventory smartInventory =  SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(draftDetails)
@@ -30,8 +30,8 @@ public final class Gui {
         draftDetails.setSmartInventory(smartInventory);
         return smartInventory;
     }
-    public static SmartInventory getDraftsList(OfflinePlayer player, List<Draft> drafts, DraftService draftService, ThreadService threadService) {
-        DraftList list = new DraftList(drafts, draftService, threadService);
+    public SmartInventory getDraftsList(OfflinePlayer player, List<Draft> drafts) {
+        DraftList list = new DraftList(drafts, draftService, threadService, this);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(list)
@@ -43,7 +43,7 @@ public final class Gui {
         return smartInventory;
     }
 
-    public static SmartInventory getConfirmationWindow(String title, Runnable onConfirm, Runnable onCancel) {
+    public SmartInventory getConfirmationWindow(String title, Runnable onConfirm, Runnable onCancel) {
         Confirmation confirmation = new Confirmation(onConfirm, onCancel);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
@@ -57,8 +57,8 @@ public final class Gui {
         return smartInventory;
     }
 
-    public static SmartInventory getThemesList(List<Theme> themes, DraftService draftService, ThemeService themeService) {
-        ThemeList list = new ThemeList(themes, draftService, themeService);
+    public SmartInventory getThemesList(List<Theme> themes) {
+        ThemeList list = new ThemeList(themes, draftService, themeService, this);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(list)
@@ -70,8 +70,8 @@ public final class Gui {
         return smartInventory;
     }
 
-    public static SmartInventory getThemeDetails(DraftService draftService, ThemeService themeService, Theme theme) {
-        ThemeDetails themeDetails = new ThemeDetails(draftService, themeService, theme);
+    public SmartInventory getThemeDetails(Theme theme) {
+        ThemeDetails themeDetails = new ThemeDetails(draftService, themeService, this, theme);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(themeDetails)
@@ -83,8 +83,8 @@ public final class Gui {
         return smartInventory;
     }
 
-    public static SmartInventory getEditDraftMembers(Draft draft, DraftService draftService, ThreadService threadService, Runnable onBack) {
-        EditMembers editMembers = new EditMembers(draft, draftService, threadService, onBack);
+    public SmartInventory getEditDraftMembers(Draft draft, Runnable onBack) {
+        EditMembers editMembers = new EditMembers(draft, draftService, threadService, this, onBack);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(editMembers)

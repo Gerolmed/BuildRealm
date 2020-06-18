@@ -23,6 +23,7 @@ public class DraftList implements InventoryProvider {
     private final List<Draft> drafts;
     private final DraftService draftService;
     private final ThreadService threadService;
+    private final GuiService guiService;
     @Setter
     private SmartInventory smartInventory;
 
@@ -40,7 +41,7 @@ public class DraftList implements InventoryProvider {
                                 player.closeInventory();
                                 return;
                             }
-                            Gui.getDraftDetails(draft, draftService, threadService).open(player);
+                            guiService.getDraftDetails(draft).open(player);
                         })
         ).toArray(ClickableItem[]::new));
 

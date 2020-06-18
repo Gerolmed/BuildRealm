@@ -1,6 +1,9 @@
 package net.endrealm.lostsouls.services;
 
+import net.endrealm.lostsouls.data.PieceType;
 import net.endrealm.lostsouls.data.entity.Draft;
+import net.endrealm.lostsouls.data.entity.Piece;
+import net.endrealm.lostsouls.data.entity.Theme;
 import org.bukkit.World;
 
 import java.util.List;
@@ -22,5 +25,8 @@ public interface DraftService {
     void replaceDraft(Draft oldDraft, Draft newDraft, Runnable onSuccess);
 
     void deleteDraft(Draft draft, Runnable onDelete);
+    void draftsByThemeAndType(String theme, PieceType type, Consumer<List<Draft>> onLoad);
+    void draftsByThemeAndType(Theme theme, PieceType type, Consumer<List<Draft>> onLoad);
 
+    void publishNew(PieceType type, Theme theme, Draft draft, Consumer<Piece> onFinish, Runnable onError);
 }

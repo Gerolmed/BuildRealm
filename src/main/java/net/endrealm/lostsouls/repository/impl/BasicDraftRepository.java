@@ -1,6 +1,7 @@
 package net.endrealm.lostsouls.repository.impl;
 
 import lombok.Data;
+import net.endrealm.lostsouls.data.PieceType;
 import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.data.entity.ForkData;
 import net.endrealm.lostsouls.data.entity.Member;
@@ -93,5 +94,27 @@ public class BasicDraftRepository implements DraftRepository {
     @Override
     public synchronized void remove(Draft draft) {
         driveService.getWriter().delete(queryById(draft.getId()), 1);
+    }
+
+    @Override
+    public List<Draft> findByThemeAndType(String theme, PieceType type, List<String> excludedDraftIds) {
+        ValueNotInOperator<AndOperator<Query>> nin = new Query().setTableName(TABLE)
+                .addAnd()
+                .addEq()
+                .setField("pieceType")
+                .setValue(type.toString())
+                .close()
+                .addEq()
+                .setField("theme")
+                .setValue(theme)
+                .close()
+                .addNin()
+                .setField("id");
+        excludedDraftIds.forEach(nin::addValue);
+
+        Query query = nin.close()
+                .close()
+                .build();
+        return driveService.getReader().readAllObjects(query, Draft.class);
     }
 }

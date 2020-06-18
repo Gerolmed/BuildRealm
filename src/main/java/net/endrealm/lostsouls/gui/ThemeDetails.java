@@ -23,6 +23,7 @@ import java.util.List;
 public class ThemeDetails implements InventoryProvider {
     private final DraftService draftService;
     private final ThemeService themeService;
+    private final GuiService guiService;
     private final Theme theme;
     private SmartInventory smartInventory;
 
@@ -51,7 +52,7 @@ public class ThemeDetails implements InventoryProvider {
         if(player.hasPermission("souls_save.theme.delete.all") || player.hasPermission("souls_save.theme.delete."+theme.getName())) {
             contents.set(0, 6, ClickableItem.of(ItemBuilder.builder(Material.BARRIER).displayName("§cDelete").build(),
                     inventoryClickEvent -> {
-                        Gui.getConfirmationWindow("Delete theme " + theme.getName(),
+                        guiService.getConfirmationWindow("Delete theme " + theme.getName(),
                                 () -> {
                                     themeService.deleteTheme(theme, () -> player.sendMessage(Constants.PREFIX+"Theme " +theme.getName() + " was deleted! Its drafts are now floating (/draft floating)"));
                                 },

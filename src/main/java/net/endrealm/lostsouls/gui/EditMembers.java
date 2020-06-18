@@ -22,6 +22,7 @@ public class EditMembers implements InventoryProvider {
     private final Draft draft;
     private final DraftService draftService;
     private final ThreadService threadService;
+    private final GuiService guiService;
     private final Runnable onBack;
     private SmartInventory smartInventory;
 
@@ -91,7 +92,7 @@ public class EditMembers implements InventoryProvider {
         } else {
             draft.getMembers().remove(member);
         }
-        draftService.saveDraft(draft, () -> threadService.runSync(() -> Gui.getEditDraftMembers(draft, draftService, threadService, onBack).open(player, pagination.getPage())));
+        draftService.saveDraft(draft, () -> threadService.runSync(() -> guiService.getEditDraftMembers(draft, onBack).open(player, pagination.getPage())));
     }
 
     @Override

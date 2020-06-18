@@ -1,5 +1,6 @@
 package net.endrealm.lostsouls.repository;
 
+import net.endrealm.lostsouls.data.PieceType;
 import net.endrealm.lostsouls.data.entity.Draft;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface DraftRepository {
     String findFreeKey();
 
     void remove(Draft draft);
+
+    List<Draft> findByThemeAndType(String theme, PieceType type, List<String> exclude);
 }

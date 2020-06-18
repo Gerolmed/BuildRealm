@@ -8,7 +8,7 @@ import lombok.Getter;
 import net.endrealm.lostsouls.bridge.WorldEditListener;
 import net.endrealm.lostsouls.commands.DraftCommand;
 import net.endrealm.lostsouls.commands.ThemeCommand;
-import net.endrealm.lostsouls.gui.Gui;
+import net.endrealm.lostsouls.gui.GuiService;
 import net.endrealm.lostsouls.listener.EditWorldListener;
 import net.endrealm.lostsouls.listener.LeaveListener;
 import net.endrealm.lostsouls.listener.WorldChangeListener;
@@ -43,6 +43,7 @@ public final class LostSoulsSave extends JavaPlugin {
     private ThemeService themeService;
     private WorldService worldService;
     private DraftService draftService;
+    private GuiService guiService;
     private final Long CACHE_DURATION = 40000L;
     private SlimePlugin slimePlugin;
     private WorldEditPlugin worldEditPlugin;
@@ -56,7 +57,6 @@ public final class LostSoulsSave extends JavaPlugin {
 
         inventoryManager = new InventoryManager(this);
         inventoryManager.init();
-        new Gui(inventoryManager);
 
         slimePlugin = (SlimePlugin) Bukkit.getServer().getPluginManager().getPlugin("SlimeWorldManager");
         worldEditPlugin = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
@@ -75,6 +75,7 @@ public final class LostSoulsSave extends JavaPlugin {
         DriveServiceFactory serviceFactory = new DriveServiceFactory();
         DriveService driveService = serviceFactory.getDriveService(settings);
 
+        //TODO: add cache cleanup on iteration
         this.dataProvider = new BasicDataProvider(
                 new BasicCache<>(CACHE_DURATION),
                 new BasicDraftRepository(driveService),
@@ -82,8 +83,10 @@ public final class LostSoulsSave extends JavaPlugin {
                 new BasicThemeRepository(driveService)
         );
         this.worldService = new BasicWorldService<>(new SlimeWorldAdapter(slimePlugin, getSlimeLoader("openDrafts"), getSlimeLoader("closedDrafts")), threadService);
-        this.draftService = new BasicDraftService(dataProvider, threadService, worldService);
         this.themeService = new BasicThemeService(dataProvider, threadService);
+        this.draftService = new BasicDraftService(dataProvider, threadService, worldService, themeService);
+
+        this.guiService = new GuiService(inventoryManager, draftService, threadService, themeService);
 
         registerCommands();
         registerEvents();
@@ -110,8 +113,8 @@ public final class LostSoulsSave extends JavaPlugin {
     }
 
     private void registerCommands() {
-        Bukkit.getServer().getPluginCommand("draft").setExecutor(new DraftCommand(draftService, threadService, worldService));
-        Bukkit.getServer().getPluginCommand("theme").setExecutor(new ThemeCommand(themeService ,draftService, threadService));
+        Bukkit.getServer().getPluginCommand("draft").setExecutor(new DraftCommand(draftService, threadService, worldService, guiService));
+        Bukkit.getServer().getPluginCommand("theme").setExecutor(new ThemeCommand(themeService ,draftService, threadService, guiService));
 
     }
 

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.PermissionLevel;
 import net.endrealm.lostsouls.data.entity.Member;
-import net.endrealm.lostsouls.gui.Gui;
+import net.endrealm.lostsouls.gui.GuiService;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.BaseCommand;
@@ -24,6 +24,7 @@ public class DraftCommand extends BaseCommand {
     private final DraftService draftService;
     private final ThreadService threadService;
     private final WorldService worldService;
+    private final GuiService guiService;
 
     private final List<UUID> openTransactions = new ArrayList<>();
 
@@ -129,7 +130,7 @@ public class DraftCommand extends BaseCommand {
                 draftService.saveDraft(draft,() -> {
                     threadService.runSync(() -> {
                         sendInfo(player, "Created a new draft " + draft.getId());
-                        Gui.getDraftDetails(draft, draftService, threadService).open(player);
+                        guiService.getDraftDetails(draft).open(player);
                     });
                 });
             }, () -> {
@@ -158,7 +159,7 @@ public class DraftCommand extends BaseCommand {
 
         draftService.ownedDrafts(target.getUniqueId(), drafts -> {
             openTransactions.remove(player.getUniqueId());
-            threadService.runSync(() -> Gui.getDraftsList(target, drafts, draftService, threadService).open(player));
+            threadService.runSync(() -> guiService.getDraftsList(target, drafts).open(player));
         });
         return true;
     }

@@ -20,6 +20,7 @@ public class DraftDetails implements InventoryProvider {
     private final Draft draft;
     private final DraftService draftService;
     private final ThreadService threadService;
+    private final GuiService guiService;
 
 
     private SmartInventory smartInventory;
@@ -54,7 +55,7 @@ public class DraftDetails implements InventoryProvider {
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.BARRIER).displayName("§cDelete").build(),
                     inventoryClickEvent -> {
-                        Gui.getConfirmationWindow("Delete Draft@"+draft.getId(),
+                        guiService.getConfirmationWindow("Delete Draft@"+draft.getId(),
                                 () -> draftService.deleteDraft(draft, () -> player.sendMessage(Constants.PREFIX+"Draft " +draft.getId() + " was deleted!")),
                                 () -> smartInventory.open(player)).open(player);
                     }));
@@ -83,14 +84,24 @@ public class DraftDetails implements InventoryProvider {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.WRITABLE_BOOK).displayName("§aPublish").build(),
-                    inventoryClickEvent -> player.sendMessage("TODO: add publish gui")));
+                    inventoryClickEvent -> {
+                        player.sendMessage("TODO: add publish gui");
+//                        draftService.publishNew(PieceType.PATH, "old_dungeon", draft, piece -> {
+//                                    player.sendMessage("Now at " + piece.getTheme() +"/"+piece.getPieceType().toString().toLowerCase()+"/"+piece.getNumber());
+//                        },
+//                        () -> {
+//                            player.sendMessage("Error");
+//                        });
+                    }
+                )
+            );
         }
 
         if((player.hasPermission("souls_save.draft.manage_members.own") && draft.hasOwner(player.getUniqueId())) || player.hasPermission("souls_save.draft.manage_members.other")) {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.PLAYER_HEAD).displayName("§bEdit Users").build(),
-                    inventoryClickEvent -> Gui.getEditDraftMembers(draft, draftService, threadService, () -> smartInventory.open(player)).open(player)));
+                    inventoryClickEvent -> guiService.getEditDraftMembers(draft, () -> smartInventory.open(player)).open(player)));
         }
     }
 
