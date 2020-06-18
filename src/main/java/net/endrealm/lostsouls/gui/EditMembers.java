@@ -60,6 +60,11 @@ public class EditMembers implements InventoryProvider {
         }
 
         contents.set(0, 4, ClickableItem.of(ItemBuilder.builder(Material.EMERALD).displayName("§aAdd player").build(), inventoryClickEvent -> {
+            inventoryClickEvent.setCancelled(true);
+            if(!player.hasPermission("souls_save.draft.manage_members.add")) {
+                return;
+            }
+
             player.closeInventory();
             chatInputManager.addQuestion(player.getUniqueId(), new AddUserInput(draft, onBack, editable, draftService, threadService, guiService));
             player.sendMessage("§6"+chatInputManager.getInput(player.getUniqueId()).getQuestion(player));
@@ -82,6 +87,9 @@ public class EditMembers implements InventoryProvider {
             return;
         }
 
+        if(!player.hasPermission("souls_save.draft.manage_members.toggle")) {
+            return;
+        }
 
         boolean editAll = player.hasPermission("souls_save.draft.manage_members.other");
         if(!(player.hasPermission("souls_save.draft.manage_members.own") && draft.hasOwner(player.getUniqueId())) && !editAll) {
