@@ -3,6 +3,7 @@ package net.endrealm.lostsouls.gui;
 import fr.minuskube.inv.InventoryManager;
 import fr.minuskube.inv.SmartInventory;
 import lombok.RequiredArgsConstructor;
+import net.endrealm.lostsouls.data.PieceType;
 import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.services.DraftService;
@@ -84,6 +85,19 @@ public class GuiService {
         return smartInventory;
     }
 
+    public SmartInventory getTypeSelection(Consumer<PieceType> onSelect, Runnable onCancel) {
+        TypeSelection typeSelection = new TypeSelection(onSelect, onCancel);
+        SmartInventory smartInventory = SmartInventory.builder()
+                .manager(inventoryManager)
+                .provider(typeSelection)
+                .size(4, 9)
+                .title("Types#select")
+                .build();
+        typeSelection.setSmartInventory(smartInventory);
+
+        return smartInventory;
+    }
+
     public SmartInventory getThemeDetails(Theme theme) {
         ThemeDetails themeDetails = new ThemeDetails(draftService, themeService, this, theme);
         SmartInventory smartInventory = SmartInventory.builder()
@@ -108,4 +122,26 @@ public class GuiService {
         editMembers.setSmartInventory(smartInventory);
         return smartInventory;
     }
+
+    public SmartInventory getPublishDraft(Draft draft, Runnable onBack) {
+        Publish publish = new Publish(draft, onBack, draftService, themeService, threadService, this);
+        SmartInventory smartInventory = SmartInventory.builder()
+                .manager(inventoryManager)
+                .provider(publish)
+                .size(4, 9)
+                .title("Publish Draft@"+draft.getId())
+                .build();
+        publish.setSmartInventory(smartInventory);
+        return smartInventory;
+    }
+
+    public SmartInventory getWait() {
+        return SmartInventory.builder()
+                .manager(inventoryManager)
+                .provider(new Wait())
+                .size(4, 9)
+                .title("Processing....")
+                .build();
+    }
+
 }

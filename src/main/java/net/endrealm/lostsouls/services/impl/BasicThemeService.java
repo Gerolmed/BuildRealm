@@ -66,7 +66,7 @@ public class BasicThemeService implements ThemeService {
 
     @Override
     public void loadTheme(String id, Consumer<Theme> onFound, Runnable notFound) {
-        if(blocked.contains(id)) {
+        if(id == null || blocked.contains(id)) {
             notFound.run();
             return;
         }
