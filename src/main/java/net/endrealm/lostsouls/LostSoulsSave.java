@@ -6,9 +6,12 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import fr.minuskube.inv.InventoryManager;
 import lombok.Getter;
 import net.endrealm.lostsouls.bridge.WorldEditListener;
+import net.endrealm.lostsouls.chatinput.ChatInput;
+import net.endrealm.lostsouls.chatinput.ChatInputManager;
 import net.endrealm.lostsouls.commands.DraftCommand;
 import net.endrealm.lostsouls.commands.ThemeCommand;
 import net.endrealm.lostsouls.gui.GuiService;
+import net.endrealm.lostsouls.listener.ChatListener;
 import net.endrealm.lostsouls.listener.EditWorldListener;
 import net.endrealm.lostsouls.listener.LeaveListener;
 import net.endrealm.lostsouls.listener.WorldChangeListener;
@@ -43,6 +46,7 @@ public final class LostSoulsSave extends JavaPlugin {
     private ThemeService themeService;
     private WorldService worldService;
     private DraftService draftService;
+    private ChatInputManager chatInputManager;
     private GuiService guiService;
     private final Long CACHE_DURATION = 40000L;
     private SlimePlugin slimePlugin;
@@ -74,6 +78,7 @@ public final class LostSoulsSave extends JavaPlugin {
 
         DriveServiceFactory serviceFactory = new DriveServiceFactory();
         DriveService driveService = serviceFactory.getDriveService(settings);
+        this.chatInputManager = new ChatInputManager();
 
         //TODO: add cache cleanup on iteration
         this.dataProvider = new BasicDataProvider(
@@ -86,8 +91,7 @@ public final class LostSoulsSave extends JavaPlugin {
         this.themeService = new BasicThemeService(dataProvider, threadService);
         this.draftService = new BasicDraftService(dataProvider, threadService, worldService, themeService);
 
-        this.guiService = new GuiService(inventoryManager, draftService, threadService, themeService, dataProvider);
-
+        this.guiService = new GuiService(inventoryManager, draftService, threadService, themeService, dataProvider, chatInputManager);
         registerCommands();
         registerEvents();
 
@@ -97,7 +101,8 @@ public final class LostSoulsSave extends JavaPlugin {
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(new WorldChangeListener(draftService, worldService), this);
         getServer().getPluginManager().registerEvents(new EditWorldListener(dataProvider, worldService), this);
-        getServer().getPluginManager().registerEvents(new LeaveListener(draftService, worldService, this), this);
+        getServer().getPluginManager().registerEvents(new LeaveListener(draftService, worldService, chatInputManager, this), this);
+        getServer().getPluginManager().registerEvents(new ChatListener(chatInputManager), this);
 
     }
 

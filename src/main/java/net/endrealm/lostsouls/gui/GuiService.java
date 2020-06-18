@@ -3,6 +3,7 @@ package net.endrealm.lostsouls.gui;
 import fr.minuskube.inv.InventoryManager;
 import fr.minuskube.inv.SmartInventory;
 import lombok.RequiredArgsConstructor;
+import net.endrealm.lostsouls.chatinput.ChatInputManager;
 import net.endrealm.lostsouls.data.PieceType;
 import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.data.entity.Piece;
@@ -25,6 +26,7 @@ public class GuiService {
     private final ThreadService threadService;
     private final ThemeService themeService;
     private final DataProvider dataProvider;
+    private final ChatInputManager chatInputManager;
 
     public SmartInventory getDraftDetails(Draft draft) {
         DraftDetails draftDetails = new DraftDetails(draft, draftService, threadService, themeService, this);
@@ -117,7 +119,7 @@ public class GuiService {
     }
 
     public SmartInventory getEditDraftMembers(Draft draft, Runnable onBack, boolean editable) {
-        EditMembers editMembers = new EditMembers(draft, draftService, threadService, this, onBack, editable);
+        EditMembers editMembers = new EditMembers(draft, draftService, threadService, this, onBack, editable, chatInputManager);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(editMembers)

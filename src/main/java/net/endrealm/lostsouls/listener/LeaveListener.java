@@ -2,6 +2,7 @@ package net.endrealm.lostsouls.listener;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import net.endrealm.lostsouls.chatinput.ChatInputManager;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.utils.BaseListener;
 import net.endrealm.lostsouls.world.WorldIdentity;
@@ -21,6 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class LeaveListener extends BaseListener {
     private final DraftService draftService;
     private final WorldService worldService;
+    private final ChatInputManager chatInputManager;
     private final JavaPlugin plugin;
 
     @EventHandler(priority = EventPriority.LOW)
@@ -35,6 +37,7 @@ public class LeaveListener extends BaseListener {
 
     private void leave(Player player) {
         if(player == null) return;
+        chatInputManager.removeQuestion(player.getUniqueId());
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             World world = player.getWorld();
 

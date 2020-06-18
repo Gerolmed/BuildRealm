@@ -7,8 +7,10 @@ import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import lombok.Data;
 import net.endrealm.lostsouls.Constants;
+import net.endrealm.lostsouls.chatinput.ChatInputManager;
 import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.data.entity.Member;
+import net.endrealm.lostsouls.gui.chat.AddUserInput;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.item.ItemBuilder;
@@ -25,6 +27,7 @@ public class EditMembers implements InventoryProvider {
     private final GuiService guiService;
     private final Runnable onBack;
     private final boolean editable;
+    private final ChatInputManager chatInputManager;
     private SmartInventory smartInventory;
 
     private boolean locked;
@@ -56,7 +59,13 @@ public class EditMembers implements InventoryProvider {
             contents.set(2, i+1, items[i+half]);
         }
 
-        contents.set(0, 4, ClickableItem.of(ItemBuilder.builder(Material.SLIME_BALL).displayName("§cBack").build(), inventoryClickEvent -> onBack.run()));
+        contents.set(0, 4, ClickableItem.of(ItemBuilder.builder(Material.EMERALD).displayName("§aAdd player").build(), inventoryClickEvent -> {
+            player.closeInventory();
+            chatInputManager.addQuestion(player.getUniqueId(), new AddUserInput(draft, onBack, editable, draftService, threadService, guiService));
+            player.sendMessage(chatInputManager.getInput(player.getUniqueId()).getQuestion(player));
+        }));
+
+        contents.set(3, 4, ClickableItem.of(ItemBuilder.builder(Material.SLIME_BALL).displayName("§cBack").build(), inventoryClickEvent -> onBack.run()));
 
         if(!pagination.isFirst())
             contents.set(3, 3, ClickableItem.of(ItemBuilder.builder(Material.ARROW).displayName("§6Previous Page").build(),
