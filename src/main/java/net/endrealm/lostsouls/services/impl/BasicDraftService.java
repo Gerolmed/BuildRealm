@@ -323,4 +323,39 @@ public class BasicDraftService implements DraftService {
 
         replaceDraft(parent, draft, onFinish);
     }
+
+    @Override
+    public void deletePiece(Piece piece, Runnable onDelete) {
+        if(blocked.contains(piece.getId()))
+            return;
+        if(piece.isInvalid()) {
+            return;
+        }
+        blocked.add(piece.getId());
+        themeService.loadTheme(
+                piece.getTheme(), theme -> {
+                    if(themeService.isLocked(theme)) {
+                        blocked.remove(piece.getId());
+                        return;
+                    }
+                    themeService.lock(theme);
+                    dataProvider.remove(piece);
+                    deleteDraft(piece, () -> {
+                        TypeCategory category = theme.getCategory(piece.getPieceType());
+                        category.setPieceCount(category.getPieceCount()-1);
+                        themeService.unlock(theme);
+
+                        themeService.saveTheme(theme, () -> {
+                            blocked.remove(piece.getId());
+                            onDelete.run();
+                        });
+                        //TODO: shift sub pieces
+                    });
+
+                }, () -> {
+                    blocked.remove(piece.getId());
+                    deleteDraft(piece, onDelete);
+                    //TODO: shift sub pieces
+                });
+    }
 }

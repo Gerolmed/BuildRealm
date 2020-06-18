@@ -61,8 +61,8 @@ public class PieceDetails implements InventoryProvider {
                     ItemBuilder.builder(Material.BARRIER).displayName("§cDelete").build(),
                     inventoryClickEvent -> {
                         if(lockedInteract) return;
-                        guiService.getConfirmationWindow("Delete Draft@"+ piece.getId(),
-                                () -> draftService.deleteDraft(piece, () -> player.sendMessage(Constants.PREFIX+"Draft " + piece.getId() + " was deleted!")),
+                        guiService.getConfirmationWindow("Delete Piece@"+ piece.getId(),
+                                () -> draftService.deletePiece(piece, () -> player.sendMessage(Constants.PREFIX+"Draft " + piece.getId() + " was deleted!")),
                                 () -> smartInventory.open(player)).open(player);
                     }));
         }

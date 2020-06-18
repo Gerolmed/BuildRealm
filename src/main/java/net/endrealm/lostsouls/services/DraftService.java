@@ -33,4 +33,5 @@ public interface DraftService {
     void publishFork(Draft draft, Consumer<Piece> onFinish, Runnable onError);
     void publishReplace(Draft draft, Consumer<Piece> onFinish, Runnable onError);
 
+    void deletePiece(Piece piece, Runnable onDelete);
 }
