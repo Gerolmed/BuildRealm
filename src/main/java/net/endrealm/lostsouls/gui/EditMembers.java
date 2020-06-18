@@ -62,7 +62,7 @@ public class EditMembers implements InventoryProvider {
         contents.set(0, 4, ClickableItem.of(ItemBuilder.builder(Material.EMERALD).displayName("§aAdd player").build(), inventoryClickEvent -> {
             player.closeInventory();
             chatInputManager.addQuestion(player.getUniqueId(), new AddUserInput(draft, onBack, editable, draftService, threadService, guiService));
-            player.sendMessage(chatInputManager.getInput(player.getUniqueId()).getQuestion(player));
+            player.sendMessage("§6"+chatInputManager.getInput(player.getUniqueId()).getQuestion(player));
         }));
 
         contents.set(3, 4, ClickableItem.of(ItemBuilder.builder(Material.SLIME_BALL).displayName("§cBack").build(), inventoryClickEvent -> onBack.run()));
