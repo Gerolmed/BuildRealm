@@ -43,7 +43,7 @@ public class AddUserInput extends AbstractChatInput {
     @Override
     public String validate(Player player, String input) {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(input);
-        if(!offlinePlayer.isOnline() || !offlinePlayer.hasPlayedBefore())
+        if(!offlinePlayer.isOnline() && !offlinePlayer.hasPlayedBefore())
             return "Player was never on this server!";
         if(draft.hasMember(offlinePlayer.getUniqueId()))
             return "Player is already in the draft";
