@@ -24,6 +24,7 @@ public class EditMembers implements InventoryProvider {
     private final ThreadService threadService;
     private final GuiService guiService;
     private final Runnable onBack;
+    private final boolean editable;
     private SmartInventory smartInventory;
 
     private boolean locked;
@@ -41,6 +42,7 @@ public class EditMembers implements InventoryProvider {
                                 .addLore("§7"+member.getPermissionLevel())
                                 .build(),
                         inventoryClickEvent -> {
+                            if(!editable) return;
                             handleUserClick(player, member, inventoryClickEvent.getClick(), pagination);
                             inventoryClickEvent.setCancelled(true);
                         }
@@ -89,10 +91,10 @@ public class EditMembers implements InventoryProvider {
         locked = true;
         if(click == ClickType.LEFT) {
             member.setPermissionLevel(member.getPermissionLevel().cycle());
-        } else {
+        } else if(draft.getMembers().size() > 1) {
             draft.getMembers().remove(member);
         }
-        draftService.saveDraft(draft, () -> threadService.runSync(() -> guiService.getEditDraftMembers(draft, onBack).open(player, pagination.getPage())));
+        draftService.saveDraft(draft, () -> threadService.runSync(() -> guiService.getEditDraftMembers(draft, onBack, editable).open(player, pagination.getPage())));
     }
 
     @Override

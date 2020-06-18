@@ -116,8 +116,8 @@ public class GuiService {
         return smartInventory;
     }
 
-    public SmartInventory getEditDraftMembers(Draft draft, Runnable onBack) {
-        EditMembers editMembers = new EditMembers(draft, draftService, threadService, this, onBack);
+    public SmartInventory getEditDraftMembers(Draft draft, Runnable onBack, boolean editable) {
+        EditMembers editMembers = new EditMembers(draft, draftService, threadService, this, onBack, editable);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(editMembers)

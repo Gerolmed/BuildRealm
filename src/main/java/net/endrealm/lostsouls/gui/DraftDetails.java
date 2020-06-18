@@ -111,7 +111,7 @@ public class DraftDetails implements InventoryProvider {
                     ItemBuilder.builder(Material.PLAYER_HEAD).displayName("§bEdit Users").build(),
                     inventoryClickEvent -> {
                         if(lockedInteract) return;
-                        guiService.getEditDraftMembers(draft, () -> smartInventory.open(player)).open(player);
+                        guiService.getEditDraftMembers(draft, () -> smartInventory.open(player), true).open(player);
                     }));
         }
     }

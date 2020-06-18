@@ -33,7 +33,7 @@ public class PieceDetails implements InventoryProvider {
         contents.fillBorders(ClickableItem.empty(new ItemStack(Material.GREEN_STAINED_GLASS_PANE)));
 
         int index = 0;
-        if(player.hasPermission("souls_save.draft.view.other") || piece.hasMember(player.getUniqueId())){
+        if(player.hasPermission("souls_save.piece.view.all") || player.hasPermission("souls_save.piece.view."+piece.getTheme())){
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.COMPASS).displayName("§6Visit").build(),
@@ -55,7 +55,7 @@ public class PieceDetails implements InventoryProvider {
                                 e -> player.sendMessage(Constants.ERROR_PREFIX + "Failed to load the world. If you think that this is an error contact your server administrator!"));
                     }));
         }
-        if(player.hasPermission("souls_save.draft.delete.other") || piece.hasOwner(player.getUniqueId())){
+        if(player.hasPermission("souls_save.piece.delete.all") || player.hasPermission("souls_save.piece.delete."+piece.getTheme())){
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.BARRIER).displayName("§cDelete").build(),
@@ -67,44 +67,23 @@ public class PieceDetails implements InventoryProvider {
                     }));
         }
 
-        if(player.hasPermission("souls_save.draft.unfork.other") || piece.hasOwner(player.getUniqueId())){
+        if(player.hasPermission("souls_save.piece.fork.all") || player.hasPermission("souls_save.piece.fork."+piece.getTheme())){
             index++;
             contents.set(1, index, ClickableItem.of(
-                    ItemBuilder.builder(Material.TRIPWIRE_HOOK).displayName("§cUnfork").build(),
+                    ItemBuilder.builder(Material.TRIPWIRE_HOOK).displayName("§cCreate a Fork").build(),
                     inventoryClickEvent -> {
                         if(lockedInteract) return;
-                        player.sendMessage("TODO: add unforking");
+                        player.sendMessage("TODO: create fork and check if more drafts allowed");
                     }));
         }
 
-        if(player.hasPermission("souls_save.draft.publish.other") ||
-                (
-                        piece.hasOwner(player.getUniqueId()) &&
-                        player.hasPermission("souls_save.draft.publish.own")
-                )
-        ){
-            index++;
-            contents.set(1, index, ClickableItem.of(
-                    ItemBuilder.builder(Material.WRITABLE_BOOK).displayName("§aPublish").build(),
-                    inventoryClickEvent -> {
-                        if(lockedInteract) return;
-
-                        lockedInteract = true;
-                        guiService.getPublishDraft(piece, () -> threadService.runSync(()->smartInventory.open(player))).open(player);
-                    }
-                )
-            );
-        }
-
-        if((player.hasPermission("souls_save.draft.manage_members.own") && piece.hasOwner(player.getUniqueId())) || player.hasPermission("souls_save.draft.manage_members.other")) {
-            index++;
-            contents.set(1, index, ClickableItem.of(
-                    ItemBuilder.builder(Material.PLAYER_HEAD).displayName("§bEdit Users").build(),
-                    inventoryClickEvent -> {
-                        if(lockedInteract) return;
-                        guiService.getEditDraftMembers(piece, () -> smartInventory.open(player)).open(player);
-                    }));
-        }
+        index++;
+        contents.set(1, index, ClickableItem.of(
+                ItemBuilder.builder(Material.PLAYER_HEAD).displayName("§bSee authors").build(),
+                inventoryClickEvent -> {
+                    if(lockedInteract) return;
+                    guiService.getEditDraftMembers(piece, () -> smartInventory.open(player), false).open(player);
+                }));
     }
 
     @Override
