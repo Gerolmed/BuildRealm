@@ -87,7 +87,7 @@ public class EditMembers implements InventoryProvider {
             return;
         }
 
-        if(!player.hasPermission("souls_save.draft.manage_members.toggle")) {
+        if(!(player.hasPermission("souls_save.draft.manage_members.toggle.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("souls_save.draft.manage_members.toggle.other")) {
             return;
         }
 
