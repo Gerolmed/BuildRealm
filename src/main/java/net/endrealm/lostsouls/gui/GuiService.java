@@ -5,13 +5,16 @@ import fr.minuskube.inv.SmartInventory;
 import lombok.RequiredArgsConstructor;
 import net.endrealm.lostsouls.data.PieceType;
 import net.endrealm.lostsouls.data.entity.Draft;
+import net.endrealm.lostsouls.data.entity.Piece;
 import net.endrealm.lostsouls.data.entity.Theme;
+import net.endrealm.lostsouls.data.entity.TypeCategory;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
 import org.bukkit.OfflinePlayer;
 
+import java.lang.module.ModuleReader;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -101,7 +104,7 @@ public class GuiService {
     }
 
     public SmartInventory getThemeDetails(Theme theme) {
-        ThemeDetails themeDetails = new ThemeDetails(draftService, themeService, this, theme);
+        ThemeDetails themeDetails = new ThemeDetails(draftService, themeService, this, threadService, theme);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(themeDetails)
@@ -146,4 +149,27 @@ public class GuiService {
                 .build();
     }
 
+    public SmartInventory getCategoryDetails(Theme theme, TypeCategory category, List<Piece> pieces) {
+        CategoryDetails categoryDetails = new CategoryDetails(theme, category, pieces, draftService, threadService, dataProvider, this);
+        SmartInventory smartInventory =  SmartInventory.builder()
+                .manager(inventoryManager)
+                .provider(categoryDetails)
+                .size(4, 9)
+                .title(theme.getName() + "@" + category.getType().name().toLowerCase())
+                .build();
+        categoryDetails.setSmartInventory(smartInventory);
+        return smartInventory;
+    }
+
+    public SmartInventory getPieceDetails(Piece piece) {
+        PieceDetails pieceDetails = new PieceDetails(piece, draftService, threadService, themeService, this);
+        SmartInventory smartInventory =  SmartInventory.builder()
+                .manager(inventoryManager)
+                .provider(pieceDetails)
+                .size(3, 9)
+                .title("Piece@" + piece.getId())
+                .build();
+        pieceDetails.setSmartInventory(smartInventory);
+        return smartInventory;
+    }
 }

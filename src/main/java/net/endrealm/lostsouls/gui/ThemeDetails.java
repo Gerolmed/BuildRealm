@@ -7,10 +7,12 @@ import fr.minuskube.inv.content.InventoryProvider;
 import lombok.Data;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.PieceType;
+import net.endrealm.lostsouls.data.entity.Piece;
 import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.data.entity.TypeCategory;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThemeService;
+import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.item.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,12 +20,14 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class ThemeDetails implements InventoryProvider {
     private final DraftService draftService;
     private final ThemeService themeService;
     private final GuiService guiService;
+    private final ThreadService threadService;
     private final Theme theme;
     private SmartInventory smartInventory;
 
@@ -69,7 +73,7 @@ public class ThemeDetails implements InventoryProvider {
             PieceType type = category.getType();
             contents.set(row, col+1, ClickableItem.of(
                     ItemBuilder.builder(type.getMaterial()).displayName("§6"+type.getDisplayName()).addLore("§aCount: §7"+category.getPieceCount()).build(),
-                    inventoryClickEvent -> player.sendMessage("Todo: open category view for Theme " + theme.getName() + " type: " + type)
+                    inventoryClickEvent -> draftService.draftsByThemeAndType(theme, category.getType(), drafts -> threadService.runSync(()-> guiService.getCategoryDetails(theme, category, drafts.stream().map(draft -> (Piece) draft).collect(Collectors.toList())).open(player)))
             ));
         }
     }

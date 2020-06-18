@@ -8,7 +8,10 @@ import fr.minuskube.inv.content.Pagination;
 import lombok.Data;
 import lombok.Setter;
 import net.endrealm.lostsouls.Constants;
-import net.endrealm.lostsouls.data.entity.Draft;
+import net.endrealm.lostsouls.data.entity.Piece;
+import net.endrealm.lostsouls.data.entity.Theme;
+import net.endrealm.lostsouls.data.entity.TypeCategory;
+import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.item.ItemBuilder;
@@ -19,10 +22,13 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 @Data
-public class DraftList implements InventoryProvider {
-    private final List<Draft> drafts;
+public class CategoryDetails implements InventoryProvider {
+    private final Theme theme;
+    private final TypeCategory category;
+    private final List<Piece> drafts;
     private final DraftService draftService;
     private final ThreadService threadService;
+    private final DataProvider dataProvider;
     private final GuiService guiService;
     @Setter
     private SmartInventory smartInventory;
@@ -34,14 +40,17 @@ public class DraftList implements InventoryProvider {
         Pagination pagination = contents.pagination();
         pagination.setItemsPerPage(14);
         pagination.setItems(drafts.stream().map(
-                draft -> ClickableItem.of(ItemBuilder.builder(Material.GRASS_BLOCK).displayName("§6" + draft.getId()).addLore("§7"+draft.getNote()).addLore("§bClick for more actions").build(),
+                draft -> ClickableItem.of(ItemBuilder.builder(Material.GRASS_BLOCK)
+                                .displayName("§6Piece@" + draft.getId() +"#"+draft.getEffectiveName(dataProvider))
+                                .addLore("§bClick for more actions")
+                                .build(),
                         inventoryClickEvent -> {
                             if(draft.isInvalid()) {
                                 player.sendMessage(Constants.ERROR_PREFIX+Constants.DRAFT_INVALIDATED);
                                 player.closeInventory();
                                 return;
                             }
-                            guiService.getDraftDetails(draft).open(player);
+                            guiService.getPieceDetails(draft).open(player);
                         })
         ).toArray(ClickableItem[]::new));
 
