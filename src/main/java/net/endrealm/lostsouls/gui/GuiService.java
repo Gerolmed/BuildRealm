@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import net.endrealm.lostsouls.data.PieceType;
 import net.endrealm.lostsouls.data.entity.Draft;
 import net.endrealm.lostsouls.data.entity.Theme;
+import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
@@ -20,6 +21,7 @@ public class GuiService {
     private final DraftService draftService;
     private final ThreadService threadService;
     private final ThemeService themeService;
+    private final DataProvider dataProvider;
 
     public SmartInventory getDraftDetails(Draft draft) {
         DraftDetails draftDetails = new DraftDetails(draft, draftService, threadService, themeService, this);
@@ -124,7 +126,7 @@ public class GuiService {
     }
 
     public SmartInventory getPublishDraft(Draft draft, Runnable onBack) {
-        Publish publish = new Publish(draft, onBack, draftService, themeService, threadService, this);
+        Publish publish = new Publish(draft, onBack, draftService, themeService, threadService, dataProvider, this);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(publish)

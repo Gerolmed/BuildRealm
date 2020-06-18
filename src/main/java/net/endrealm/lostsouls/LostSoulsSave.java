@@ -86,7 +86,7 @@ public final class LostSoulsSave extends JavaPlugin {
         this.themeService = new BasicThemeService(dataProvider, threadService);
         this.draftService = new BasicDraftService(dataProvider, threadService, worldService, themeService);
 
-        this.guiService = new GuiService(inventoryManager, draftService, threadService, themeService);
+        this.guiService = new GuiService(inventoryManager, draftService, threadService, themeService, dataProvider);
 
         registerCommands();
         registerEvents();
