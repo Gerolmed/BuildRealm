@@ -105,7 +105,7 @@ public class ThemeCommand extends BaseCommand {
                 return true;
             }
             if(args.length != 2) {
-                sendError(sender, "Use /theme create {name}");
+                sendError(sender, "Use /theme open {name}");
                 return true;
             }
 
