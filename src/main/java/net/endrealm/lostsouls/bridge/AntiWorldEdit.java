@@ -44,6 +44,9 @@ public class AntiWorldEdit extends AbstractDelegateExtent
             return false;
         }
 
+        if(!draft.isOpen())
+            return false;
+
         if(draft.hasMember(player.getUniqueId()))
             return super.setBlock(location, block);
         return false;

@@ -61,7 +61,7 @@ public class EditMembers implements InventoryProvider {
 
         contents.set(0, 4, ClickableItem.of(ItemBuilder.builder(Material.EMERALD).displayName("§aAdd player").build(), inventoryClickEvent -> {
             inventoryClickEvent.setCancelled(true);
-            if(!player.hasPermission("souls_save.draft.manage_members.add")) {
+            if(!(player.hasPermission("souls_save.draft.manage_members.add.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("souls_save.draft.manage_members.add.other")) {
                 return;
             }
 
