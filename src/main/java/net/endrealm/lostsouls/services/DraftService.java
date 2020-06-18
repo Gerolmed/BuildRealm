@@ -22,11 +22,15 @@ public interface DraftService {
      *
      */
     void generateDraft(Draft draft, Consumer<World> onGenerated, Consumer<Exception> onFailure);
-    void replaceDraft(Draft oldDraft, Draft newDraft, Runnable onSuccess);
+    <T extends Draft> void replaceDraft(T oldDraft, Draft newDraft, Consumer<T> onSuccess);
 
     void deleteDraft(Draft draft, Runnable onDelete);
     void draftsByThemeAndType(String theme, PieceType type, Consumer<List<Draft>> onLoad);
     void draftsByThemeAndType(Theme theme, PieceType type, Consumer<List<Draft>> onLoad);
 
     void publishNew(PieceType type, Theme theme, Draft draft, Consumer<Piece> onFinish, Runnable onError);
+    void publishAppend(Draft draft, Consumer<Piece> onFinish, Runnable onError);
+    void publishFork(Draft draft, Consumer<Piece> onFinish, Runnable onError);
+    void publishReplace(Draft draft, Consumer<Piece> onFinish, Runnable onError);
+
 }

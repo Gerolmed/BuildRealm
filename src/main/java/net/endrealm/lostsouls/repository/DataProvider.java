@@ -21,4 +21,6 @@ public interface DataProvider {
     void removeTheme(Theme theme);
 
     List<Draft> getDraftsByThemeAndType(String theme, PieceType type);
+
+    void invalidate(Draft draft);
 }

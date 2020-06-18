@@ -113,18 +113,23 @@ public class BasicDraftService implements DraftService {
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void replaceDraft(Draft oldDraft, Draft newDraft, Runnable onSuccess) {
+    public <T extends Draft> void replaceDraft(T oldDraft, Draft newDraft, Consumer<T> onSuccess) {
         if(blocked.contains(oldDraft.getId()) || oldDraft.isInvalid())
             return;
         if(blocked.contains(newDraft.getId()) || newDraft.isInvalid())
             return;
-
+        blocked.add(oldDraft.getId());
+        blocked.add(newDraft.getId());
         worldService.replace(oldDraft.getIdentity(), newDraft.getIdentity(), () -> {
             threadService.runAsync(() -> {
-                Draft merge = oldDraft.merge(newDraft);
+                T merge = (T) oldDraft.merge(newDraft);
                 dataProvider.remove(newDraft);
                 dataProvider.saveDraft(merge);
+                blocked.remove(oldDraft.getId());
+                blocked.remove(newDraft.getId());
+                onSuccess.accept(merge);
             });
         });
     }
@@ -195,5 +200,127 @@ public class BasicDraftService implements DraftService {
 
             });
         });
+    }
+
+    @Override
+    public void publishAppend(Draft draft, Consumer<Piece> onFinish, Runnable onError) {
+        ForkData forkData = draft.getForkData();
+        if(forkData == null || blocked.contains(draft.getId())) {
+            onError.run();
+            return;
+        }
+        blocked.add(draft.getId());
+        threadService.runAsync(() -> {
+            Optional<Draft> parent = dataProvider.getDraft(forkData.getOriginId());
+            if(parent.isEmpty()) {
+                blocked.remove(draft.getId());
+                onError.run();
+                return;
+            }
+            String oldTarget = forkData.getOriginId();
+            forkData.setOriginId(parent.get().getForkData().getOriginId());
+            blocked.remove(draft.getId());
+            publishFork(draft, onFinish, () -> {
+                draft.getForkData().setOriginId(oldTarget);
+                onError.run();
+            });
+        });
+    }
+
+    @Override
+    public void publishFork(Draft draft, Consumer<Piece> onFinish, Runnable onError) {
+        ForkData forkData = draft.getForkData();
+        if(forkData == null || blocked.contains(draft.getId())) {
+            onError.run();
+            return;
+        }
+
+        blocked.add(draft.getId());
+        threadService.runAsync(() -> {
+            Optional<Draft> parentOpt = dataProvider.getDraft(forkData.getOriginId());
+            if(parentOpt.isEmpty() || blocked.contains(parentOpt.get().getId())) {
+                blocked.remove(draft.getId());
+                onError.run();
+                return;
+            }
+            Draft parentDraft = parentOpt.get();
+            blocked.add(parentDraft.getId());
+
+            if(!(parentDraft instanceof Piece)) {
+                blocked.remove(draft.getId());
+                blocked.remove(parentDraft.getId());
+                onError.run();
+                return;
+            }
+            Piece parent = (Piece) parentDraft;
+
+            Piece piece = new Piece(
+                    draft.getId(),
+                    draft.getMembers().stream().map(member -> new Member(member.getUuid(), PermissionLevel.COLLABORATOR)).collect(Collectors.toList()),
+                    draft.getNote(),
+                    null, //clear any fork data if present
+                    parent.getTheme(),
+                    new Date(),
+                    false);
+            int pointer = parent.getForkCount()+1;
+            piece.setNumber(pointer+"");
+            piece.setPieceType(parent.getPieceType());
+            parent.setForkCount(pointer);
+
+            this.themeService.loadTheme(piece.getTheme(), theme -> {
+                worldService.clone(draft.getIdentity(), piece.getIdentity(), () -> {
+                    worldService.delete(draft.getIdentity(), () -> {
+
+                        blocked.remove(draft.getId());
+                        TypeCategory category = theme.getCategory(piece.getPieceType());
+                        category.setPieceCount(category.getPieceCount()+1);
+
+                        dataProvider.saveDraft(piece);
+                        themeService.unlock(theme);
+                        themeService.saveTheme(theme, () -> {
+                            blocked.remove(piece.getId());
+                            blocked.remove(parent.getId());
+                            onFinish.accept(piece);
+                        });
+
+                    });
+                });
+            }, () -> {
+                //Undo changes
+                dataProvider.invalidate(piece);
+                dataProvider.invalidate(parent);
+                blocked.remove(piece.getId());
+                blocked.remove(parent.getId());
+            });
+        });
+    }
+
+    @Override
+    public void publishReplace(Draft draft, Consumer<Piece> onFinish, Runnable onError) {
+
+        ForkData forkData = draft.getForkData();
+        if(forkData == null || blocked.contains(draft.getId())) {
+            onError.run();
+            return;
+        }
+        Optional<Draft> parentOpt = dataProvider.getDraft(forkData.getOriginId());
+        if(parentOpt.isEmpty() || blocked.contains(parentOpt.get().getId())) {
+            blocked.remove(draft.getId());
+            onError.run();
+            return;
+        }
+        Draft parentDraft = parentOpt.get();
+        blocked.add(parentDraft.getId());
+
+        if(!(parentDraft instanceof Piece)) {
+            blocked.remove(draft.getId());
+            blocked.remove(parentDraft.getId());
+            onError.run();
+            return;
+        }
+
+        Piece parent = (Piece) parentDraft;
+
+        replaceDraft(parent, draft, onFinish);
     }
 }

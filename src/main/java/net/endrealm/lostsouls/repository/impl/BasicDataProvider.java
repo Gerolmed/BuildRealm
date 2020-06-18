@@ -105,4 +105,9 @@ public class BasicDataProvider implements DataProvider {
         drafts.addAll(newDrafts);
         return drafts;
     }
+
+    @Override
+    public void invalidate(Draft draft) {
+        draftCache.markDirty(draft.getId());
+    }
 }
