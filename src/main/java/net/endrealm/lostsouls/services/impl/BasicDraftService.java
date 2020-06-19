@@ -224,13 +224,35 @@ public class BasicDraftService implements DraftService {
                 onError.run();
                 return;
             }
+            Draft parentDraft = parent.get();
             String oldTarget = forkData.getOriginId();
-            forkData.setOriginId(parent.get().getForkData().getOriginId());
-            blocked.remove(draft.getId());
-            publishFork(draft, onFinish, () -> {
-                draft.getForkData().setOriginId(oldTarget);
-                onError.run();
-            });
+            draft.setForkData(parentDraft.getForkData());
+            if(draft.getForkData() != null) {
+                blocked.remove(draft.getId());
+                publishFork(draft, onFinish, () -> {
+                    draft.getForkData().setOriginId(oldTarget);
+                    onError.run();
+                });
+            } else{
+                if(!(parentDraft instanceof Piece)) {
+                    onError.run();
+                    return;
+                }
+                Piece parentPiece = (Piece) parentDraft;
+                themeService.loadTheme(parentPiece.getTheme(), theme -> {
+                    blocked.remove(draft.getId());
+                    publishNew(parentPiece.getPieceType(), theme, draft, onFinish, () -> {
+                        if(draft.getForkData() == null)
+                            draft.setForkData(new ForkData(oldTarget));
+                        onError.run();
+                    });
+                }, () -> {
+                    blocked.remove(draft.getId());
+                    if(draft.getForkData() == null)
+                        draft.setForkData(new ForkData(oldTarget));
+                    onError.run();
+                });
+            }
         });
     }
 
@@ -265,7 +287,7 @@ public class BasicDraftService implements DraftService {
                     draft.getId(),
                     draft.getMembers().stream().map(member -> new Member(member.getUuid(), PermissionLevel.COLLABORATOR)).collect(Collectors.toList()),
                     draft.getNote(),
-                    null, //clear any fork data if present
+                    new ForkData(parent.getId()),
                     parent.getTheme(),
                     new Date(),
                     false);
@@ -310,6 +332,8 @@ public class BasicDraftService implements DraftService {
             onError.run();
             return;
         }
+        blocked.add(draft.getId());
+
         Optional<Draft> parentOpt = dataProvider.getDraft(forkData.getOriginId());
         if(parentOpt.isEmpty() || blocked.contains(parentOpt.get().getId())) {
             blocked.remove(draft.getId());
@@ -327,7 +351,8 @@ public class BasicDraftService implements DraftService {
         }
 
         Piece parent = (Piece) parentDraft;
-
+        blocked.remove(draft.getId());
+        blocked.remove(parentDraft.getId());
         replaceDraft(parent, draft, onFinish);
     }
 
@@ -354,16 +379,64 @@ public class BasicDraftService implements DraftService {
 
                         themeService.saveTheme(theme, () -> {
                             blocked.remove(piece.getId());
+                            shiftSubPieces(piece);
                             onDelete.run();
+
                         });
-                        //TODO: shift sub pieces
                     });
 
                 }, () -> {
                     blocked.remove(piece.getId());
-                    deleteDraft(piece, onDelete);
-                    //TODO: shift sub pieces
+                    deleteDraft(piece, ()-> {
+                        shiftSubPieces(piece);
+                        onDelete.run();
+                    });
                 });
+    }
+
+    @SuppressWarnings("BusyWait")
+    private void shiftSubPieces(Piece piece) {
+        List<Draft> drafts = dataProvider.getDraftsByParent(piece.getId());
+        drafts.forEach(draft -> {
+            while (blocked.contains(draft.getId())) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            blocked.add(draft.getId());
+        });
+        foreachValidDraft(drafts.iterator(), draft -> {
+            blocked.remove(draft.getId());
+            if(draft instanceof Piece) {
+                Piece subPiece = (Piece) draft;
+                subPiece.setNumber(piece.getNumber() + "_" + subPiece.getNumber());
+            }
+            draft.setForkData(piece.getForkData());
+            saveDraft(draft, () -> {});
+        }, draft -> {
+            blocked.remove(draft.getId());
+        });
+
+    }
+
+    private void foreachValidDraft(Iterator<Draft> drafts, Consumer<Draft> onDraft, Consumer<Draft> onRemoved) {
+        if(!drafts.hasNext()) return;
+        Draft draft = drafts.next();
+        if(draft.isInvalid()) {
+            Optional<Draft> optionalDraft = dataProvider.getDraft(draft.getId());
+            if(optionalDraft.isEmpty()) {
+                onRemoved.accept(draft);
+                foreachValidDraft(drafts, onDraft, onRemoved);
+                return;
+            }
+
+            draft = optionalDraft.get();
+        }
+
+        onDraft.accept(draft);
+        foreachValidDraft(drafts, onDraft, onRemoved);
     }
 
     @Override

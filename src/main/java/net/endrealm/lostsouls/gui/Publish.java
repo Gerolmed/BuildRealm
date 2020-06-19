@@ -76,7 +76,10 @@ public class Publish implements InventoryProvider {
         player.sendMessage(Constants.PREFIX+"Starting publish process...");
         draftService.publishAppend(draft, piece -> {
             player.sendMessage(Constants.PREFIX+"Draft@" +piece.getId() + " was published to "+piece.getTheme()+"/"+piece.getPieceType().name().toLowerCase() + "/" + piece.getEffectiveName(dataProvider));
-        }, () -> {
+            threadService.runSync(()-> {
+                guiService.getPieceDetails(piece).open(player);
+            });
+            }, () -> {
             player.sendMessage(Constants.PREFIX+"Failed to publish. Invalid fork origin!");
         });
     }
@@ -85,8 +88,11 @@ public class Publish implements InventoryProvider {
         player.sendMessage(Constants.PREFIX+"Starting publish process...");
         draftService.publishFork(draft, piece -> {
             player.sendMessage(Constants.PREFIX+"Draft@" +piece.getId() + " was published to "+piece.getTheme()+"/"+piece.getPieceType().name().toLowerCase() + "/" + piece.getEffectiveName(dataProvider));
+            threadService.runSync(()-> {
+                guiService.getPieceDetails(piece).open(player);
+            });
         }, () -> {
-            player.sendMessage(Constants.PREFIX+"Failed to publish. Invalid fork origin!");
+            player.sendMessage(Constants.ERROR_PREFIX+"Failed to publish. Invalid fork origin!");
         });
     }
 
@@ -95,8 +101,11 @@ public class Publish implements InventoryProvider {
 
         draftService.publishReplace(draft, piece -> {
             player.sendMessage(Constants.PREFIX+"Draft@" +piece.getId() + " was published to "+piece.getTheme()+"/"+piece.getPieceType().name().toLowerCase() + "/" + piece.getEffectiveName(dataProvider));
+            threadService.runSync(()-> {
+                guiService.getPieceDetails(piece).open(player);
+            });
         }, () -> {
-            player.sendMessage(Constants.PREFIX+"Failed to publish. Invalid fork origin!");
+            player.sendMessage(Constants.ERROR_PREFIX+"Failed to publish. Invalid fork origin!");
         });
     }
 
@@ -109,7 +118,9 @@ public class Publish implements InventoryProvider {
                         player.closeInventory();
                         draftService.publishNew(type, theme, draft, piece -> {
                             player.sendMessage(Constants.PREFIX+"Draft@" +piece.getId() + " was published to "+theme.getName()+"/"+type.name().toLowerCase() + "/" + piece.getEffectiveName(dataProvider));
-                            guiService.getPieceDetails(piece);
+                            threadService.runSync(()-> {
+                                guiService.getPieceDetails(piece).open(player);
+                            });
                         }, ()-> {
                             player.sendMessage(Constants.ERROR_PREFIX+"Failed to publish the draft. If you believe that this is an error contact an administrator!");
                         });

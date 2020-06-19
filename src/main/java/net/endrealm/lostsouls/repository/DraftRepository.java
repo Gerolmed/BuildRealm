@@ -16,4 +16,6 @@ public interface DraftRepository {
     void remove(Draft draft);
 
     List<Draft> findByThemeAndType(String theme, PieceType type, List<String> exclude);
+
+    List<Draft> findByParent(String parentId, List<String> exclude);
 }

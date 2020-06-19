@@ -98,7 +98,7 @@ public class PieceDetails implements InventoryProvider {
 
                                         fork(player);
                                     });
-                                }, ()->{});
+                                }, ()->{}).open(player);
                     }));
         }
 

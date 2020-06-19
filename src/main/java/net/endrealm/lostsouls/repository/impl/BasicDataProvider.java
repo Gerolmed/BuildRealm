@@ -30,6 +30,16 @@ public class BasicDataProvider implements DataProvider {
     }
 
     @Override
+    public List<Draft> getDraftsByParent(String parentId) {
+        List<Draft> drafts = draftCache.getAllBy(value -> value.getForkData() != null && value.getForkData().getOriginId().equals(parentId));
+
+        List<Draft> newDrafts = draftRepository.findByParent(parentId, drafts.stream().map(Draft::getId).collect(Collectors.toList()));
+        newDrafts.forEach(draft -> draftCache.add(draft.getId(), draft));
+        drafts.addAll(newDrafts);
+        return drafts;
+    }
+
+    @Override
     public Optional<Draft> getDraft(String key) {
         Optional<Draft> draftOpt = draftCache.get(key);
         if(!draftOpt.isPresent()) {

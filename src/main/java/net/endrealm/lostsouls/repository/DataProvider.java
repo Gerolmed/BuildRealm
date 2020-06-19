@@ -24,4 +24,6 @@ public interface DataProvider {
 
     void invalidate(Draft draft);
     void validateCaches();
+
+    List<Draft> getDraftsByParent(String parentId);
 }

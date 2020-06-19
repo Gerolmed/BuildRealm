@@ -117,4 +117,22 @@ public class BasicDraftRepository implements DraftRepository {
                 .build();
         return driveService.getReader().readAllObjects(query, Draft.class);
     }
+
+    @Override
+    public List<Draft> findByParent(String parentId, List<String> excludedDraftIds) {
+        ValueNotInOperator<AndOperator<Query>> nin = new Query().setTableName(TABLE)
+                .addAnd()
+                .addEq()
+                .setField("forkData.originId")
+                .setValue(parentId)
+                .close()
+                .addNin()
+                .setField("id");
+        excludedDraftIds.forEach(nin::addValue);
+
+        Query query = nin.close()
+                .close()
+                .build();
+        return driveService.getReader().readAllObjects(query, Draft.class);
+    }
 }
