@@ -8,6 +8,7 @@ import lombok.Data;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.PieceType;
 import net.endrealm.lostsouls.data.entity.Draft;
+import net.endrealm.lostsouls.data.entity.Piece;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
@@ -28,6 +29,8 @@ public class DraftDetails implements InventoryProvider {
 
     private SmartInventory smartInventory;
     private boolean lockedInteract;
+    private Draft parent;
+    private boolean parentSet;
 
     @Override
     public void init(Player player, InventoryContents contents) {
@@ -114,10 +117,35 @@ public class DraftDetails implements InventoryProvider {
                         guiService.getEditDraftMembers(draft, () -> smartInventory.open(player), true).open(player);
                     }));
         }
+        if(draft.getForkData() != null) {
+            draftService.loadDraft(draft.getForkData().getOriginId(),
+                    draft1 -> {
+                        parent = draft1;
+                    },
+                    () -> {
+                        draft.setForkData(null);
+                        draftService.saveDraft(draft, () -> {
+                            threadService.runSync(() -> {
+                                guiService.getDraftDetails(draft).open(player);
+                            });
+                        });
+                    }
+                    );
+        }
     }
 
     @Override
     public void update(Player player, InventoryContents contents) {
-
+        if(parent != null && !parentSet) {
+            parentSet = true;
+            contents.set(1, 7, ClickableItem.of(ItemBuilder.builder(Material.CHISELED_STONE_BRICKS).displayName("§6View parent").build(),
+                    inventoryClickEvent -> {
+                        if(parent instanceof Piece) {
+                            guiService.getPieceDetails((Piece) draft).open(player);
+                            return;
+                        }
+                        guiService.getDraftDetails(draft).open(player);
+                    }));
+        }
     }
 }

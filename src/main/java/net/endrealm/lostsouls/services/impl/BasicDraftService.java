@@ -30,7 +30,7 @@ public class BasicDraftService implements DraftService {
 
     @Override
     public void loadDraft(String id, Consumer<Draft> onLoad, Runnable notExists) {
-        if(blocked.contains(id)) return; //TODO call error
+        if(blocked.contains(id)) return;
         threadService.runAsync(() -> dataProvider.getDraft(id).ifPresentOrElse(onLoad, notExists));
     }
 
@@ -364,5 +364,25 @@ public class BasicDraftService implements DraftService {
                     deleteDraft(piece, onDelete);
                     //TODO: shift sub pieces
                 });
+    }
+
+    @Override
+    public void createFork(Draft draft, UUID uniqueId, Consumer<Draft> onCreate) {
+        if(blocked.contains(draft.getId())) {
+            return;
+        }
+        blocked.add(draft.getId());
+
+        createDraft(newDraft -> {
+            blocked.add(newDraft.getId());
+            newDraft.getMembers().add(new Member(uniqueId, PermissionLevel.OWNER));
+            newDraft.setForkData(new ForkData(draft.getId()));
+            dataProvider.saveDraft(newDraft);
+            worldService.clone(draft.getIdentity(), newDraft.getIdentity(), () -> {
+                blocked.remove(draft.getId());
+                blocked.remove(newDraft.getId());
+                onCreate.accept(newDraft);
+            });
+        }, () -> {});
     }
 }

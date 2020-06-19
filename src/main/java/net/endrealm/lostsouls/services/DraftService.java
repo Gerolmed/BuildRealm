@@ -34,4 +34,6 @@ public interface DraftService {
     void publishReplace(Draft draft, Consumer<Piece> onFinish, Runnable onError);
 
     void deletePiece(Piece piece, Runnable onDelete);
+
+    void createFork(Draft draft, UUID uniqueId, Consumer<Draft> onCreat);
 }

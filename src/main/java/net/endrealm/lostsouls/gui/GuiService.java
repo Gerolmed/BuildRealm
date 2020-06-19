@@ -166,7 +166,7 @@ public class GuiService {
     }
 
     public SmartInventory getPieceDetails(Piece piece) {
-        PieceDetails pieceDetails = new PieceDetails(piece, draftService, threadService, themeService, this);
+        PieceDetails pieceDetails = new PieceDetails(piece, draftService, threadService, themeService, this, permissionService);
         SmartInventory smartInventory =  SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(pieceDetails)

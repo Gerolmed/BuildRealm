@@ -6,8 +6,10 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import lombok.Data;
 import net.endrealm.lostsouls.Constants;
+import net.endrealm.lostsouls.config.Configuration;
 import net.endrealm.lostsouls.data.entity.Piece;
 import net.endrealm.lostsouls.services.DraftService;
+import net.endrealm.lostsouls.services.PermissionService;
 import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.PlayerUtils;
@@ -23,6 +25,7 @@ public class PieceDetails implements InventoryProvider {
     private final ThreadService threadService;
     private final ThemeService themeService;
     private final GuiService guiService;
+    private final PermissionService permissionService;
 
 
     private SmartInventory smartInventory;
@@ -73,7 +76,19 @@ public class PieceDetails implements InventoryProvider {
                     ItemBuilder.builder(Material.TRIPWIRE_HOOK).displayName("§cCreate a Fork").build(),
                     inventoryClickEvent -> {
                         if(lockedInteract) return;
-                        player.sendMessage("TODO: create fork and check if more drafts allowed");
+                        lockedInteract = true;
+                        int max = permissionService.maxDrafts(player);
+
+                        if(max == -1) {
+                            lockedInteract = false;
+                            fork(player);
+                            return;
+                        }
+
+                        permissionService.currentDrafts(player, currentOwnedDraftCount -> {
+                            lockedInteract = false;
+                            fork(player);
+                        });
                     }));
         }
 
@@ -86,8 +101,20 @@ public class PieceDetails implements InventoryProvider {
                 }));
     }
 
+    private void fork(Player player) {
+        threadService.runSync(() -> {
+            player.closeInventory();
+            player.sendMessage(Constants.PREFIX+"Starting fork process...");
+            draftService.createFork(piece, player.getUniqueId(), draft -> {
+                player.sendMessage(Constants.PREFIX+"Created a new forked Draft@"+draft.getId());
+                threadService.runSync(() -> {
+                    guiService.getDraftDetails(draft).open(player);
+                });
+            });
+        });
+    }
+
     @Override
     public void update(Player player, InventoryContents contents) {
-
     }
 }
