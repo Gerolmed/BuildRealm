@@ -54,13 +54,14 @@ public final class LostSoulsSave extends JavaPlugin {
     private PermissionService permissionService;
     private ChatInputManager chatInputManager;
     private GuiService guiService;
-    private final Long CACHE_DURATION = 40000L;
+    private final Long CACHE_DURATION = 150000L;
     private SlimePlugin slimePlugin;
     private WorldEditPlugin worldEditPlugin;
     private InventoryManager inventoryManager;
     private MainConfig mainConfig;
     private boolean running;
 
+    @SuppressWarnings("BusyWait")
     @Override
     public void onEnable() {
 
@@ -111,6 +112,11 @@ public final class LostSoulsSave extends JavaPlugin {
             running = true;
 
             while (running) {
+                try {
+                    Thread.sleep(600000);
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
                 dataProvider.validateCaches();
             }
         });

@@ -85,7 +85,10 @@ public class DraftDetails implements InventoryProvider {
                                 lockedInteract = false;
                                 guiService.getDraftDetails(draft).open(player);
                             }));
-                        }, () -> smartInventory.open(player)).open(player);
+                        }, () -> {
+                            lockedInteract = false;
+                            smartInventory.open(player);
+                        }).open(player);
                     }));
         }
 
@@ -141,10 +144,10 @@ public class DraftDetails implements InventoryProvider {
             contents.set(1, 7, ClickableItem.of(ItemBuilder.builder(Material.CHISELED_STONE_BRICKS).displayName("§6View parent").build(),
                     inventoryClickEvent -> {
                         if(parent instanceof Piece) {
-                            guiService.getPieceDetails((Piece) draft).open(player);
+                            guiService.getPieceDetails((Piece) parent).open(player);
                             return;
                         }
-                        guiService.getDraftDetails(draft).open(player);
+                        guiService.getDraftDetails(parent).open(player);
                     }));
         }
     }

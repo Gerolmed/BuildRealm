@@ -120,7 +120,7 @@ public class DraftCommand extends BaseCommand {
                 openTransactions.remove(player.getUniqueId());
 
                 if(maxDrafts != -1 && ownedDraftCount >= maxDrafts) {
-                    sendError(player, "You already have to many open drafts. Max."+maxDrafts);
+                    sendError(player, "You already have too many open drafts. Max."+maxDrafts);
                     return;
                 }
                 draftService.createDraft(draft -> {

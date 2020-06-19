@@ -76,19 +76,29 @@ public class PieceDetails implements InventoryProvider {
                     ItemBuilder.builder(Material.TRIPWIRE_HOOK).displayName("§cCreate a Fork").build(),
                     inventoryClickEvent -> {
                         if(lockedInteract) return;
-                        lockedInteract = true;
-                        int max = permissionService.maxDrafts(player);
+                        guiService.getConfirmationWindow("Fork Piece@"+piece.getId(),
+                                () -> {
+                                    lockedInteract = true;
+                                    smartInventory.open(player);
+                                    int max = permissionService.maxDrafts(player);
 
-                        if(max == -1) {
-                            lockedInteract = false;
-                            fork(player);
-                            return;
-                        }
+                                    if(max == -1) {
+                                        lockedInteract = false;
+                                        fork(player);
+                                        return;
+                                    }
 
-                        permissionService.currentDrafts(player, currentOwnedDraftCount -> {
-                            lockedInteract = false;
-                            fork(player);
-                        });
+                                    permissionService.currentDrafts(player, currentOwnedDraftCount -> {
+                                        lockedInteract = false;
+
+                                        if(currentOwnedDraftCount >= max) {
+                                            player.sendMessage(Constants.ERROR_PREFIX + "You already have too many open drafts. Max."+max);
+                                            return;
+                                        }
+
+                                        fork(player);
+                                    });
+                                }, ()->{});
                     }));
         }
 
