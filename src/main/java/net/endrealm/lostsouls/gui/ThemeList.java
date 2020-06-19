@@ -11,6 +11,7 @@ import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThemeService;
+import net.endrealm.lostsouls.utils.NameComparator;
 import net.endrealm.lostsouls.utils.item.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -56,7 +57,7 @@ public class ThemeList implements InventoryProvider {
 
                             guiService.getThemeDetails(theme).open(player);
                         })
-        ).toArray(ClickableItem[]::new));
+        ).sorted(new NameComparator<>(type -> type.getItem().getItemMeta().getDisplayName())).toArray(ClickableItem[]::new));
 
         ClickableItem[] items = pagination.getPageItems();
         int half = items.length / 2;

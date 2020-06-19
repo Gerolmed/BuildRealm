@@ -171,7 +171,7 @@ public class GuiService {
                 .manager(inventoryManager)
                 .provider(pieceDetails)
                 .size(3, 9)
-                .title("Piece@" + piece.getId())
+                .title("Piece@" + piece.getId() + "#" + piece.getEffectiveDisplayName(dataProvider))
                 .build();
         pieceDetails.setSmartInventory(smartInventory);
         return smartInventory;

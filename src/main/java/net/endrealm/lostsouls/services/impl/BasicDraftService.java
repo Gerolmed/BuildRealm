@@ -125,6 +125,7 @@ public class BasicDraftService implements DraftService {
         worldService.replace(oldDraft.getIdentity(), newDraft.getIdentity(), () -> {
             threadService.runAsync(() -> {
                 T merge = (T) oldDraft.merge(newDraft);
+                merge.setLastUpdated(new Date());
                 dataProvider.remove(newDraft);
                 dataProvider.saveDraft(merge);
                 blocked.remove(oldDraft.getId());

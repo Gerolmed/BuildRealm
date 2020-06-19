@@ -45,4 +45,11 @@ public class Piece extends Draft {
         if(!(draft instanceof Piece)) return number;
         return ((Piece) draft).getEffectiveName(dataProvider) + "_" +number;
     }
+
+    public String getEffectiveDisplayName(DataProvider dataProvider) {
+        String effectiveName = getEffectiveName(dataProvider);
+        if(effectiveName.length() == 1)
+            effectiveName = effectiveName + "_0";
+        return effectiveName;
+    }
 }

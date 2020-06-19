@@ -14,6 +14,7 @@ import net.endrealm.lostsouls.data.entity.TypeCategory;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThreadService;
+import net.endrealm.lostsouls.utils.NameComparator;
 import net.endrealm.lostsouls.utils.item.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -41,7 +42,7 @@ public class CategoryDetails implements InventoryProvider {
         pagination.setItemsPerPage(14);
         pagination.setItems(drafts.stream().map(
                 draft -> ClickableItem.of(ItemBuilder.builder(Material.GRASS_BLOCK)
-                                .displayName("§6Piece@" + draft.getId() +"#"+draft.getEffectiveName(dataProvider))
+                                .displayName("§6Piece@" + draft.getId() +"#"+draft.getEffectiveDisplayName(dataProvider))
                                 .addLore("§bClick for more actions")
                                 .build(),
                         inventoryClickEvent -> {
@@ -52,7 +53,7 @@ public class CategoryDetails implements InventoryProvider {
                             }
                             guiService.getPieceDetails(draft).open(player);
                         })
-        ).toArray(ClickableItem[]::new));
+        ).sorted(new NameComparator<>(type -> type.getItem().getItemMeta().getDisplayName())).toArray(ClickableItem[]::new));
 
         ClickableItem[] items = pagination.getPageItems();
         int half = items.length / 2;
