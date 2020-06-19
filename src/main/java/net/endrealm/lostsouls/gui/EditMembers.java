@@ -59,16 +59,18 @@ public class EditMembers implements InventoryProvider {
             contents.set(2, i+1, items[i+half]);
         }
 
-        contents.set(0, 4, ClickableItem.of(ItemBuilder.builder(Material.EMERALD).displayName("§aAdd player").build(), inventoryClickEvent -> {
-            inventoryClickEvent.setCancelled(true);
-            if(!(player.hasPermission("souls_save.draft.manage_members.add.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("souls_save.draft.manage_members.add.other")) {
-                return;
-            }
+        if(editable) {
+            contents.set(0, 4, ClickableItem.of(ItemBuilder.builder(Material.EMERALD).displayName("§aAdd player").build(), inventoryClickEvent -> {
+                inventoryClickEvent.setCancelled(true);
+                if(!(player.hasPermission("souls_save.draft.manage_members.add.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("souls_save.draft.manage_members.add.other")) {
+                    return;
+                }
 
-            player.closeInventory();
-            chatInputManager.addQuestion(player.getUniqueId(), new AddUserInput(draft, onBack, editable, draftService, threadService, guiService));
-            player.sendMessage("§6"+chatInputManager.getInput(player.getUniqueId()).getQuestion(player));
-        }));
+                player.closeInventory();
+                chatInputManager.addQuestion(player.getUniqueId(), new AddUserInput(draft, onBack, editable, draftService, threadService, guiService));
+                player.sendMessage("§6"+chatInputManager.getInput(player.getUniqueId()).getQuestion(player));
+            }));
+        }
 
         contents.set(3, 4, ClickableItem.of(ItemBuilder.builder(Material.SLIME_BALL).displayName("§cBack").build(), inventoryClickEvent -> onBack.run()));
 
