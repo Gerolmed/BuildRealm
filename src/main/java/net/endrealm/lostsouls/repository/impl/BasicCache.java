@@ -32,7 +32,7 @@ public class BasicCache<T extends Invalidateble, K> implements Cache<T, K> {
     private synchronized boolean validateOrRefresh(K key, Pair<T, Long> entry) {
         long now = System.currentTimeMillis();
 
-        if(entry.getValue() > now) {
+        if(entry.getValue() > now || entry.getKey().isInvalid()) {
             markDirty(key);
             return false;
         }
@@ -44,7 +44,7 @@ public class BasicCache<T extends Invalidateble, K> implements Cache<T, K> {
     public synchronized List<T> getAllBy(Filter<T> matches) {
         List<T> found = new ArrayList<>();
         new ArrayList<>(cacheMap.entrySet()).forEach((k) -> {
-            if(matches.matches(k.getValue().getKey()))
+            if(matches.matches(k.getValue().getKey()) && !k.getValue().getKey().isInvalid())
                 found.add(k.getValue().getKey());
         });
 

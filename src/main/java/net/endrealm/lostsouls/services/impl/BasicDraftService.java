@@ -295,22 +295,26 @@ public class BasicDraftService implements DraftService {
             int pointer = parent.getForkCount()+1;
             piece.setNumber(pointer+"");
             piece.setPieceType(parent.getPieceType());
+
             parent.setForkCount(pointer);
 
             this.themeService.loadTheme(piece.getTheme(), theme -> {
                 worldService.clone(draft.getIdentity(), piece.getIdentity(), () -> {
                     worldService.delete(draft.getIdentity(), () -> {
 
-                        blocked.remove(draft.getId());
-                        TypeCategory category = theme.getCategory(piece.getPieceType());
-                        category.setPieceCount(category.getPieceCount()+1);
-
-                        dataProvider.saveDraft(piece);
-                        themeService.unlock(theme);
-                        themeService.saveTheme(theme, () -> {
-                            blocked.remove(piece.getId());
+                        threadService.runAsync(() -> {
+                            dataProvider.saveDraft(parent);
+                            dataProvider.saveDraft(piece);
                             blocked.remove(parent.getId());
-                            onFinish.accept(piece);
+                            blocked.remove(draft.getId());
+
+                            TypeCategory category = theme.getCategory(piece.getPieceType());
+                            category.setPieceCount(category.getPieceCount()+1);
+
+                            themeService.unlock(theme);
+                            themeService.saveTheme(theme, () -> {
+                                onFinish.accept(piece);
+                            });
                         });
 
                     });
