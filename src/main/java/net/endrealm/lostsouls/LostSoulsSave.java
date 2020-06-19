@@ -10,6 +10,8 @@ import net.endrealm.lostsouls.chatinput.ChatInput;
 import net.endrealm.lostsouls.chatinput.ChatInputManager;
 import net.endrealm.lostsouls.commands.DraftCommand;
 import net.endrealm.lostsouls.commands.ThemeCommand;
+import net.endrealm.lostsouls.config.Configuration;
+import net.endrealm.lostsouls.config.MainConfig;
 import net.endrealm.lostsouls.gui.GuiService;
 import net.endrealm.lostsouls.listener.ChatListener;
 import net.endrealm.lostsouls.listener.EditWorldListener;
@@ -21,9 +23,11 @@ import net.endrealm.lostsouls.repository.impl.BasicDataProvider;
 import net.endrealm.lostsouls.repository.impl.BasicDraftRepository;
 import net.endrealm.lostsouls.repository.impl.BasicThemeRepository;
 import net.endrealm.lostsouls.services.DraftService;
+import net.endrealm.lostsouls.services.PermissionService;
 import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.services.impl.BasicDraftService;
+import net.endrealm.lostsouls.services.impl.BasicPermissionService;
 import net.endrealm.lostsouls.services.impl.BasicThemeService;
 import net.endrealm.lostsouls.services.impl.ThreadServiceImpl;
 import net.endrealm.lostsouls.world.WorldService;
@@ -37,6 +41,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 
 @Getter
 public final class LostSoulsSave extends JavaPlugin {
@@ -46,19 +51,20 @@ public final class LostSoulsSave extends JavaPlugin {
     private ThemeService themeService;
     private WorldService worldService;
     private DraftService draftService;
+    private PermissionService permissionService;
     private ChatInputManager chatInputManager;
     private GuiService guiService;
     private final Long CACHE_DURATION = 40000L;
     private SlimePlugin slimePlugin;
     private WorldEditPlugin worldEditPlugin;
     private InventoryManager inventoryManager;
+    private MainConfig mainConfig;
+    private boolean running;
 
     @Override
     public void onEnable() {
 
-        String version = Bukkit.getServer().getClass().getPackage().getName();
-        String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
-
+        initConfigs();
         inventoryManager = new InventoryManager(this);
         inventoryManager.init();
 
@@ -90,12 +96,39 @@ public final class LostSoulsSave extends JavaPlugin {
         this.worldService = new BasicWorldService<>(new SlimeWorldAdapter(slimePlugin, getSlimeLoader("openDrafts"), getSlimeLoader("closedDrafts")), threadService);
         this.themeService = new BasicThemeService(dataProvider, threadService);
         this.draftService = new BasicDraftService(dataProvider, threadService, worldService, themeService);
+        this.permissionService = new BasicPermissionService(mainConfig, draftService);
 
-        this.guiService = new GuiService(inventoryManager, draftService, threadService, themeService, dataProvider, chatInputManager);
+        this.guiService = new GuiService(inventoryManager, draftService, threadService, themeService, dataProvider, chatInputManager, permissionService);
         registerCommands();
         registerEvents();
 
         this.worldEditPlugin.getWorldEdit().getEventBus().register(new WorldEditListener(dataProvider, worldService));
+
+        threadService.runAsync(() -> {
+
+            if(running) return;
+
+            running = true;
+
+            while (running) {
+                dataProvider.validateCaches();
+            }
+        });
+    }
+
+    private void initConfigs() {
+        try {
+            this.mainConfig = new MainConfig(new Configuration(this, "config.yml"));
+        } catch (IOException e) {
+            getLogger().severe("Failed to load config! Shutting down in 3 seconds to prevent any harm!");
+            getLogger().severe("Delete the config and try again!!");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+            System.exit(1);
+        }
     }
 
     private void registerEvents() {
@@ -118,13 +151,13 @@ public final class LostSoulsSave extends JavaPlugin {
     }
 
     private void registerCommands() {
-        Bukkit.getServer().getPluginCommand("draft").setExecutor(new DraftCommand(draftService, threadService, worldService, guiService));
+        Bukkit.getServer().getPluginCommand("draft").setExecutor(new DraftCommand(draftService, threadService, worldService, guiService, permissionService));
         Bukkit.getServer().getPluginCommand("theme").setExecutor(new ThemeCommand(themeService ,draftService, threadService, guiService));
 
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        running = false;
     }
 }

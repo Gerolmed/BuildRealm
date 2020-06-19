@@ -35,7 +35,7 @@ public class BasicDraftService implements DraftService {
     }
 
     @Override
-    public void ownedDrafts(UUID playerId, Consumer<List<Draft>> onLoad) {
+    public void accessibleDrafts(UUID playerId, Consumer<List<Draft>> onLoad) {
         threadService.runAsync(
                 () -> onLoad.accept(dataProvider.getDraftsByUser(playerId, true))
         );

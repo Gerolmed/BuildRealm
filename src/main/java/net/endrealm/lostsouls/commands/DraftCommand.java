@@ -6,6 +6,7 @@ import net.endrealm.lostsouls.data.PermissionLevel;
 import net.endrealm.lostsouls.data.entity.Member;
 import net.endrealm.lostsouls.gui.GuiService;
 import net.endrealm.lostsouls.services.DraftService;
+import net.endrealm.lostsouls.services.PermissionService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.BaseCommand;
 import net.endrealm.lostsouls.world.WorldIdentity;
@@ -25,6 +26,7 @@ public class DraftCommand extends BaseCommand {
     private final ThreadService threadService;
     private final WorldService worldService;
     private final GuiService guiService;
+    private final PermissionService permissionService;
 
     private final List<UUID> openTransactions = new ArrayList<>();
 
@@ -112,29 +114,27 @@ public class DraftCommand extends BaseCommand {
         openTransactions.add(player.getUniqueId());
         final int maxDrafts = getMaxDrafts(player);
         sendInfo(player, "Preparing to create a new draft...");
-        draftService.ownedDrafts(player.getUniqueId(), drafts -> {
-            openTransactions.remove(player.getUniqueId());
-        });
 
+        draftService.accessibleDrafts(player.getUniqueId(), drafts -> {
+            permissionService.currentDrafts(player, ownedDraftCount -> {
+                openTransactions.remove(player.getUniqueId());
 
-        draftService.ownedDrafts(player.getUniqueId(), drafts -> {
-            openTransactions.remove(player.getUniqueId());
-
-            if(drafts.size() >= maxDrafts) {
-                threadService.runSync(() -> sendError(player, "You already have to many open drafts. Max."+maxDrafts));
-                return;
-            }
-            draftService.createDraft(draft -> {
-                draft.setNote(note);
-                draft.setMembers(new ArrayList<>(Collections.singletonList(new Member(player.getUniqueId(), PermissionLevel.OWNER))));
-                draftService.saveDraft(draft,() -> {
-                    threadService.runSync(() -> {
-                        sendInfo(player, "Created a new draft " + draft.getId());
-                        guiService.getDraftDetails(draft).open(player);
+                if(maxDrafts != -1 && ownedDraftCount >= maxDrafts) {
+                    sendError(player, "You already have to many open drafts. Max."+maxDrafts);
+                    return;
+                }
+                draftService.createDraft(draft -> {
+                    draft.setNote(note);
+                    draft.setMembers(new ArrayList<>(Collections.singletonList(new Member(player.getUniqueId(), PermissionLevel.OWNER))));
+                    draftService.saveDraft(draft,() -> {
+                        threadService.runSync(() -> {
+                            sendInfo(player, "Created a new draft " + draft.getId());
+                            guiService.getDraftDetails(draft).open(player);
+                        });
                     });
+                }, () -> {
+                    sendError(player, "An error occurred while saving! Please report this to an administrator");
                 });
-            }, () -> {
-                sendError(player, "An error occurred while saving! Please report this to an administrator");
             });
         });
     }
@@ -157,7 +157,7 @@ public class DraftCommand extends BaseCommand {
         sendInfo(player, "Opening drafts owned by " + target.getName()+"...");
 
 
-        draftService.ownedDrafts(target.getUniqueId(), drafts -> {
+        draftService.accessibleDrafts(target.getUniqueId(), drafts -> {
             openTransactions.remove(player.getUniqueId());
             threadService.runSync(() -> guiService.getDraftsList(target, drafts).open(player));
         });
@@ -165,7 +165,6 @@ public class DraftCommand extends BaseCommand {
     }
 
     private int getMaxDrafts(Player player) {
-        //TODO: add check for max drafts
-        return 5;
+        return permissionService.maxDrafts(player);
     }
 }

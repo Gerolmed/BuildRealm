@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 public interface DraftService {
     void loadDraft(String id, Consumer<Draft> onLoad, Runnable notExists);
-    void ownedDrafts(UUID playerId, Consumer<List<Draft>> onLoad);
+    void accessibleDrafts(UUID playerId, Consumer<List<Draft>> onLoad);
     void createDraft(Consumer<Draft> onLoad, Runnable duplicateId);
     void saveDraft(Draft draft, Runnable onLoad);
     void unloadDraft(Draft draft, Runnable onFinish, Consumer<Exception> onFailure);

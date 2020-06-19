@@ -23,6 +23,12 @@ public class BasicDataProvider implements DataProvider {
     private final DraftRepository draftRepository;
     private final Cache<Theme, String> themeCache;
     private final ThemeRepository themeRepository;
+
+    public void validateCaches() {
+        themeCache.validateAll();
+        draftCache.validateAll();
+    }
+
     @Override
     public Optional<Draft> getDraft(String key) {
         Optional<Draft> draftOpt = draftCache.get(key);

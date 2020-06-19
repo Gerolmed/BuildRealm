@@ -14,7 +14,7 @@ public class BasicCache<T extends Invalidateble, K> implements Cache<T, K> {
     private final Long cacheDuration;
 
     @Override
-    public Optional<T> get(K key) {
+    public synchronized Optional<T> get(K key) {
         Pair<T, Long> entry = cacheMap.get(key);
 
         if(entry == null) {
@@ -29,7 +29,7 @@ public class BasicCache<T extends Invalidateble, K> implements Cache<T, K> {
         return Optional.of(entry.getKey());
     }
 
-    private boolean validateOrRefresh(K key, Pair<T, Long> entry) {
+    private synchronized boolean validateOrRefresh(K key, Pair<T, Long> entry) {
         long now = System.currentTimeMillis();
 
         if(entry.getValue() > now) {
@@ -41,7 +41,7 @@ public class BasicCache<T extends Invalidateble, K> implements Cache<T, K> {
     }
 
     @Override
-    public List<T> getAllBy(Filter<T> matches) {
+    public synchronized List<T> getAllBy(Filter<T> matches) {
         List<T> found = new ArrayList<>();
         new ArrayList<>(cacheMap.entrySet()).forEach((k) -> {
             if(matches.matches(k.getValue().getKey()))
@@ -66,5 +66,9 @@ public class BasicCache<T extends Invalidateble, K> implements Cache<T, K> {
             return Optional.of(pair.getKey());
         }
         return Optional.empty();
+    }
+
+    public synchronized void validateAll() {
+        new ArrayList<>(cacheMap.entrySet()).forEach(kPairEntry -> validateOrRefresh(kPairEntry.getKey(), kPairEntry.getValue()));
     }
 }

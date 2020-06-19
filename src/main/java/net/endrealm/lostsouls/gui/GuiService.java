@@ -11,6 +11,7 @@ import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.data.entity.TypeCategory;
 import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.services.DraftService;
+import net.endrealm.lostsouls.services.PermissionService;
 import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
 import org.bukkit.OfflinePlayer;
@@ -27,6 +28,7 @@ public class GuiService {
     private final ThemeService themeService;
     private final DataProvider dataProvider;
     private final ChatInputManager chatInputManager;
+    private final PermissionService permissionService;
 
     public SmartInventory getDraftDetails(Draft draft) {
         DraftDetails draftDetails = new DraftDetails(draft, draftService, threadService, themeService, this);

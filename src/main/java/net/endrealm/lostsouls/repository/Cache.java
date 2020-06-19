@@ -10,8 +10,9 @@ public interface Cache<T extends Invalidateble, K> {
     List<T> getAllBy(Filter<T> matches);
     void add(K key, T value);
     Optional<T> markDirty(K key);
+    void validateAll();
 
-    @FunctionalInterface
+        @FunctionalInterface
     interface Filter<T> {
         boolean matches(T value);
     }
