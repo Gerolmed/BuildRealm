@@ -44,6 +44,7 @@ public class CategoryDetails implements InventoryProvider {
                 draft -> ClickableItem.of(ItemBuilder.builder(Material.GRASS_BLOCK)
                                 .displayName("§6Piece@" + draft.getId() +"#"+draft.getEffectiveDisplayName(dataProvider))
                                 .addLore("§bClick for more actions")
+                        .addLore(draft.isInvalid()+"")
                                 .build(),
                         inventoryClickEvent -> {
                             if(draft.isInvalid()) {

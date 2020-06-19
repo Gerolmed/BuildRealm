@@ -40,7 +40,7 @@ public class BasicDataProvider implements DataProvider {
     }
 
     @Override
-    public Optional<Draft> getDraft(String key) {
+    public synchronized Optional<Draft> getDraft(String key) {
         Optional<Draft> draftOpt = draftCache.get(key);
         if(!draftOpt.isPresent()) {
             draftOpt = draftRepository.findByKey(key);

@@ -32,7 +32,7 @@ public class BasicCache<T extends Invalidateble, K> implements Cache<T, K> {
     private synchronized boolean validateOrRefresh(K key, Pair<T, Long> entry) {
         long now = System.currentTimeMillis();
 
-        if(entry.getValue() > now || entry.getKey().isInvalid()) {
+        if(entry.getValue() < now || entry.getKey().isInvalid()) {
             markDirty(key);
             return false;
         }
