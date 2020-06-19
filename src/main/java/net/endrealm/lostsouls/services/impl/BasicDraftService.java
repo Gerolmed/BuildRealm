@@ -376,16 +376,15 @@ public class BasicDraftService implements DraftService {
                         return;
                     }
                     themeService.lock(theme);
-                    dataProvider.remove(piece);
+                    blocked.remove(piece.getId());
+
                     deleteDraft(piece, () -> {
                         TypeCategory category = theme.getCategory(piece.getPieceType());
                         category.setPieceCount(category.getPieceCount()-1);
                         themeService.unlock(theme);
 
                         themeService.saveTheme(theme, () -> {
-                            blocked.remove(piece.getId());
-                            shiftSubPieces(piece);
-                            onDelete.run();
+                            shiftSubPieces(piece, onDelete);
 
                         });
                     });
@@ -393,14 +392,13 @@ public class BasicDraftService implements DraftService {
                 }, () -> {
                     blocked.remove(piece.getId());
                     deleteDraft(piece, ()-> {
-                        shiftSubPieces(piece);
-                        onDelete.run();
+                        shiftSubPieces(piece, onDelete);
                     });
                 });
     }
 
     @SuppressWarnings("BusyWait")
-    private void shiftSubPieces(Piece piece) {
+    private void shiftSubPieces(Piece piece, Runnable onComplete) {
         List<Draft> drafts = dataProvider.getDraftsByParent(piece.getId());
         drafts.forEach(draft -> {
             while (blocked.contains(draft.getId())) {
@@ -422,18 +420,21 @@ public class BasicDraftService implements DraftService {
             saveDraft(draft, () -> {});
         }, draft -> {
             blocked.remove(draft.getId());
-        });
+        }, onComplete);
 
     }
 
-    private void foreachValidDraft(Iterator<Draft> drafts, Consumer<Draft> onDraft, Consumer<Draft> onRemoved) {
-        if(!drafts.hasNext()) return;
+    private void foreachValidDraft(Iterator<Draft> drafts, Consumer<Draft> onDraft, Consumer<Draft> onRemoved, Runnable onComplete) {
+        if(!drafts.hasNext()) {
+            onComplete.run();
+            return;
+        }
         Draft draft = drafts.next();
         if(draft.isInvalid()) {
             Optional<Draft> optionalDraft = dataProvider.getDraft(draft.getId());
             if(optionalDraft.isEmpty()) {
                 onRemoved.accept(draft);
-                foreachValidDraft(drafts, onDraft, onRemoved);
+                foreachValidDraft(drafts, onDraft, onRemoved, onComplete);
                 return;
             }
 
@@ -441,7 +442,7 @@ public class BasicDraftService implements DraftService {
         }
 
         onDraft.accept(draft);
-        foreachValidDraft(drafts, onDraft, onRemoved);
+        foreachValidDraft(drafts, onDraft, onRemoved, onComplete);
     }
 
     @Override

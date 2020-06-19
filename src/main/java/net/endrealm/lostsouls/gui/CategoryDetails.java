@@ -44,7 +44,6 @@ public class CategoryDetails implements InventoryProvider {
                 draft -> ClickableItem.of(ItemBuilder.builder(Material.GRASS_BLOCK)
                                 .displayName("§6Piece@" + draft.getId() +"#"+draft.getEffectiveDisplayName(dataProvider))
                                 .addLore("§bClick for more actions")
-                        .addLore(draft.isInvalid()+"")
                                 .build(),
                         inventoryClickEvent -> {
                             if(draft.isInvalid()) {
@@ -54,7 +53,7 @@ public class CategoryDetails implements InventoryProvider {
                             }
                             guiService.getPieceDetails(draft).open(player);
                         })
-        ).sorted(new NameComparator<>(type -> type.getItem().getItemMeta().getDisplayName())).toArray(ClickableItem[]::new));
+        ).sorted(new NameComparator<>(type -> type.getItem().getItemMeta().getDisplayName().split("#")[1])).toArray(ClickableItem[]::new));
 
         ClickableItem[] items = pagination.getPageItems();
         int half = items.length / 2;

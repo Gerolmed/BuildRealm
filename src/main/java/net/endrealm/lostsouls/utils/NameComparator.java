@@ -10,8 +10,8 @@ public class NameComparator<T> implements Comparator<T> {
     @Override
     public int compare(T o1, T o2) {
         //Flipped to be descending
-        String name1 = nameFactory.from(o2);
-        String name2 = nameFactory.from(o1);
+        String name1 = nameFactory.from(o1);
+        String name2 = nameFactory.from(o2);
 
         int lengthComp = name1.length() - name2.length();
         int compDist = Math.min(name1.length(), name2.length());
