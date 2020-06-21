@@ -6,7 +6,10 @@ import net.endrealm.lostsouls.world.WorldAdapter;
 import net.endrealm.lostsouls.world.WorldIdentity;
 import net.endrealm.lostsouls.world.WorldInstance;
 import net.endrealm.lostsouls.world.WorldService;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -38,6 +41,12 @@ public class BasicWorldService<T> implements WorldService {
                     () -> {
                         WorldInstance<T> filledInstance = worldAdapter.generate(instance);
                         activeInstances.put(worldIdentity, filledInstance);
+                        filledInstance.getBukkitWorld().ifPresent(world -> {
+                            Block block = new Location(world, 0,70,0).getBlock();
+                            if(block.isEmpty()) {
+                                block.setType(Material.WET_SPONGE);
+                            }
+                        });
                         worldConsumer.accept(filledInstance.getBukkitWorld().get());
                     }
             );

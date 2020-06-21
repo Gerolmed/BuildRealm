@@ -158,7 +158,7 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
     private SlimePropertyMap getDefaultProperties() {
         SlimePropertyMap propertyMap = new SlimePropertyMap();
         propertyMap.setInt(SlimeProperties.SPAWN_X, 0);
-        propertyMap.setInt(SlimeProperties.SPAWN_Y, 70);
+        propertyMap.setInt(SlimeProperties.SPAWN_Y, 100);
         propertyMap.setInt(SlimeProperties.SPAWN_Z, 0);
         propertyMap.setBoolean(SlimeProperties.ALLOW_ANIMALS, false);
         propertyMap.setBoolean(SlimeProperties.ALLOW_MONSTERS, false);
