@@ -9,6 +9,7 @@ import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.PermissionService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.BaseCommand;
+import net.endrealm.lostsouls.utils.Observable;
 import net.endrealm.lostsouls.world.WorldIdentity;
 import net.endrealm.lostsouls.world.WorldService;
 import org.bukkit.Bukkit;
@@ -27,6 +28,7 @@ public class DraftCommand extends BaseCommand {
     private final WorldService worldService;
     private final GuiService guiService;
     private final PermissionService permissionService;
+    private final Observable<Boolean> isLocked;
 
     private final List<UUID> openTransactions = new ArrayList<>();
 
@@ -37,6 +39,12 @@ public class DraftCommand extends BaseCommand {
             sendError(sender, "This is a player only command!");
             return true;
         }
+
+        if(isLocked.get().orElse(false)) {
+            sendError(sender, Constants.SYSTEM_WORKING);
+            return true;
+        }
+
         Player player = (Player) sender;
 
         if(args.length == 0) {

@@ -30,6 +30,7 @@ import net.endrealm.lostsouls.services.impl.BasicDraftService;
 import net.endrealm.lostsouls.services.impl.BasicPermissionService;
 import net.endrealm.lostsouls.services.impl.BasicThemeService;
 import net.endrealm.lostsouls.services.impl.ThreadServiceImpl;
+import net.endrealm.lostsouls.utils.Observable;
 import net.endrealm.lostsouls.world.WorldService;
 import net.endrealm.lostsouls.world.impl.BasicWorldService;
 import net.endrealm.lostsouls.world.impl.FileLoader;
@@ -60,11 +61,13 @@ public final class LostSoulsSave extends JavaPlugin {
     private InventoryManager inventoryManager;
     private MainConfig mainConfig;
     private boolean running;
+    private Observable<Boolean> isUILocked;
 
     @SuppressWarnings("BusyWait")
     @Override
     public void onEnable() {
 
+        isUILocked = Observable.of(false);
         initConfigs();
         inventoryManager = new InventoryManager(this);
         inventoryManager.init();
@@ -99,12 +102,22 @@ public final class LostSoulsSave extends JavaPlugin {
         this.draftService = new BasicDraftService(dataProvider, threadService, worldService, themeService);
         this.permissionService = new BasicPermissionService(mainConfig, draftService);
 
-        this.guiService = new GuiService(inventoryManager, draftService, threadService, themeService, dataProvider, chatInputManager, permissionService);
+        this.guiService = new GuiService(inventoryManager, draftService, threadService, themeService, dataProvider, chatInputManager, permissionService, isUILocked);
         registerCommands();
         registerEvents();
 
         this.worldEditPlugin.getWorldEdit().getEventBus().register(new WorldEditListener(dataProvider, worldService));
 
+        startWorkers();
+
+        // Close all open UI's when locked
+        isUILocked.subscribe(isLocked -> {
+            if(!isLocked) return;
+            threadService.runSync(() -> Bukkit.getOnlinePlayers().forEach(player -> inventoryManager.getInventory(player).ifPresent(smartInventory -> smartInventory.close(player))));
+        });
+    }
+
+    private void startWorkers() {
         threadService.runAsync(() -> {
 
             if(running) return;
@@ -157,8 +170,8 @@ public final class LostSoulsSave extends JavaPlugin {
     }
 
     private void registerCommands() {
-        Bukkit.getServer().getPluginCommand("draft").setExecutor(new DraftCommand(draftService, threadService, worldService, guiService, permissionService));
-        Bukkit.getServer().getPluginCommand("theme").setExecutor(new ThemeCommand(themeService ,draftService, threadService, guiService));
+        Bukkit.getServer().getPluginCommand("draft").setExecutor(new DraftCommand(draftService, threadService, worldService, guiService, permissionService, isUILocked));
+        Bukkit.getServer().getPluginCommand("theme").setExecutor(new ThemeCommand(themeService ,draftService, threadService, guiService, isUILocked));
 
     }
 

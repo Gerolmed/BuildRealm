@@ -14,6 +14,7 @@ import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.PermissionService;
 import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
+import net.endrealm.lostsouls.utils.Observable;
 import org.bukkit.OfflinePlayer;
 
 import java.lang.module.ModuleReader;
@@ -29,8 +30,11 @@ public class GuiService {
     private final DataProvider dataProvider;
     private final ChatInputManager chatInputManager;
     private final PermissionService permissionService;
+    private final Observable<Boolean> isLocked;
 
     public SmartInventory getDraftDetails(Draft draft) {
+        if(isLocked.get().orElse(false)) return null;
+
         DraftDetails draftDetails = new DraftDetails(draft, draftService, threadService, themeService, this);
         SmartInventory smartInventory =  SmartInventory.builder()
                 .manager(inventoryManager)
@@ -42,6 +46,8 @@ public class GuiService {
         return smartInventory;
     }
     public SmartInventory getDraftsList(OfflinePlayer player, List<Draft> drafts) {
+        if(isLocked.get().orElse(false)) return null;
+
         DraftList list = new DraftList(drafts, draftService, threadService, this);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
@@ -55,6 +61,8 @@ public class GuiService {
     }
 
     public SmartInventory getConfirmationWindow(String title, Runnable onConfirm, Runnable onCancel) {
+        if(isLocked.get().orElse(false)) return null;
+
         Confirmation confirmation = new Confirmation(onConfirm, onCancel);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
@@ -69,6 +77,8 @@ public class GuiService {
     }
 
     public SmartInventory getThemesList(List<Theme> themes) {
+        if(isLocked.get().orElse(false)) return null;
+
         ThemeList list = new ThemeList(themes, draftService, themeService, this);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
@@ -82,6 +92,8 @@ public class GuiService {
     }
 
     public SmartInventory getThemesSelection(List<Theme> themes, Consumer<Theme> onSelect, Runnable onCancel) {
+        if(isLocked.get().orElse(false)) return null;
+
         ThemeSelection list = new ThemeSelection(themes, draftService, themeService, this, onSelect, onCancel);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
@@ -95,6 +107,8 @@ public class GuiService {
     }
 
     public SmartInventory getTypeSelection(Consumer<PieceType> onSelect, Runnable onCancel) {
+        if(isLocked.get().orElse(false)) return null;
+
         TypeSelection typeSelection = new TypeSelection(onSelect, onCancel);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
@@ -108,6 +122,8 @@ public class GuiService {
     }
 
     public SmartInventory getThemeDetails(Theme theme) {
+        if(isLocked.get().orElse(false)) return null;
+
         ThemeDetails themeDetails = new ThemeDetails(draftService, themeService, this, threadService, theme);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
@@ -121,6 +137,8 @@ public class GuiService {
     }
 
     public SmartInventory getEditDraftMembers(Draft draft, Runnable onBack, boolean editable) {
+        if(isLocked.get().orElse(false)) return null;
+
         EditMembers editMembers = new EditMembers(draft, draftService, threadService, this, onBack, editable, chatInputManager);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
@@ -133,6 +151,8 @@ public class GuiService {
     }
 
     public SmartInventory getPublishDraft(Draft draft, Runnable onBack) {
+        if(isLocked.get().orElse(false)) return null;
+
         Publish publish = new Publish(draft, onBack, draftService, themeService, threadService, dataProvider, this);
         SmartInventory smartInventory = SmartInventory.builder()
                 .manager(inventoryManager)
@@ -145,6 +165,8 @@ public class GuiService {
     }
 
     public SmartInventory getWait() {
+        if(isLocked.get().orElse(false)) return null;
+
         return SmartInventory.builder()
                 .manager(inventoryManager)
                 .provider(new Wait())
@@ -154,6 +176,8 @@ public class GuiService {
     }
 
     public SmartInventory getCategoryDetails(Theme theme, TypeCategory category, List<Piece> pieces) {
+        if(isLocked.get().orElse(false)) return null;
+
         CategoryDetails categoryDetails = new CategoryDetails(theme, category, pieces, draftService, threadService, dataProvider, this);
         SmartInventory smartInventory =  SmartInventory.builder()
                 .manager(inventoryManager)
@@ -166,6 +190,8 @@ public class GuiService {
     }
 
     public SmartInventory getPieceDetails(Piece piece) {
+        if(isLocked.get().orElse(false)) return null;
+
         PieceDetails pieceDetails = new PieceDetails(piece, draftService, threadService, themeService, this, permissionService);
         SmartInventory smartInventory =  SmartInventory.builder()
                 .manager(inventoryManager)

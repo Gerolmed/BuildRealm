@@ -9,6 +9,7 @@ import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.BaseCommand;
+import net.endrealm.lostsouls.utils.Observable;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,6 +28,7 @@ public class ThemeCommand extends BaseCommand {
     private final ThreadService threadService;
     private final GuiService guiService;
     private final List<UUID> openTransactions = Collections.synchronizedList(new ArrayList<>());
+    private final Observable<Boolean> isLocked;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -34,6 +36,12 @@ public class ThemeCommand extends BaseCommand {
             sendError(sender, "This is a player only command!");
             return true;
         }
+
+        if(isLocked.get().orElse(false)) {
+            sendError(sender, Constants.SYSTEM_WORKING);
+            return true;
+        }
+
         Player player = (Player) sender;
 
         if(args.length == 0) {
@@ -120,6 +128,35 @@ public class ThemeCommand extends BaseCommand {
                  openTransactions.remove(player.getUniqueId());
                  sendError(sender, "The given theme does not exist!");
             });
+            return true;
+        } else if(subCommandLabel.equalsIgnoreCase("export")) {
+            String themeName = "all";
+
+            if(args.length == 2) {
+                themeName = args[1];
+            }
+            if(!sender.hasPermission("souls_save.theme.export.all") && !sender.hasPermission("souls_save.theme.export."+themeName)) {
+                sendError(sender, Constants.NO_PERMISSION);
+                return true;
+            }
+            if(args.length != 2) {
+                sendError(sender, "Use /theme export {name}");
+                return true;
+            }
+
+
+            openTransactions.add(player.getUniqueId());
+            themeService.loadTheme(themeName,
+                    theme -> {
+                        openTransactions.remove(player.getUniqueId());
+                        sendInfo(sender, "Started exporting " + theme.getName() + "...");
+                        isLocked.next(true);
+                        //TODO: actually export
+
+                    }, () -> {
+                        openTransactions.remove(player.getUniqueId());
+                        sendError(sender, "The given theme does not exist!");
+                    });
             return true;
         }
         return false;
