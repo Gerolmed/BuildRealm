@@ -4,12 +4,16 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.entity.Theme;
+import net.endrealm.lostsouls.export.Exporter;
 import net.endrealm.lostsouls.gui.GuiService;
+import net.endrealm.lostsouls.repository.DataProvider;
 import net.endrealm.lostsouls.services.DraftService;
 import net.endrealm.lostsouls.services.ThemeService;
 import net.endrealm.lostsouls.services.ThreadService;
 import net.endrealm.lostsouls.utils.BaseCommand;
 import net.endrealm.lostsouls.utils.Observable;
+import net.endrealm.lostsouls.world.WorldService;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,6 +30,8 @@ public class ThemeCommand extends BaseCommand {
     private final ThemeService themeService;
     private final DraftService draftService;
     private final ThreadService threadService;
+    private final DataProvider dataProvider;
+    private final WorldService worldService;
     private final GuiService guiService;
     private final List<UUID> openTransactions = Collections.synchronizedList(new ArrayList<>());
     private final Observable<Boolean> isLocked;
@@ -150,8 +156,12 @@ public class ThemeCommand extends BaseCommand {
                     theme -> {
                         openTransactions.remove(player.getUniqueId());
                         sendInfo(sender, "Started exporting " + theme.getName() + "...");
+                        broadcastInfo("Started exporting a theme please wait until this has finished! (You will be notified!)");
                         isLocked.next(true);
-                        //TODO: actually export
+                        new Exporter(theme, dataProvider, threadService, worldService, () -> {
+                            sendInfo(sender, "Finished exporting " + theme.getName() + "!");
+                            broadcastInfo("Finished exporting theme!");
+                        });
 
                     }, () -> {
                         openTransactions.remove(player.getUniqueId());
@@ -160,6 +170,12 @@ public class ThemeCommand extends BaseCommand {
             return true;
         }
         return false;
+    }
+
+    private void broadcastInfo(String message) {
+        Bukkit.getOnlinePlayers().forEach(other -> {
+            sendInfo(other, message);
+        });
     }
 
     private void openList(Player player, List<Theme> themes) {

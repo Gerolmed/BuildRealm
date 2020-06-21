@@ -108,4 +108,13 @@ public class BasicWorldService<T> implements WorldService {
             return;
         worldAdapter.save(activeInstances.get(identity));
     }
+
+    @Override
+    public synchronized void unloadSync(WorldIdentity worldIdentity) {
+        if(!activeInstances.containsKey(worldIdentity)) {
+            return;
+        }
+        WorldInstance<T> instance = activeInstances.remove(worldIdentity);
+        worldAdapter.unload(instance.getIdentity());
+    }
 }

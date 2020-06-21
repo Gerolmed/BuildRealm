@@ -34,4 +34,6 @@ public interface WorldService {
     void replace(WorldIdentity old, WorldIdentity newIdentity, Runnable onSuccess);
 
     void save(WorldIdentity identity);
+
+    void unloadSync(WorldIdentity identity);
 }

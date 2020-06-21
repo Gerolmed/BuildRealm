@@ -31,6 +31,7 @@ import net.endrealm.lostsouls.services.impl.BasicPermissionService;
 import net.endrealm.lostsouls.services.impl.BasicThemeService;
 import net.endrealm.lostsouls.services.impl.ThreadServiceImpl;
 import net.endrealm.lostsouls.utils.Observable;
+import net.endrealm.lostsouls.world.WorldIdentity;
 import net.endrealm.lostsouls.world.WorldService;
 import net.endrealm.lostsouls.world.impl.BasicWorldService;
 import net.endrealm.lostsouls.world.impl.FileLoader;
@@ -109,12 +110,6 @@ public final class LostSoulsSave extends JavaPlugin {
         this.worldEditPlugin.getWorldEdit().getEventBus().register(new WorldEditListener(dataProvider, worldService));
 
         startWorkers();
-
-        // Close all open UI's when locked
-        isUILocked.subscribe(isLocked -> {
-            if(!isLocked) return;
-            threadService.runSync(() -> Bukkit.getOnlinePlayers().forEach(player -> inventoryManager.getInventory(player).ifPresent(smartInventory -> smartInventory.close(player))));
-        });
     }
 
     private void startWorkers() {
@@ -132,6 +127,21 @@ public final class LostSoulsSave extends JavaPlugin {
                 }
                 dataProvider.validateCaches();
             }
+        });
+        // Close all open UI's when locked
+        isUILocked.subscribe(isLocked -> {
+            if(!isLocked) return;
+            threadService.runSync(() -> Bukkit.getOnlinePlayers().forEach(player -> inventoryManager.getInventory(player).ifPresent(smartInventory -> smartInventory.close(player))));
+        });
+        // Close all open worlds when ui is locked to prevent corrupt worlds on export
+        isUILocked.subscribe(isLocked -> {
+            if(!isLocked) return;
+            Bukkit.getWorlds().forEach(world -> {
+                WorldIdentity identity = new WorldIdentity(world.getName(), false);
+                if(!worldService.isLoaded(identity))
+                    return;
+                worldService.unloadSync(identity);
+            });
         });
     }
 
@@ -171,7 +181,7 @@ public final class LostSoulsSave extends JavaPlugin {
 
     private void registerCommands() {
         Bukkit.getServer().getPluginCommand("draft").setExecutor(new DraftCommand(draftService, threadService, worldService, guiService, permissionService, isUILocked));
-        Bukkit.getServer().getPluginCommand("theme").setExecutor(new ThemeCommand(themeService ,draftService, threadService, guiService, isUILocked));
+        Bukkit.getServer().getPluginCommand("theme").setExecutor(new ThemeCommand(themeService ,draftService, threadService, dataProvider, worldService, guiService, isUILocked));
 
     }
 
