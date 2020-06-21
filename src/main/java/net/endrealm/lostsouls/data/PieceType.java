@@ -10,7 +10,9 @@ public enum PieceType {
     PATH(Material.STONE_BRICK_WALL, "Paths (Straight)", 1, 29, 21),
     PATH_CORNER(Material.STONE_BRICK_WALL, "Paths (Corner)", 1, 29, 21),
     PATH_T(Material.STONE_BRICK_WALL, "Paths (T)", 1, 29, 21),
-    PATH_CROSS(Material.STONE_BRICK_WALL, "Paths (Cross)", 1, 29, 21)
+    PATH_CROSS(Material.STONE_BRICK_WALL, "Paths (Cross)", 1, 29, 21),
+    BOSS_TWIN(Material.STONE_BRICK_WALL, "Boss (Twin)", 1, 53, 77),
+    BOSS_CREEPER(Material.STONE_BRICK_WALL, "Boss (Creeper)", 1, 53, 77)
     ;
 
     private final Material material;
