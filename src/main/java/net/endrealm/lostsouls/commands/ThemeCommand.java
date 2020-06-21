@@ -158,10 +158,11 @@ public class ThemeCommand extends BaseCommand {
                         sendInfo(sender, "Started exporting " + theme.getName() + "...");
                         broadcastInfo("Started exporting a theme please wait until this has finished! (You will be notified!)");
                         isLocked.next(true);
-                        new Exporter(theme, dataProvider, threadService, worldService, () -> {
+                        Exporter exporter = new Exporter(theme, dataProvider, threadService, worldService, () -> {
                             sendInfo(sender, "Finished exporting " + theme.getName() + "!");
                             broadcastInfo("Finished exporting theme!");
                         });
+                        threadService.runAsync(exporter::run);
 
                     }, () -> {
                         openTransactions.remove(player.getUniqueId());

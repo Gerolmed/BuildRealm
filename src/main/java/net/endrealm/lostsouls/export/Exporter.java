@@ -12,7 +12,6 @@ public final class Exporter implements Runnable {
     public Exporter(Theme theme, DataProvider dataProvider, ThreadService threadService, WorldService worldService, Runnable onFinish) {
         this.theme = theme;
         this.process = ExportUtils.createExportChain(threadService, dataProvider, worldService, onFinish);
-
     }
 
     @Override

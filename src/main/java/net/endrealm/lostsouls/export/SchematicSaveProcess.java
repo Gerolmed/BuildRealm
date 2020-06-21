@@ -27,7 +27,7 @@ public class SchematicSaveProcess extends Process<Pair<Piece, File>> {
             if(file.exists()) {
                 long lastModified = file.lastModified();
                 if(lastModified >= piece.getLastUpdated().getTime()) {
-                    runNext();
+                    runNext(pieceFilePair);
                     return;
                 }
             }
@@ -35,14 +35,16 @@ public class SchematicSaveProcess extends Process<Pair<Piece, File>> {
             PieceType type = piece.getPieceType();
 
             worldService.generate(piece.getIdentity(), world -> {
-                DungeonSchematic dungeonSchematic = new DungeonSchematic(new Vector(0,70,0), type.getCorner(), type.getCorner(), world, file);
                 try {
+                    DungeonSchematic dungeonSchematic = new DungeonSchematic(new Vector(0,70,0), type.getCorner(), type.getCorner(), world, file);
                     dungeonSchematic.save();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                worldService.unload(piece.getIdentity(), () -> {
+                    runNext(pieceFilePair);
+                });
             });
         });
     }
-
 }

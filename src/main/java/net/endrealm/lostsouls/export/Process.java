@@ -14,7 +14,7 @@ public abstract class Process<T> implements Consumer<T> {
             next.append(newProcess);
     }
 
-    protected void runNext() {
-        next.runNext();
+    protected void runNext(T value) {
+        next.accept(value);
     }
 }

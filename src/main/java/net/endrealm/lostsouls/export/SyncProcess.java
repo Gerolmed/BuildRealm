@@ -1,9 +1,13 @@
 package net.endrealm.lostsouls.export;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.endrealm.lostsouls.services.ThreadService;
 
 import java.util.function.Consumer;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class SyncProcess<T> extends Process<T> {
     private final ThreadService threadService;
     private final boolean isSynced;
@@ -19,7 +23,9 @@ public class SyncProcess<T> extends Process<T> {
     public void accept(T t) {
         run(()-> {
             onValue.accept(t);
-            threadService.runAsync(this::runNext);
+            threadService.runAsync(() -> {
+                runNext(t);
+            });
         });
     }
 

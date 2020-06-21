@@ -1,9 +1,13 @@
 package net.endrealm.lostsouls.export;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.endrealm.lostsouls.services.ThreadService;
 
 import java.util.Iterator;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 class SubProcess<K, T> extends Process<T> {
 
 
@@ -29,14 +33,17 @@ class SubProcess<K, T> extends Process<T> {
             subProcess.accept(iterator.next());
             return;
         }
-        runNext();
+        runNext(old);
     }
     
     //This will cause issues if trying to run processes parallel!
     private Iterator<K> iterator;
 
+    private T old;
     @Override
     public void accept(T t) {
+        old = t;
         iterator = subChainer.findValues(t).iterator();
+        next();
     }
 }

@@ -18,7 +18,7 @@ public final class ProcessBuilder<T> {
         root = new Process<>() {
             @Override
             public void accept(T t) {
-                runNext();
+                runNext(t);
             }
         };
     }
@@ -37,7 +37,7 @@ public final class ProcessBuilder<T> {
             @Override
             public void accept(T t) {
                 onValue.accept(t);
-                runNext();
+                runNext(t);
             }
         });
         return this;

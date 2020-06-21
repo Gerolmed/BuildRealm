@@ -40,8 +40,7 @@ public final class ExportUtils {
         pieceBuilder.build();
         typeBuilder.build();
         themeProcessBuilder.build();
-        return mainBuilder.next(theme -> onFinish.run())
-                .build();
+        return mainBuilder.next(theme -> onFinish.run()).build();
     }
 
     private static ProcessBuilder<Pair<Piece, File>> createPieceExportChain(ProcessBuilder<Touple<TypeCategory, File, Theme>> typeBuilder, DataProvider provider, ThreadService threadService, WorldService worldService) {
