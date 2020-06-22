@@ -1,5 +1,6 @@
 package net.endrealm.lostsouls.export;
 
+import com.google.common.io.Files;
 import net.endrealm.lostsouls.data.entity.Piece;
 import net.endrealm.lostsouls.data.entity.Theme;
 import net.endrealm.lostsouls.data.entity.TypeCategory;
@@ -11,6 +12,7 @@ import net.endrealm.lostsouls.world.WorldService;
 import org.bukkit.Bukkit;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +20,8 @@ import java.util.stream.Collectors;
 
 public final class ExportUtils {
 
-    public static Process<Theme> createExportChain(ThreadService threadService, DataProvider dataProvider, WorldService worldService, Runnable onFinish) {
+    @SuppressWarnings("UnstableApiUsage")
+    public static Process<Theme> createExportChain(File dataFolder, ThreadService threadService, DataProvider dataProvider, WorldService worldService, Runnable onFinish) {
         ProcessBuilder<Theme> mainBuilder = ProcessBuilder.builder(threadService, Theme.class);
         ProcessBuilder<Pair<Theme, File>> themeProcessBuilder = mainBuilder
                 .initSubChains(
@@ -31,7 +34,16 @@ public final class ExportUtils {
                             return Collections.singletonList(Pair.of(theme, file));
                         }
                 ).nextAsync(theme -> {
-                    //TODO do theme settings
+                    File settings = new File(theme.getValue(), "settings.yml");
+                    File defaultFiles = new File(dataFolder, "themeDefaultSettings.yml");
+
+                    if (!settings.exists()) {
+                        try {
+                            Files.copy(defaultFiles, settings);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 });
 
         ProcessBuilder<Touple<TypeCategory, File, Theme>> typeBuilder = createCategoryExportChain(themeProcessBuilder);

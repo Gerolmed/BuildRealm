@@ -18,6 +18,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.UUID;
 @Data
 public class ThemeCommand extends BaseCommand {
 
+    private final File dataFolder;
     private final ThemeService themeService;
     private final DraftService draftService;
     private final ThreadService threadService;
@@ -158,7 +160,7 @@ public class ThemeCommand extends BaseCommand {
                         sendInfo(sender, "Started exporting " + theme.getName() + "...");
                         broadcastInfo("Started exporting a theme please wait until this has finished! (You will be notified!)");
                         isLocked.next(true);
-                        Exporter exporter = new Exporter(theme, dataProvider, threadService, worldService, () -> {
+                        Exporter exporter = new Exporter(dataFolder, theme, dataProvider, threadService, worldService, () -> {
                             sendInfo(sender, "Finished exporting " + theme.getName() + "!");
                             broadcastInfo("Finished exporting theme!");
                         });

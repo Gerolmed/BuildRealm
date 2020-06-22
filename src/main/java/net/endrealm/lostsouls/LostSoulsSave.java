@@ -148,6 +148,7 @@ public final class LostSoulsSave extends JavaPlugin {
     private void initConfigs() {
         try {
             this.mainConfig = new MainConfig(new Configuration(this, "config.yml"));
+            new Configuration(this, "themeDefaultSettings.yml");
         } catch (IOException e) {
             getLogger().severe("Failed to load config! Shutting down in 3 seconds to prevent any harm!");
             getLogger().severe("Delete the config and try again!!");
@@ -181,7 +182,7 @@ public final class LostSoulsSave extends JavaPlugin {
 
     private void registerCommands() {
         Bukkit.getServer().getPluginCommand("draft").setExecutor(new DraftCommand(draftService, threadService, worldService, guiService, permissionService, isUILocked));
-        Bukkit.getServer().getPluginCommand("theme").setExecutor(new ThemeCommand(themeService ,draftService, threadService, dataProvider, worldService, guiService, isUILocked));
+        Bukkit.getServer().getPluginCommand("theme").setExecutor(new ThemeCommand(getDataFolder(), themeService ,draftService, threadService, dataProvider, worldService, guiService, isUILocked));
 
     }
 
