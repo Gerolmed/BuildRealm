@@ -89,6 +89,35 @@ public class EditMembers implements InventoryProvider {
             return;
         }
 
+        if(click == ClickType.LEFT) {
+            toggle(player, member, pagination);
+        } else if(click == ClickType.RIGHT) {
+            remove(player, member, pagination);
+        }
+    }
+
+    private void remove(Player player, Member member, Pagination pagination) {
+        if(!(player.hasPermission("souls_save.draft.manage_members.add.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("souls_save.draft.manage_members.add.other")) {
+            return;
+        }
+
+        boolean editAll = player.hasPermission("souls_save.draft.manage_members.other");
+        if(!(player.hasPermission("souls_save.draft.manage_members.own") && draft.hasOwner(player.getUniqueId())) && !editAll) {
+            player.closeInventory();
+            return;
+        }
+
+        if(player.getUniqueId().equals(member.getUuid()) && !editAll) {
+            return;
+        }
+
+        locked = true;
+        draft.getMembers().remove(member);
+
+        draftService.saveDraft(draft, () -> threadService.runSync(() -> guiService.getEditDraftMembers(draft, onBack, editable).open(player, pagination.getPage())));
+    }
+
+    private void toggle(Player player, Member member, Pagination pagination) {
         if(!(player.hasPermission("souls_save.draft.manage_members.toggle.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("souls_save.draft.manage_members.toggle.other")) {
             return;
         }
@@ -103,16 +132,9 @@ public class EditMembers implements InventoryProvider {
             return;
         }
 
-        if(locked) return;
-
-        if(click != ClickType.LEFT && click != ClickType.RIGHT) return;
-
         locked = true;
-        if(click == ClickType.LEFT) {
-            member.setPermissionLevel(member.getPermissionLevel().cycle());
-        } else if(draft.getMembers().size() > 1) {
-            draft.getMembers().remove(member);
-        }
+        member.setPermissionLevel(member.getPermissionLevel().cycle());
+
         draftService.saveDraft(draft, () -> threadService.runSync(() -> guiService.getEditDraftMembers(draft, onBack, editable).open(player, pagination.getPage())));
     }
 
