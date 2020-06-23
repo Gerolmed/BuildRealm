@@ -20,7 +20,8 @@ public class BasicThemeRepository implements ThemeRepository {
         this.driveService = driveService;
         driveService.getConversionHandler().registerClasses(
                 Theme.class,
-                TypeCategory.class
+                TypeCategory.class,
+                ThemeSettings.class
         );
     }
 
