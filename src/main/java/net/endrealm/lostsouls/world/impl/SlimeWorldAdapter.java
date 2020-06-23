@@ -95,7 +95,8 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
     public synchronized void delete(WorldIdentity identity) {
         try {
             SlimeLoader loader = getLoader(identity);
-            loader.unlockWorld(identity.getWorldName());
+            if(loader.worldExists(identity.getWorldName()))
+                loader.unlockWorld(identity.getWorldName());
             loader.deleteWorld(identity.getWorldName());
         } catch (UnknownWorldException | IOException e) {
             e.printStackTrace();
