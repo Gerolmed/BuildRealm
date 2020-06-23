@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.endrealm.lostsouls.Constants;
 import net.endrealm.lostsouls.data.entity.Theme;
+import net.endrealm.lostsouls.data.entity.ThemeSettings;
 import net.endrealm.lostsouls.export.Exporter;
 import net.endrealm.lostsouls.gui.GuiService;
 import net.endrealm.lostsouls.repository.DataProvider;
@@ -84,7 +85,7 @@ public class ThemeCommand extends BaseCommand {
                 openTransactions.remove(player.getUniqueId());
                 sendError(sender, "Theme " + theme.getName() + " already exists!");
             }, () -> {
-                Theme theme = new Theme(newThemeName, false, new ArrayList<>(), false);
+                Theme theme = new Theme(newThemeName, false, new ThemeSettings(), new ArrayList<>(), false);
                 themeService.createTheme(theme, createdTheme -> {
                     createdTheme.fixList();
                     openTransactions.remove(player.getUniqueId());
