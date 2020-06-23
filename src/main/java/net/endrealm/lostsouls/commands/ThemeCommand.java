@@ -164,6 +164,7 @@ public class ThemeCommand extends BaseCommand {
                         Exporter exporter = new Exporter(dataFolder, theme, dataProvider, threadService, worldService, () -> {
                             sendInfo(sender, "Finished exporting " + theme.getName() + "!");
                             broadcastInfo("Finished exporting theme!");
+                            isLocked.next(false);
                         });
                         threadService.runAsync(exporter::run);
 
