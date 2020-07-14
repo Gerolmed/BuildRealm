@@ -67,12 +67,13 @@ public class BasicDraftService implements DraftService {
         if(draft.isInvalid()) {
             return;
         }
-        threadService.runAsync(
+        threadService.runSync(
                 () -> {
-                    //TODO: save world if generated
                     worldService.save(draft.getIdentity());
-                    dataProvider.saveDraft(draft);
-                    postSave.run();
+                    threadService.runAsync(() -> {
+                        dataProvider.saveDraft(draft);
+                        postSave.run();
+                    });
                 }
         );
     }
