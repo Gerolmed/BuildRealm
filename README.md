@@ -4,6 +4,7 @@
 
 ## Support
 Any issues or questions? Need help with the setup. You can reach us on our discord.
+
 [<img src="https://discordapp.com/assets/e4923594e694a21542a489471ecffa50.svg" alt="" height="55" />](https://endrealm.net/discord)
 
 ## About
