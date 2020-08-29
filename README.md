@@ -2,12 +2,12 @@
 
 **This project has not been fully released yet and is still under development in some areas**
 
-1. [Support](/#support)
-1. [About](/#about)
-1. [Dependencies and Libraries](/#dependencies-and-libraries)
-1. [History](/#history)
-1. [For Developers](/#for-developers)
-1. [Special Thanks](/#special-thanks)
+1. [Support](#support)
+1. [About](#about)
+1. [Dependencies and Libraries](#dependencies-and-libraries)
+1. [History](#history)
+1. [For Developers](#for-developers)
+1. [Special Thanks](#special-thanks)
 
 
 ## Support
