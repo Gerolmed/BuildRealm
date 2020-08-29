@@ -1,13 +1,13 @@
 name: LostSoulsSave
 version: @version@
-main: net.endrealm.lostsouls.LostSoulsSave
-api-version: 1.15
+main: net.endrealm.buildrealm.BuildRealm
+api-version: "1.15"
 depend: [SlimeWorldManager, WorldEdit]
 
 commands:
   draft:
     description: Base command for drafts
     usage: /draft create/list/leave
-  theme:
-    description: Base command for themes
-    usage: /theme create/list/open
+  Group:
+    description: Base command for Groups
+    usage: /group create/list/open
