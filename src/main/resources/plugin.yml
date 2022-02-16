@@ -1,4 +1,4 @@
-name: LostSoulsSave
+name: BuildRealm
 version: @version@
 main: net.endrealm.buildrealm.BuildRealm
 api-version: "1.15"
@@ -8,6 +8,6 @@ commands:
   draft:
     description: Base command for drafts
     usage: /draft create/list/leave
-  Group:
+  group:
     description: Base command for Groups
     usage: /group create/list/open
