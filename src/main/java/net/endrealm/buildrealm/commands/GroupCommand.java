@@ -148,6 +148,12 @@ public class GroupCommand extends BaseCommand {
                 sendError(sender, Constants.NO_PERMISSION);
                 return true;
             }
+
+            if(!Bukkit.getPluginManager().isPluginEnabled("WorldEdit")) {
+                sendError(sender, "Exporting requires world edit to be installed");
+                return true;
+            }
+
             if (args.length != 2) {
                 sendError(sender, "Use /group export {name}");
                 return true;

@@ -2,10 +2,9 @@ package net.endrealm.buildrealm;
 
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import fr.minuskube.inv.InventoryManager;
 import lombok.Getter;
-import net.endrealm.buildrealm.bridge.WorldEditListener;
+import net.endrealm.buildrealm.bridge.WorldEditBridge;
 import net.endrealm.buildrealm.chatinput.ChatInputManager;
 import net.endrealm.buildrealm.commands.DraftCommand;
 import net.endrealm.buildrealm.commands.GroupCommand;
@@ -57,13 +56,11 @@ public final class BuildRealm extends JavaPlugin {
     private GuiService guiService;
     private final Long CACHE_DURATION = 150000L;
     private SlimePlugin slimePlugin;
-    private WorldEditPlugin worldEditPlugin;
     private InventoryManager inventoryManager;
     private MainConfig mainConfig;
     private boolean running;
     private Observable<Boolean> isUILocked;
 
-    @SuppressWarnings("BusyWait")
     @Override
     public void onEnable() {
 
@@ -73,7 +70,6 @@ public final class BuildRealm extends JavaPlugin {
         inventoryManager.init();
 
         slimePlugin = (SlimePlugin) Bukkit.getServer().getPluginManager().getPlugin("SlimeWorldManager");
-        worldEditPlugin = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
         registerLoaders();
 
         threadService = new ThreadServiceImpl(this);
@@ -106,7 +102,10 @@ public final class BuildRealm extends JavaPlugin {
         registerCommands();
         registerEvents();
 
-        this.worldEditPlugin.getWorldEdit().getEventBus().register(new WorldEditListener(dataProvider, worldService));
+        if(getServer().getPluginManager().isPluginEnabled("WorldEdit")) {
+            WorldEditBridge.setup(dataProvider, worldService);
+        }
+
 
         startWorkers();
     }

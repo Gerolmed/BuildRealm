@@ -2,7 +2,8 @@ name: BuildRealm
 version: @version@
 main: net.endrealm.buildrealm.BuildRealm
 api-version: "1.15"
-depend: [SlimeWorldManager, WorldEdit]
+depend: [SlimeWorldManager]
+softdepend: [WorldEdit]
 
 commands:
   draft:
