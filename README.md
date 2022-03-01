@@ -2,6 +2,8 @@
 
 All versions from 1.13 upwards **should** be supported if supported by either SWM or ASWM. That being said tested versions are: 1.15, 1.16, 1.17, 1.18.
 
+NOTE: ASWM 1.18 is a highly unstable development version. This leads to inherted broken functionalities at all ends.
+
 This plugin currently only works on a single server at once!
 
 **This project has not been fully released yet and is still under development in some areas.**
