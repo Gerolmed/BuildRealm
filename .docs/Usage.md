@@ -13,6 +13,14 @@ the connection at any time, but that can't be undone.
 While there is an export mechanism, which will create Schematics the sizes are currently hardcoded leading to this feature
 being quite useless rn. Customizable bounds will probably be added later,
 
+# Configuration
+Draft and group data will be saved depending on the backend. Currently its not possible to migrate the data between them
+though! Possible backends are SQLight (by default) alias file based and MongoDB. I personally recommend MongoDB because it
+has been tested more.
+
+SlimeWorlds will be saved as files by default. It's possible to overwrite this. Closed and open drafts should be saved in
+separate loaders to prevent any interferences!
+
 
 ## Commands:
  - `/draft list` Shows all your drafts and drafts you are a collaborator in
