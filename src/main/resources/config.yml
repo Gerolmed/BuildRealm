@@ -1,14 +1,31 @@
-#        _____             _      _____
-#      / ____|           | |    / ____|
-#     | (___   ___  _   _| |___| (___   __ ___   _____
-#     \___ \ / _ \| | | | / __|\___ \ / _` \ \ / / _ \
-#    ____) | (_) | |_| | \__ \____) | (_| |\ V /  __/
-#   |_____/ \___/ \__,_|_|___/_____/ \__,_| \_/ \___|
+#  ____        _ _     _   _____            _
+# |  _ \      (_) |   | | |  __ \          | |
+# | |_) |_   _ _| | __| | | |__) |___  __ _| |_ __ ___
+# |  _ <| | | | | |/ _` | |  _  // _ \/ _` | | '_ ` _ \
+# | |_) | |_| | | | (_| | | | \ \  __/ (_| | | | | | | |
+# |____/ \__,_|_|_|\__,_| |_|  \_\___|\__,_|_|_| |_| |_|
 #
 # Made by Gerolmed for the EndRealm Network
 
+# Slime loaders to use for storing worlds
+# don't touch unless you know what you are doing
+slime_loader:
+    open: "openDrafts"
+    close: "closedDrafts"
+
+# Defines data storage. This is not where the worlds are saved but the data like groups, drafts etc.
+# Values: "file" | "mongo"
+backend: "file"
+
+backends:
+    # MongoDB backend config (only needed if actually using mongo db as backend)
+    mongo:
+        host: "mongodb://localhost:27017"
+        database: "buildrealm"
+        # Comment in password if you have a password
+        # password: "Password"
 
 max_draft_perms_steps:
-  - 5
-  - 10
-  - 20
+    - 5
+    - 10
+    - 20

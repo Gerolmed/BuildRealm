@@ -16,10 +16,9 @@ import net.endrealm.buildrealm.listener.EditWorldListener;
 import net.endrealm.buildrealm.listener.LeaveListener;
 import net.endrealm.buildrealm.listener.WorldChangeListener;
 import net.endrealm.buildrealm.repository.DataProvider;
-import net.endrealm.buildrealm.repository.impl.BasicCache;
-import net.endrealm.buildrealm.repository.impl.BasicDataProvider;
-import net.endrealm.buildrealm.repository.impl.BasicDraftRepository;
-import net.endrealm.buildrealm.repository.impl.BasicGroupRepository;
+import net.endrealm.buildrealm.repository.DraftRepository;
+import net.endrealm.buildrealm.repository.GroupRepository;
+import net.endrealm.buildrealm.repository.impl.*;
 import net.endrealm.buildrealm.services.DraftService;
 import net.endrealm.buildrealm.services.GroupService;
 import net.endrealm.buildrealm.services.PermissionService;
@@ -74,24 +73,34 @@ public final class BuildRealm extends JavaPlugin {
 
         threadService = new ThreadServiceImpl(this);
 
-        // Plugin startup logic
-        DriveSettings settings = DriveSettings.builder()
-                .type(DriveSettings.BackendType.MONGO_DB)
-                .hostURL("mongodb://localhost:27017")
-                .database("soulssave")
-                .table("primary")
-                .build();
 
-        DriveServiceFactory serviceFactory = new DriveServiceFactory();
-        DriveService driveService = serviceFactory.getDriveService(settings);
+        DraftRepository draftRepository = null;
+        GroupRepository groupRepository = null;
+        if(mainConfig.getBackend() == MainConfig.BackendType.MONGO) {
+            // Plugin startup logic
+            var settings = DriveSettings.builder()
+                    .type(DriveSettings.BackendType.MONGO_DB)
+                    .hostURL(mainConfig.getMongoSettings().host())
+                    .database(mainConfig.getMongoSettings().database())
+                    .table("primary");
+            mainConfig.getMongoSettings().password().ifPresent(settings::password);
+
+            DriveServiceFactory serviceFactory = new DriveServiceFactory();
+            DriveService driveService = serviceFactory.getDriveService(settings.build());
+
+            draftRepository = new BasicDraftRepository(driveService);
+            groupRepository = new BasicGroupRepository(driveService);
+        } else {
+            draftRepository = new SQLLiteDraftRepository(new File(getDataFolder(), "local"), getLogger());
+        }
         this.chatInputManager = new ChatInputManager();
 
         //TODO: add cache cleanup on iteration
         this.dataProvider = new BasicDataProvider(
                 new BasicCache<>(CACHE_DURATION),
-                new BasicDraftRepository(driveService),
+                draftRepository,
                 new BasicCache<>(CACHE_DURATION),
-                new BasicGroupRepository(driveService)
+                groupRepository
         );
         this.worldService = new BasicWorldService<>(new SlimeWorldAdapter(slimePlugin, getSlimeLoader("openDrafts"), getSlimeLoader("closedDrafts")), threadService);
         this.groupService = new BasicGroupService(dataProvider, threadService);
