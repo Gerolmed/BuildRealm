@@ -67,7 +67,7 @@ public abstract class SQLDraftRepository implements DraftRepository {
             var piece = new Piece();
             piece.setPieceType(PieceType.valueOf(resultSet.getString("pieceType")));
             piece.setNumber(resultSet.getString("number"));
-            piece.setForkCount(resultSet.getInt("fokCount"));
+            piece.setForkCount(resultSet.getInt("forkCount"));
             draft = piece;
         } else {
             draft = new Draft();
