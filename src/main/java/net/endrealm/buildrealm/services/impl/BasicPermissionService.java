@@ -17,10 +17,10 @@ public class BasicPermissionService implements PermissionService {
     @Override
     public int maxDrafts(Player player) {
 
-        if (player.hasPermission("souls_save.draft.max.infinite")) return -1;
+        if (player.hasPermission("build_realm.draft.max.infinite")) return -1;
 
         for (int step : mainConfig.getMaxDraftSteps()) {
-            if (player.hasPermission("souls_save.draft.max." + step))
+            if (player.hasPermission("build_realm.draft.max." + step))
                 return step;
         }
         return 0;

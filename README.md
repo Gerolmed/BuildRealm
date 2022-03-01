@@ -1,6 +1,10 @@
 # Build Realm
 
-**This project has not been fully released yet and is still under development in some areas**
+All versions from 1.13 upwards **should** be supported if supported by either SWM or ASWM. That being said tested are: 1.15, 1.16 and 1.17.
+
+This plugin currently only works on a single server at once!
+
+**This project has not been fully released yet and is still under development in some areas.**
 
 1. [Support](#support)
 1. [About](#about)
@@ -35,6 +39,11 @@ to exactly control, what each user is allowed to do.
  - world variations
  - published world grouping and author tracking
  - rich permission set
+
+## Documentation
+  - [Installation](.docs/Installation.md)
+  - [Usage](.docs/Usage.md)
+  - [Permissions](.docs/Permissions.md)
 
 ## Dependencies and Libraries
 **You need to have slime world manager installed on you server for this to work**

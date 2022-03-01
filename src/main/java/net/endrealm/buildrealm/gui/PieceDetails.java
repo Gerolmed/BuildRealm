@@ -35,7 +35,7 @@ public class PieceDetails implements InventoryProvider {
         contents.fillBorders(ClickableItem.empty(new ItemStack(Material.GREEN_STAINED_GLASS_PANE)));
 
         int index = 0;
-        if (player.hasPermission("souls_save.piece.view.all") || player.hasPermission("souls_save.piece.view." + piece.getGroup())) {
+        if (player.hasPermission("build_realm.piece.view.all") || player.hasPermission("build_realm.piece.view." + piece.getGroup())) {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.COMPASS).displayName("§6Visit").build(),
@@ -57,7 +57,7 @@ public class PieceDetails implements InventoryProvider {
                                 e -> player.sendMessage(Constants.ERROR_PREFIX + "Failed to load the world. If you think that this is an error contact your server administrator!"));
                     }));
         }
-        if (player.hasPermission("souls_save.piece.delete.all") || player.hasPermission("souls_save.piece.delete." + piece.getGroup())) {
+        if (player.hasPermission("build_realm.piece.delete.all") || player.hasPermission("build_realm.piece.delete." + piece.getGroup())) {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.BARRIER).displayName("§cDelete").build(),
@@ -69,7 +69,7 @@ public class PieceDetails implements InventoryProvider {
                     }));
         }
 
-        if (player.hasPermission("souls_save.piece.fork.all") || player.hasPermission("souls_save.piece.fork." + piece.getGroup())) {
+        if (player.hasPermission("build_realm.piece.fork.all") || player.hasPermission("build_realm.piece.fork." + piece.getGroup())) {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.TRIPWIRE_HOOK).displayName("§cCreate a Fork").build(),

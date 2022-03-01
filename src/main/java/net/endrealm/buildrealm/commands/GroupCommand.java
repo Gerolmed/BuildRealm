@@ -65,7 +65,7 @@ public class GroupCommand extends BaseCommand {
         String subCommandLabel = args[0];
 
         if (subCommandLabel.equalsIgnoreCase("create")) {
-            if (!sender.hasPermission("souls_save.group.create")) {
+            if (!sender.hasPermission("build_realm.group.create")) {
                 sendError(sender, Constants.NO_PERMISSION);
                 return true;
             }
@@ -98,7 +98,7 @@ public class GroupCommand extends BaseCommand {
             });
             return true;
         } else if (subCommandLabel.equalsIgnoreCase("list")) {
-            if (!sender.hasPermission("souls_save.group.list")) {
+            if (!sender.hasPermission("build_realm.group.list")) {
                 sendError(sender, Constants.NO_PERMISSION);
                 return true;
             }
@@ -117,7 +117,7 @@ public class GroupCommand extends BaseCommand {
             if (args.length == 2) {
                 groupName = args[1];
             }
-            if (!sender.hasPermission("souls_save.group.open.all") && !sender.hasPermission("souls_save.group.open." + groupName)) {
+            if (!sender.hasPermission("build_realm.group.open.all") && !sender.hasPermission("build_realm.group.open." + groupName)) {
                 sendError(sender, Constants.NO_PERMISSION);
                 return true;
             }
@@ -144,7 +144,7 @@ public class GroupCommand extends BaseCommand {
             if (args.length == 2) {
                 groupName = args[1];
             }
-            if (!sender.hasPermission("souls_save.group.export.all") && !sender.hasPermission("souls_save.group.export." + groupName)) {
+            if (!sender.hasPermission("build_realm.group.export.all") && !sender.hasPermission("build_realm.group.export." + groupName)) {
                 sendError(sender, Constants.NO_PERMISSION);
                 return true;
             }

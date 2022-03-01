@@ -33,7 +33,7 @@ public class Publish implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fill(ClickableItem.empty(ItemBuilder.builder(Material.GREEN_STAINED_GLASS_PANE).build()));
 
-        boolean allPerm = player.hasPermission("souls_save.publish.any");
+        boolean allPerm = player.hasPermission("build_realm.publish.any");
         contents.set(3, 4, ClickableItem.of(ItemBuilder.builder(Material.BARRIER).displayName("§cCancel").build(),
                 inventoryClickEvent -> {
                     onCancel.run();
@@ -41,19 +41,19 @@ public class Publish implements InventoryProvider {
 
         if (draft.getForkData() != null) {
 
-            if (allPerm || player.hasPermission("souls_save.publish.original." + draft.getGroup()) || player.hasPermission("souls_save.publish.original"))
+            if (allPerm || player.hasPermission("build_realm.publish.original." + draft.getGroup()) || player.hasPermission("build_realm.publish.original"))
                 contents.set(1, 1, ClickableItem.of(ItemBuilder.builder(Material.REDSTONE_BLOCK).displayName("§cReplace Original").build(),
                         inventoryClickEvent -> {
                             player.closeInventory();
                             publishReplace(player);
                         }));
-            if (allPerm || player.hasPermission("souls_save.publish.variant." + draft.getGroup()) || player.hasPermission("souls_save.publish.variant"))
+            if (allPerm || player.hasPermission("build_realm.publish.variant." + draft.getGroup()) || player.hasPermission("build_realm.publish.variant"))
                 contents.set(1, 4, ClickableItem.of(ItemBuilder.builder(Material.SLIME_BLOCK).displayName("§cAs Variant").build(),
                         inventoryClickEvent -> {
                             player.closeInventory();
                             publishVariant(player);
                         }));
-            if (allPerm || player.hasPermission("souls_save.publish.original_new." + draft.getGroup()) || player.hasPermission("souls_save.publish.original_new"))
+            if (allPerm || player.hasPermission("build_realm.publish.original_new." + draft.getGroup()) || player.hasPermission("build_realm.publish.original_new"))
                 contents.set(1, 7, ClickableItem.of(
                         ItemBuilder
                                 .builder(Material.EMERALD_BLOCK)
@@ -65,7 +65,7 @@ public class Publish implements InventoryProvider {
                             publishAppend(player);
                         }));
         } else {
-            if (allPerm || player.hasPermission("souls_save.publish.new." + draft.getGroup()) || player.hasPermission("souls_save.publish.new"))
+            if (allPerm || player.hasPermission("build_realm.publish.new." + draft.getGroup()) || player.hasPermission("build_realm.publish.new"))
                 contents.set(1, 4, ClickableItem.of(ItemBuilder.builder(Material.LIME_CONCRETE).displayName("§cPublish new").build(),
                         inventoryClickEvent -> publishNew(player)));
         }

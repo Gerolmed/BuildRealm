@@ -59,6 +59,6 @@ public class EditWorldListener extends BaseListener {
         if (draftOpt.isPresent() && !draftOpt.get().isOpen())
             return false;
 
-        return player.hasPermission("souls_save.draft.edit.other") || draftOpt.map(draft -> draft.hasMember(player.getUniqueId())).orElse(false);
+        return player.hasPermission("build_realm.draft.edit.other") || draftOpt.map(draft -> draft.hasMember(player.getUniqueId())).orElse(false);
     }
 }

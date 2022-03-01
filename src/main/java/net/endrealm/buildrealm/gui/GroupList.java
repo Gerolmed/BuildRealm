@@ -32,11 +32,11 @@ public class GroupList implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(new ItemStack(Material.GREEN_STAINED_GLASS_PANE)));
 
-        boolean seeAllPerm = player.hasPermission("souls_save.Group.see.all");
-        boolean useAll = player.hasPermission("souls_save.Group.open.all");
+        boolean seeAllPerm = player.hasPermission("build_realm.Group.see.all");
+        boolean useAll = player.hasPermission("build_realm.Group.open.all");
         Pagination pagination = contents.pagination();
         pagination.setItemsPerPage(14);
-        pagination.setItems(drafts.stream().filter(Group -> seeAllPerm || useAll || player.hasPermission("souls_save.Group.open." + Group.getName())).map(
+        pagination.setItems(drafts.stream().filter(Group -> seeAllPerm || useAll || player.hasPermission("build_realm.Group.open." + Group.getName())).map(
                 Group -> ClickableItem.of(
                         ItemBuilder
                                 .builder(Material.CHEST)
@@ -50,7 +50,7 @@ public class GroupList implements InventoryProvider {
                                 player.closeInventory();
                                 return;
                             }
-                            if (!useAll && !player.hasPermission("souls_save.Group.open." + Group.getName())) {
+                            if (!useAll && !player.hasPermission("build_realm.Group.open." + Group.getName())) {
                                 player.sendMessage(Constants.ERROR_PREFIX + Constants.NO_PERMISSION);
                                 return;
                             }

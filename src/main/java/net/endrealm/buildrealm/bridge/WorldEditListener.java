@@ -20,7 +20,7 @@ public class WorldEditListener {
     public void onEditSessionEvent(EditSessionEvent event) {
         Actor actor = event.getActor();
         if (actor != null && actor.isPlayer()) {
-            if (actor.hasPermission("souls_save.draft.edit.other")) return;
+            if (actor.hasPermission("build_realm.draft.edit.other")) return;
             World world = event.getWorld();
             String name = world.getName();
             WorldIdentity identity = new WorldIdentity(name, false);

@@ -62,14 +62,14 @@ public class DraftCommand extends BaseCommand {
         String subCommandLabel = args[0];
         if (subCommandLabel.equalsIgnoreCase("list")) {
             if (args.length == 1) {
-                if (!sender.hasPermission("souls_save.draft.list.own")) {
+                if (!sender.hasPermission("build_realm.draft.list.own")) {
                     sendError(sender, Constants.NO_PERMISSION);
                     return true;
                 }
                 return onList(player, player);
             }
 
-            if (!sender.hasPermission("souls_save.draft.list.other")) {
+            if (!sender.hasPermission("build_realm.draft.list.other")) {
                 sendError(sender, Constants.NO_PERMISSION);
                 return true;
             }
@@ -82,7 +82,7 @@ public class DraftCommand extends BaseCommand {
             }
             return onList(player, offlinePlayer);
         } else if (subCommandLabel.equalsIgnoreCase("create")) {
-            if (!sender.hasPermission("souls_save.draft.create")) {
+            if (!sender.hasPermission("build_realm.draft.create")) {
                 sendError(sender, Constants.NO_PERMISSION);
                 return true;
             }
@@ -98,7 +98,7 @@ public class DraftCommand extends BaseCommand {
             tryCreate(player, note);
             return true;
         } else if (subCommandLabel.equalsIgnoreCase("leave")) {
-            if (!sender.hasPermission("souls_save.draft.leave")) {
+            if (!sender.hasPermission("build_realm.draft.leave")) {
                 sendError(sender, Constants.NO_PERMISSION);
                 return true;
             }
@@ -110,7 +110,7 @@ public class DraftCommand extends BaseCommand {
             player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
             return true;
         } else if (subCommandLabel.equalsIgnoreCase("floating")) {
-            if (!sender.hasPermission("souls_save.draft.floating")) {
+            if (!sender.hasPermission("build_realm.draft.floating")) {
                 sendError(sender, Constants.NO_PERMISSION);
                 return true;
             }

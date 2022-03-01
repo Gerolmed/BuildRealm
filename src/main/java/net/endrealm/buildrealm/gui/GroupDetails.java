@@ -36,7 +36,7 @@ public class GroupDetails implements InventoryProvider {
         contents.fillBorders(ClickableItem.empty(ItemBuilder.builder(Material.GREEN_STAINED_GLASS_PANE).build()));
 
         // Can edit Group
-        if (player.hasPermission("souls_save.Group.edit.all") || player.hasPermission("souls_save.Group.edit." + Group.getName())) {
+        if (player.hasPermission("build_realm.Group.edit.all") || player.hasPermission("build_realm.Group.edit." + Group.getName())) {
             contents.set(0, 2, ClickableItem.of(ItemBuilder.builder(Material.REPEATER).displayName("§aSettings").build(),
                     inventoryClickEvent -> {
                         player.sendMessage("todo: open settings");
@@ -53,7 +53,7 @@ public class GroupDetails implements InventoryProvider {
                         .build()));
 
         // Can delete Group
-        if (player.hasPermission("souls_save.Group.delete.all") || player.hasPermission("souls_save.Group.delete." + Group.getName())) {
+        if (player.hasPermission("build_realm.Group.delete.all") || player.hasPermission("build_realm.Group.delete." + Group.getName())) {
             contents.set(0, 6, ClickableItem.of(ItemBuilder.builder(Material.BARRIER).displayName("§cDelete").build(),
                     inventoryClickEvent -> {
                         guiService.getConfirmationWindow("Delete Group " + Group.getName(),

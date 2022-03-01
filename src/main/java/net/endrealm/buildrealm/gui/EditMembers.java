@@ -63,7 +63,7 @@ public class EditMembers implements InventoryProvider {
         if (editable) {
             contents.set(0, 4, ClickableItem.of(ItemBuilder.builder(Material.EMERALD).displayName("§aAdd player").build(), inventoryClickEvent -> {
                 inventoryClickEvent.setCancelled(true);
-                if (!(player.hasPermission("souls_save.draft.manage_members.add.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("souls_save.draft.manage_members.add.other")) {
+                if (!(player.hasPermission("build_realm.draft.manage_members.add.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("build_realm.draft.manage_members.add.other")) {
                     return;
                 }
 
@@ -98,12 +98,12 @@ public class EditMembers implements InventoryProvider {
     }
 
     private void remove(Player player, Member member, Pagination pagination) {
-        if (!(player.hasPermission("souls_save.draft.manage_members.add.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("souls_save.draft.manage_members.add.other")) {
+        if (!(player.hasPermission("build_realm.draft.manage_members.add.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("build_realm.draft.manage_members.add.other")) {
             return;
         }
 
-        boolean editAll = player.hasPermission("souls_save.draft.manage_members.other");
-        if (!(player.hasPermission("souls_save.draft.manage_members.own") && draft.hasOwner(player.getUniqueId())) && !editAll) {
+        boolean editAll = player.hasPermission("build_realm.draft.manage_members.other");
+        if (!(player.hasPermission("build_realm.draft.manage_members.own") && draft.hasOwner(player.getUniqueId())) && !editAll) {
             player.closeInventory();
             return;
         }
@@ -119,12 +119,12 @@ public class EditMembers implements InventoryProvider {
     }
 
     private void toggle(Player player, Member member, Pagination pagination) {
-        if (!(player.hasPermission("souls_save.draft.manage_members.toggle.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("souls_save.draft.manage_members.toggle.other")) {
+        if (!(player.hasPermission("build_realm.draft.manage_members.toggle.own") && draft.hasOwner(player.getUniqueId())) && !player.hasPermission("build_realm.draft.manage_members.toggle.other")) {
             return;
         }
 
-        boolean editAll = player.hasPermission("souls_save.draft.manage_members.other");
-        if (!(player.hasPermission("souls_save.draft.manage_members.own") && draft.hasOwner(player.getUniqueId())) && !editAll) {
+        boolean editAll = player.hasPermission("build_realm.draft.manage_members.other");
+        if (!(player.hasPermission("build_realm.draft.manage_members.own") && draft.hasOwner(player.getUniqueId())) && !editAll) {
             player.closeInventory();
             return;
         }

@@ -36,7 +36,7 @@ public class DraftDetails implements InventoryProvider {
         contents.fillBorders(ClickableItem.empty(new ItemStack(Material.GREEN_STAINED_GLASS_PANE)));
 
         int index = 0;
-        if (player.hasPermission("souls_save.draft.view.other") || draft.hasMember(player.getUniqueId())) {
+        if (player.hasPermission("build_realm.draft.view.other") || draft.hasMember(player.getUniqueId())) {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.COMPASS).displayName("§6Visit").build(),
@@ -58,7 +58,7 @@ public class DraftDetails implements InventoryProvider {
                                 e -> player.sendMessage(Constants.ERROR_PREFIX + "Failed to load the world. If you think that this is an error contact your server administrator!"));
                     }));
         }
-        if (player.hasPermission("souls_save.draft.delete.other") || draft.hasOwner(player.getUniqueId())) {
+        if (player.hasPermission("build_realm.draft.delete.other") || draft.hasOwner(player.getUniqueId())) {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.BARRIER).displayName("§cDelete").build(),
@@ -70,7 +70,7 @@ public class DraftDetails implements InventoryProvider {
                     }));
         }
 
-        if (draft.getForkData() != null && (player.hasPermission("souls_save.draft.unfork.other") || draft.hasOwner(player.getUniqueId()))) {
+        if (draft.getForkData() != null && (player.hasPermission("build_realm.draft.unfork.other") || draft.hasOwner(player.getUniqueId()))) {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.TRIPWIRE_HOOK).displayName("§cUnfork").build(),
@@ -91,10 +91,10 @@ public class DraftDetails implements InventoryProvider {
                     }));
         }
 
-        if (player.hasPermission("souls_save.draft.publish.other") ||
+        if (player.hasPermission("build_realm.draft.publish.other") ||
                 (
                         draft.hasOwner(player.getUniqueId()) &&
-                                player.hasPermission("souls_save.draft.publish.own")
+                                player.hasPermission("build_realm.draft.publish.own")
                 )
         ) {
             index++;
@@ -110,7 +110,7 @@ public class DraftDetails implements InventoryProvider {
             );
         }
 
-        if ((player.hasPermission("souls_save.draft.manage_members.own") && draft.hasOwner(player.getUniqueId())) || player.hasPermission("souls_save.draft.manage_members.other")) {
+        if ((player.hasPermission("build_realm.draft.manage_members.own") && draft.hasOwner(player.getUniqueId())) || player.hasPermission("build_realm.draft.manage_members.other")) {
             index++;
             contents.set(1, index, ClickableItem.of(
                     ItemBuilder.builder(Material.PLAYER_HEAD).displayName("§bEdit Users").build(),
