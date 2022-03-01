@@ -103,7 +103,7 @@ public final class BuildRealm extends JavaPlugin {
                 new BasicCache<>(CACHE_DURATION),
                 groupRepository
         );
-        this.worldService = new BasicWorldService<>(new SlimeWorldAdapter(slimePlugin, getSlimeLoader("openDrafts"), getSlimeLoader("closedDrafts")), threadService);
+        this.worldService = new BasicWorldService<>(new SlimeWorldAdapter(slimePlugin, getSlimeLoader(mainConfig.getOpenedDraftLoader()), getSlimeLoader(mainConfig.getClosedDraftLoader())), threadService);
         this.groupService = new BasicGroupService(dataProvider, threadService);
         this.draftService = new BasicDraftService(dataProvider, threadService, worldService, groupService);
         this.permissionService = new BasicPermissionService(mainConfig, draftService);

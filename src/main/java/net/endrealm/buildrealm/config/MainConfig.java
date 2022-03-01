@@ -15,6 +15,10 @@ public class MainConfig {
     @Getter
     private BackendType backend;
     @Getter
+    private String openedDraftLoader;
+    @Getter
+    private String closedDraftLoader;
+    @Getter
     private MongoSettings mongoSettings;
 
     public MainConfig(Configuration configuration) {
@@ -24,6 +28,8 @@ public class MainConfig {
 
     public void reload() {
         var config = configuration.getConfiguration();
+        this.openedDraftLoader = config.getString("slime_loader.open");
+        this.closedDraftLoader = config.getString("slime_loader.closed");
         this.maxDraftSteps = config.getIntegerList("max_draft_perms_steps");
         this.maxDraftSteps.sort((o1, o2) -> o2 - o1);
         this.backend = BackendType.valueOf(config.getString("backend").toUpperCase());
