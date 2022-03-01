@@ -92,6 +92,7 @@ public final class BuildRealm extends JavaPlugin {
             groupRepository = new BasicGroupRepository(driveService);
         } else {
             draftRepository = new SQLLiteDraftRepository(new File(getDataFolder(), "local"), getLogger());
+            groupRepository = new SQLLiteGroupRepository(new File(getDataFolder(), "local"), getLogger());
         }
         this.chatInputManager = new ChatInputManager();
 

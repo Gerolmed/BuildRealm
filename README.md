@@ -1,6 +1,6 @@
 # Build Realm
 
-All versions from 1.13 upwards **should** be supported if supported by either SWM or ASWM. That being said tested are: 1.15, 1.16 and 1.17.
+All versions from 1.13 upwards **should** be supported if supported by either SWM or ASWM. That being said tested versions are: 1.15, 1.16, 1.17, 1.18.
 
 This plugin currently only works on a single server at once!
 
