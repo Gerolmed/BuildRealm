@@ -11,7 +11,7 @@
 # don't touch unless you know what you are doing
 slime_loader:
     open: "openDrafts"
-    close: "closedDrafts"
+    closed: "closedDrafts"
 
 # Defines data storage. This is not where the worlds are saved but the data like groups, drafts etc.
 # Values: "file" | "mongo"

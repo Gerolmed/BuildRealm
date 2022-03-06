@@ -1,12 +1,12 @@
 package net.endrealm.buildrealm.config;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.Optional;
 
+@ToString
 public class MainConfig {
     private final Configuration configuration;
 
