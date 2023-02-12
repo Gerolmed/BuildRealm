@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'net.endrealm'
-version = '1.1.1-PRE'
+version = '1.2.0-PRE'
 
 sourceCompatibility = '17'
 targetCompatibility = '17'
@@ -34,7 +34,7 @@ repositories {
     mavenCentral()
     maven {
         name = 'papermc-repo'
-        url = 'https://papermc.io/repo/repository/maven-public/'
+        url = 'https://repo.papermc.io/repository/maven-public/'
     }
     maven {
         name = 'sonatype'
@@ -42,14 +42,18 @@ repositories {
     }
     maven { url "https://repo.glaremasters.me/repository/concuncan/" }
     maven { url "https://maven.enginehub.org/repo/" }
+    maven { url = 'https://repo.infernalsuite.com/repository/maven-snapshots/' }
+    maven { url = 'https://repo.infernalsuite.com/repository/maven-releases/' }
+    maven { url = 'https://repo.rapture.pw/repository/maven-releases/' }
 }
 
 dependencies {
-    compileOnly 'com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT'
     compileOnly 'org.projectlombok:lombok:1.18.22'
-    compileOnly group: "com.grinderwolf", name: "slimeworldmanager-api", version: "2.2.1";
     compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT'
+    compileOnly 'com.infernalsuite.aswm:api:1.19.3-R0.1-SNAPSHOT'
 
+    implementation 'org.apache.commons:commons-io:1.3.2'
     implementation 'fr.minuskube.inv:smart-invs:1.2.7'
     implementation 'net.endrealm:realm-drive:1.3.2-RELEASE'
     implementation group: 'org.mongodb', name: 'mongo-java-driver', version: '3.11.2'

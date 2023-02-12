@@ -1,7 +1,7 @@
 package net.endrealm.buildrealm;
 
-import com.grinderwolf.swm.api.SlimePlugin;
-import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import com.infernalsuite.aswm.api.SlimePlugin;
+import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import fr.minuskube.inv.InventoryManager;
 import lombok.Getter;
 import net.endrealm.buildrealm.bridge.WorldEditBridge;

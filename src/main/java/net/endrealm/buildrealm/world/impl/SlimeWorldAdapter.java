@@ -1,11 +1,11 @@
 package net.endrealm.buildrealm.world.impl;
 
-import com.grinderwolf.swm.api.SlimePlugin;
-import com.grinderwolf.swm.api.exceptions.*;
-import com.grinderwolf.swm.api.loaders.SlimeLoader;
-import com.grinderwolf.swm.api.world.SlimeWorld;
-import com.grinderwolf.swm.api.world.properties.SlimeProperties;
-import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
+import com.infernalsuite.aswm.api.SlimePlugin;
+import com.infernalsuite.aswm.api.exceptions.*;
+import com.infernalsuite.aswm.api.loaders.SlimeLoader;
+import com.infernalsuite.aswm.api.world.SlimeWorld;
+import com.infernalsuite.aswm.api.world.properties.SlimeProperties;
+import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap;
 import lombok.Data;
 import net.endrealm.buildrealm.world.WorldAdapter;
 import net.endrealm.buildrealm.world.WorldIdentity;
@@ -48,7 +48,7 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
         } catch (WorldAlreadyExistsException e) {
             e.printStackTrace();
             return load(target);
-        } catch (IOException | UnknownWorldException | WorldInUseException | NewerFormatException | CorruptedWorldException e) {
+        } catch (IOException | UnknownWorldException | WorldLockedException | NewerFormatException | CorruptedWorldException e) {
             e.printStackTrace();
             return null;
         }
@@ -61,7 +61,7 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
             SlimeWorldInstance slimeWorldInstance = new SlimeWorldInstance(identity);
             slimeWorldInstance.setStorageWorld(slimeWorld);
             return slimeWorldInstance;
-        } catch (UnknownWorldException | IOException | CorruptedWorldException | NewerFormatException | WorldInUseException e) {
+        } catch (UnknownWorldException | IOException | CorruptedWorldException | NewerFormatException | WorldLockedException e) {
             e.printStackTrace();
         }
         return new SlimeWorldInstance(identity);
@@ -83,7 +83,7 @@ public class SlimeWorldAdapter implements WorldAdapter<SlimeWorld> {
 
     @Override
     public WorldInstance<SlimeWorld> generate(WorldInstance<SlimeWorld> instance) {
-        slimePlugin.generateWorld(instance.getStorageWorld().get());
+        slimePlugin.loadWorld(instance.getStorageWorld().get());
         World world = Bukkit.getWorld(instance.getIdentity().getWorldName());
         SlimeWorldInstance newInstance = new SlimeWorldInstance(instance.getIdentity());
         newInstance.setStorageWorld(instance.getStorageWorld().get());
