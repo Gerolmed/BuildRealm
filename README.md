@@ -65,5 +65,10 @@ benefits in performance, when running as much as possible async. Turns out mostl
 ## For Developers
 If you have a feature or new function implemented, feel free to setup a [PullRequest](https://github.com/Gerolmed/BuildRealm/pulls).
 
+Compile:
+ - clean shadowJar
+Test:
+ - runServer
+
 ## Special thanks
 Thanks to all the people maintaining AdvancedSlimePaper it's a great system and I hope we can make it more popular.
