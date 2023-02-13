@@ -1,6 +1,5 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import dev.s7a.gradle.minecraft.server.tasks.LaunchMinecraftServerTask
-import dev.s7a.gradle.minecraft.server.tasks.LaunchMinecraftServerTask.JarUrl
 import java.io.FileOutputStream
 
 plugins {
@@ -139,12 +138,10 @@ bukkit {
 task<LaunchMinecraftServerTask>("runServer") {
     dependsOn("shadowJar")
 
-
-
     doFirst {
-        val f = buildDir.resolve("MinecraftServer/plugins/AdvancedSlimeManager.jar")
-        uri("https://dl.rapture.pw/IS/ASP/main/42175f090baf00494c0fb25588f1e22ad4d9558f/plugin-1.19.3-R0.1-SNAPSHOT.jar")
-            .toURL().openStream().use { it.copyTo(FileOutputStream(f)) }
+        val slimeJarFileOutput = buildDir.resolve("MinecraftServer/plugins/AdvancedSlimeManager.jar")
+        uri(ASWM.plugin("42175f090baf00494c0fb25588f1e22ad4d9558f", "1.19.3-R0.1"))
+            .toURL().openStream().use { it.copyTo(FileOutputStream(slimeJarFileOutput)) }
         copy {
             val file = tasks.named<AbstractArchiveTask>("shadowJar").flatMap { shadow -> shadow.archiveFile }.get().asFile;
             from(file)
@@ -152,7 +149,17 @@ task<LaunchMinecraftServerTask>("runServer") {
         }
     }
 
-    jarUrl.set("https://dl.rapture.pw/IS/ASP/main/42175f090baf00494c0fb25588f1e22ad4d9558f/slimeworldmanager-paperclip-1.19.3-R0.1-SNAPSHOT-reobf.jar")
-    // jarUrl.set(JarUrl.Paper("1.19.3"))
+    jarUrl.set(ASWM.server("42175f090baf00494c0fb25588f1e22ad4d9558f", "1.19.3-R0.1"))
     agreeEula.set(true)
+}
+
+class ASWM {
+    companion object {
+        fun server(build: String, version: String) : String {
+            return "https://dl.rapture.pw/IS/ASP/main/${build}/slimeworldmanager-paperclip-${version}-SNAPSHOT-reobf.jar";
+        }
+        fun plugin(build: String, version: String) : String {
+            return "https://dl.rapture.pw/IS/ASP/main/${build}/plugin-${version}-SNAPSHOT.jar";
+        }
+    }
 }
