@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @ToString
@@ -32,7 +33,7 @@ public class MainConfig {
         this.closedDraftLoader = config.getString("slime_loader.closed");
         this.maxDraftSteps = config.getIntegerList("max_draft_perms_steps");
         this.maxDraftSteps.sort((o1, o2) -> o2 - o1);
-        this.backend = BackendType.valueOf(config.getString("backend").toUpperCase());
+        this.backend = BackendType.valueOf(config.getString("backend").toUpperCase(Locale.ROOT));
         if(backend == BackendType.MONGO) {
             mongoSettings = new MongoSettings(
                     config.getString("backends.mongo.host"),
