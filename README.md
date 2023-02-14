@@ -1,17 +1,19 @@
 # Build Realm
 
-All versions from 1.13 upwards **should** be supported if supported by either SWM or ASWM. That being said tested versions are: 1.15, 1.16, 1.17, 1.18.
+All versions from 1.19.3 upwards **should** be supported.
+
+[**REQUIRES AdvancedSlimePaper**](https://github.com/InfernalSuite/AdvancedSlimePaper)
 
 This plugin currently only works on a single server at once!
 
 **This project has not been fully released yet and is still under development in some areas.**
 
 1. [Support](#support)
-1. [About](#about)
-1. [Dependencies and Libraries](#dependencies-and-libraries)
-1. [History](#history)
-1. [For Developers](#for-developers)
-1. [Special Thanks](#special-thanks)
+2. [About](#about)
+3. [Dependencies and Libraries](#dependencies-and-libraries)
+4. [History](#history)
+5. [For Developers](#for-developers)
+6. [Special Thanks](#special-thanks)
 
 
 ## Support
@@ -46,9 +48,8 @@ to exactly control, what each user is allowed to do.
   - [Permissions](.docs/Permissions.md)
 
 ## Dependencies and Libraries
-**You need to have slime world manager installed on you server for this to work**
-- (**Recommended**): _https://github.com/Paul19988/Advanced-Slime-World-Manager_
-- (Original): _https://github.com/Grinderwolf/Slime-World-Manager_
+**You need to use AdvancedSlimePaper on you server for this to work**
+- https://github.com/InfernalSuite/AdvancedSlimePaper
 
 For the inventory guis we use a library called [SmartInvs](https://github.com/MinusKube/SmartInvs). This library is included in the project and does **not** have to be downloaded seperatly.
 
@@ -64,5 +65,10 @@ benefits in performance, when running as much as possible async. Turns out mostl
 ## For Developers
 If you have a feature or new function implemented, feel free to setup a [PullRequest](https://github.com/Gerolmed/BuildRealm/pulls).
 
+Compile:
+ - clean shadowJar
+Test:
+ - runServer
+
 ## Special thanks
-Thanks to all the people maintaining SWM it's a great system and I hope we can make it more popular.
+Thanks to all the people maintaining AdvancedSlimePaper it's a great system and I hope we can make it more popular.

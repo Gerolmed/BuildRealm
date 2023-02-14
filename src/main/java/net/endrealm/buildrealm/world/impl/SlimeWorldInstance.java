@@ -1,6 +1,6 @@
 package net.endrealm.buildrealm.world.impl;
 
-import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.infernalsuite.aswm.api.world.SlimeWorld;
 import lombok.Data;
 import net.endrealm.buildrealm.world.WorldIdentity;
 import net.endrealm.buildrealm.world.WorldInstance;
