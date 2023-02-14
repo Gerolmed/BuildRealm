@@ -31,10 +31,11 @@ public class Configuration {
         if (!parentDirectory.exists()) {
             LOGGER.info("Missing a config directory. Attempting to create...");
 
-            if (parentDirectory.mkdirs())
+            if (parentDirectory.mkdirs()) {
                 LOGGER.info("Constructed config directories");
-            else
+            } else {
                 LOGGER.info("Failed to create config directories");
+            }
         }
 
         // Add file ending if needed
@@ -46,10 +47,11 @@ public class Configuration {
 
         //Create file if not existent
         if (!file.exists()) {
-            if (file.createNewFile())
+            if (file.createNewFile()) {
                 LOGGER.info("Constructed config file");
-            else
+            } else {
                 LOGGER.info("Failed to create config file");
+            }
 
             loadFromResources(plugin, fileName);
         }
@@ -73,14 +75,16 @@ public class Configuration {
      * @param removeRedundantKeys should redundant keys be removed
      */
     public void reloadConfig(boolean removeRedundantKeys) {
+
         try {
             configuration.load(file);
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
 
-        if (removeRedundantKeys)
+        if (removeRedundantKeys) {
             removeRedundantKeys();
+        }
     }
 
     private void removeRedundantKeys() {
@@ -99,8 +103,9 @@ public class Configuration {
         //noinspection ResultOfMethodCallIgnored
         inputStream.read(buffer);
 
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        fileOutputStream.write(buffer);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            fileOutputStream.write(buffer);
+        }
     }
 
     private InputStream getResourceStream(JavaPlugin plugin, String fileName) {
