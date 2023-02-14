@@ -139,14 +139,15 @@ task<LaunchMinecraftServerTask>("runServer") {
     dependsOn("shadowJar")
 
     doFirst {
-        val slimeJarFileOutput = buildDir.resolve("MinecraftServer/plugins/AdvancedSlimeManager.jar")
-        uri(ASWM.plugin("42175f090baf00494c0fb25588f1e22ad4d9558f", "1.19.3-R0.1"))
-            .toURL().openStream().use { it.copyTo(FileOutputStream(slimeJarFileOutput)) }
         copy {
             val file = tasks.named<AbstractArchiveTask>("shadowJar").flatMap { shadow -> shadow.archiveFile }.get().asFile;
             from(file)
             into(buildDir.resolve("MinecraftServer/plugins"))
         }
+
+        val slimeJarFileOutput = buildDir.resolve("MinecraftServer/plugins/AdvancedSlimeManager.jar")
+        uri(ASWM.plugin("42175f090baf00494c0fb25588f1e22ad4d9558f", "1.19.3-R0.1"))
+            .toURL().openStream().use { it.copyTo(FileOutputStream(slimeJarFileOutput)) }
     }
 
     jarUrl.set(ASWM.server("42175f090baf00494c0fb25588f1e22ad4d9558f", "1.19.3-R0.1"))
